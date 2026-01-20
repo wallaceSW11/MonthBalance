@@ -16,7 +16,7 @@
     </button>
 
     <div
-      v-show="!collapsed"
+      v-if="!collapsed"
       class="items-container"
     >
       <div
@@ -29,14 +29,12 @@
         </div>
 
         <div class="item-value">
-          <input
-            :value="formatValue(income)"
-            type="text"
-            inputmode="decimal"
-            class="value-input"
-            @input="handleValueChange(income, $event)"
-            @blur="saveIncome(income)"
+          <button
+            class="value-button"
+            @click="$emit('edit', income)"
           >
+            {{ formatValue(income) }}
+          </button>
         </div>
       </div>
 
@@ -54,15 +52,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIncomeStore } from '@/stores/income'
-import { formatCurrency, parseCurrency } from '@/utils/currency'
+import { formatCurrency } from '@/utils/currency'
 import { uiStorageService } from '@/services/storage/UIStorageService'
 import type { Income } from '@/models/Income'
+
+defineEmits<{
+  edit: [income: Income]
+}>()
 
 const { t, locale } = useI18n()
 const incomeStore = useIncomeStore()
 
 const collapsed = ref(false)
-const pendingChanges = ref<Map<string, Income>>(new Map())
 
 const incomes = computed(() => incomeStore.incomes)
 
@@ -77,29 +78,6 @@ function formatValue(income: Income): string {
   return formatCurrency(value, locale.value)
 }
 
-function handleValueChange(income: Income, event: Event): void {
-  const target = event.target as HTMLInputElement
-  const newValue = parseCurrency(target.value, locale.value)
-  
-  if (income.type === 'manual') {
-    const updatedIncome: Income = {
-      ...income,
-      netValue: newValue,
-    }
-    
-    pendingChanges.value.set(income.id, updatedIncome)
-  }
-}
-
-function saveIncome(income: Income): void {
-  const pending = pendingChanges.value.get(income.id)
-  
-  if (!pending) return
-  
-  incomeStore.updateIncome(pending)
-  pendingChanges.value.delete(income.id)
-}
-
 onMounted(() => {
   const uiState = uiStorageService.getUIState()
   
@@ -109,7 +87,7 @@ onMounted(() => {
 
 <style scoped>
 .income-list {
-  padding-top: 24px;
+  padding-top: 8px;
   padding-bottom: 8px;
 }
 
@@ -205,7 +183,7 @@ onMounted(() => {
   width: 128px;
 }
 
-.value-input {
+.value-button {
   width: 100%;
   background: transparent;
   text-align: right;
@@ -217,16 +195,16 @@ onMounted(() => {
   border-radius: 4px;
   transition: background-color 0.2s, color 0.2s;
   font-variant-numeric: tabular-nums;
+  cursor: pointer;
 }
 
-.value-input:hover {
+.value-button:hover {
   background-color: rgba(var(--v-theme-on-surface), 0.04);
+  color: rgb(var(--v-theme-primary));
 }
 
-.value-input:focus {
-  outline: none;
+.value-button:active {
   background-color: rgba(var(--v-theme-on-surface), 0.08);
-  color: rgb(var(--v-theme-primary));
 }
 
 .empty-state {

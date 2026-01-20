@@ -73,11 +73,6 @@ const menuItems = computed(() => [
     icon: 'mdi-cash-minus',
     route: '/expenses',
   },
-  {
-    title: t('navigation.settings'),
-    icon: 'mdi-cog',
-    route: '/settings',
-  },
 ])
 
 function isActiveRoute(routePath: string): boolean {

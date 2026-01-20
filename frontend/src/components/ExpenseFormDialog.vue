@@ -108,7 +108,7 @@ async function handleSubmit(): Promise<void> {
   }
   
   emit('save', expenseData)
-  closeDialog()
+  resetForm()
 }
 
 function closeDialog(): void {

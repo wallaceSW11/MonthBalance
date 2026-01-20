@@ -16,7 +16,7 @@
     </button>
 
     <div
-      v-show="!collapsed"
+      v-if="!collapsed"
       class="items-container"
     >
       <div
@@ -105,7 +105,7 @@ onMounted(() => {
 
 <style scoped>
 .expense-list {
-  padding-top: 8px;
+  padding-top: 4px;
   padding-bottom: 96px;
 }
 
@@ -116,7 +116,6 @@ onMounted(() => {
   justify-content: space-between;
   padding: 0 16px;
   margin-bottom: 8px;
-  margin-top: 16px;
   background: transparent;
   border: none;
   cursor: pointer;
