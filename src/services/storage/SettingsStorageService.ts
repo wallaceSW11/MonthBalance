@@ -3,7 +3,7 @@ import type { Settings } from '@/models/Settings'
 
 export class SettingsStorageService extends StorageService<Settings> {
   constructor() {
-    super('month-balance-settings')
+    super('monthbalance:settings')
   }
 
   getSettings(): Settings {
@@ -34,10 +34,29 @@ export class SettingsStorageService extends StorageService<Settings> {
     this.saveSettings(settings)
   }
 
+  updateIncomesCollapsed(collapsed: boolean): void {
+    const settings = this.getSettings()
+    
+    settings.incomesCollapsed = collapsed
+    this.saveSettings(settings)
+  }
+
+  updateExpensesCollapsed(collapsed: boolean): void {
+    const settings = this.getSettings()
+    
+    settings.expensesCollapsed = collapsed
+    this.saveSettings(settings)
+  }
+
   private getDefaultSettings(): Settings {
+    const browserLang = navigator.language.toLowerCase()
+    const defaultLocale = browserLang.startsWith('pt') ? 'pt-BR' : 'en-US'
+    
     return {
       theme: 'dark',
-      locale: 'pt-BR',
+      locale: defaultLocale as 'pt-BR' | 'en-US',
+      incomesCollapsed: false,
+      expensesCollapsed: false,
     }
   }
 }

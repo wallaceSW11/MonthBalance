@@ -51,10 +51,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIncomeStore } from '@/stores/income'
 import { formatCurrency, parseCurrency } from '@/utils/currency'
+import { uiStorageService } from '@/services/storage/UIStorageService'
 import type { Income } from '@/models/Income'
 
 const { t, locale } = useI18n()
@@ -67,6 +68,7 @@ const incomes = computed(() => incomeStore.incomes)
 
 function toggleCollapse(): void {
   collapsed.value = !collapsed.value
+  uiStorageService.updateIncomesCollapsed(collapsed.value)
 }
 
 function formatValue(income: Income): string {
@@ -97,6 +99,12 @@ function saveIncome(income: Income): void {
   incomeStore.updateIncome(pending)
   pendingChanges.value.delete(income.id)
 }
+
+onMounted(() => {
+  const uiState = uiStorageService.getUIState()
+  
+  collapsed.value = uiState.incomesCollapsed
+})
 </script>
 
 <style scoped>

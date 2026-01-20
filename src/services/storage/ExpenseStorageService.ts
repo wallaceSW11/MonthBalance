@@ -5,7 +5,7 @@ type ExpensesByMonth = Record<string, Expense[]>
 
 export class ExpenseStorageService extends StorageService<ExpensesByMonth> {
   constructor() {
-    super('month-balance-expenses')
+    super('monthbalance:expenses')
   }
 
   getExpensesByMonth(year: number, month: number): Expense[] {

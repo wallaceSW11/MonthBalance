@@ -22,7 +22,7 @@
 
           <template #append>
             <v-btn-toggle
-              v-model="selectedTheme"
+              :model-value="selectedTheme"
               mandatory
               density="compact"
               @update:model-value="handleThemeChange"
@@ -85,13 +85,14 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useTheme } from 'vuetify'
+import { useThemeStore } from '@wallacesw11/base-lib/stores'
 import { useLocaleStore } from '@/stores/locale'
+import { settingsStorageService } from '@/services/storage/SettingsStorageService'
 import { availableLocales } from '@/locales'
 
 const { t } = useI18n()
 const router = useRouter()
-const theme = useTheme()
+const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
 const selectedTheme = ref<'light' | 'dark'>('dark')
@@ -107,16 +108,21 @@ function goBack(): void {
 }
 
 function handleThemeChange(themeName: 'light' | 'dark'): void {
-  theme.global.name.value = themeName
+  selectedTheme.value = themeName
+  themeStore.setTheme(themeName)
+  settingsStorageService.updateTheme(themeName)
 }
 
 function handleLocaleChange(locale: string): void {
   localeStore.setLocale(locale as 'pt-BR' | 'en-US')
+  settingsStorageService.updateLocale(locale as 'pt-BR' | 'en-US')
 }
 
 onMounted(() => {
-  selectedTheme.value = theme.global.name.value as 'light' | 'dark'
-  selectedLocale.value = localeStore.currentLocale
+  const settings = settingsStorageService.getSettings()
+  
+  selectedTheme.value = settings.theme
+  selectedLocale.value = settings.locale
 })
 </script>
 

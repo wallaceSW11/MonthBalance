@@ -13,4 +13,10 @@ export const availableLocales = [
 
 export type LocaleCode = keyof typeof messages;
 
-export const defaultLocale: LocaleCode = "pt-BR";
+function getDefaultLocale(): LocaleCode {
+  const browserLang = navigator.language.toLowerCase()
+  
+  return browserLang.startsWith('pt') ? 'pt-BR' : 'en-US'
+}
+
+export const defaultLocale: LocaleCode = getDefaultLocale();

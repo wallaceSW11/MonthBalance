@@ -5,7 +5,7 @@ type IncomesByMonth = Record<string, Income[]>
 
 export class IncomeStorageService extends StorageService<IncomesByMonth> {
   constructor() {
-    super('month-balance-incomes')
+    super('monthbalance:incomes')
   }
 
   getIncomesByMonth(year: number, month: number): Income[] {

@@ -4,7 +4,8 @@ import App from "@/App.vue";
 import router from "@/router";
 import vuetify from "@/plugins/vuetify";
 import i18n from "@/plugins/i18n";
-import { setupLib, useThemeStore } from "@wallacesw11/base-lib";
+import { setupLib } from "@wallacesw11/base-lib";
+import { settingsStorageService } from "@/services/storage/SettingsStorageService";
 import "@wallacesw11/base-lib/style.css";
 import "@/styles/main.css";
 
@@ -20,8 +21,10 @@ function registerPlugins(app: ReturnType<typeof createApp>) {
 }
 
 async function initializeAndMountApp() {
-  const themeStore = useThemeStore();
-  await themeStore.loadTheme();
+  const settings = settingsStorageService.getSettings()
+  
+  i18n.global.locale.value = settings.locale
+  
   app.mount("#app");
 }
 

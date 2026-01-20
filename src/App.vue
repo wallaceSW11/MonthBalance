@@ -16,12 +16,14 @@ import {
   FloatingNotify,
   LoadingOverlay,
   ConfirmDialog,
-  useThemeSync,
   useNotifyStore,
   useLoadingStore,
   useConfirmStore
 } from '@wallacesw11/base-lib'
+import { useThemeStore } from '@wallacesw11/base-lib/stores'
+import { useThemeSync } from '@wallacesw11/base-lib/composables'
 import { useLocaleStore } from '@/stores/locale'
+import { settingsStorageService } from '@/services/storage/SettingsStorageService'
 
 const floatingNotifyRef = ref()
 const loadingOverlayRef = ref()
@@ -31,11 +33,13 @@ const localeStore = useLocaleStore()
 const notifyStore = useNotifyStore()
 const loadingStore = useLoadingStore()
 const confirmStore = useConfirmStore()
+const themeStore = useThemeStore()
 
-useThemeSync()
+const { syncTheme } = useThemeSync()
+
 localeStore.initializeLocale()
 
-function registerGlobalComponentRefs() {
+async function initializeApp() {
   if (floatingNotifyRef.value) {
     notifyStore.setNotifyRef(floatingNotifyRef.value)
   }
@@ -47,7 +51,13 @@ function registerGlobalComponentRefs() {
   if (confirmDialogRef.value) {
     confirmStore.setConfirmRef(confirmDialogRef.value)
   }
+
+  const settings = settingsStorageService.getSettings()
+  themeStore.setTheme(settings.theme)
+  
+  await themeStore.loadTheme()
+  syncTheme()
 }
 
-onMounted(registerGlobalComponentRefs)
+onMounted(initializeApp)
 </script>
