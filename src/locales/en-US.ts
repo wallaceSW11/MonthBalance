@@ -19,6 +19,21 @@ export default {
   navigation: {
     home: "Home",
     demo: "Demo",
+    dashboard: "Dashboard",
+    incomes: "Incomes",
+    expenses: "Expenses",
+    settings: "Settings",
+  },
+  dashboard: {
+    incomes: "Incomes",
+    expenses: "Expenses",
+    balance: "Balance",
+    noIncomes: "No incomes registered",
+    noExpenses: "No expenses registered",
+    duplicateMonth: {
+      title: "Duplicate data?",
+      message: "Do you want to copy incomes and expenses from the current month to the next month?",
+    },
   },
   home: {
     title: "Welcome to Base Project",

@@ -4,8 +4,8 @@ import type { RouteRecordRaw } from "vue-router";
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    name: "Home",
-    component: () => import("@/views/HomeView.vue"),
+    name: "Dashboard",
+    component: () => import("@/views/DashboardView.vue"),
   },
   {
     path: "/demo",

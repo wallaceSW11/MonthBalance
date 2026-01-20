@@ -19,6 +19,21 @@ export default {
   navigation: {
     home: "Início",
     demo: "Demonstração",
+    dashboard: "Dashboard",
+    incomes: "Receitas",
+    expenses: "Despesas",
+    settings: "Configurações",
+  },
+  dashboard: {
+    incomes: "Receitas",
+    expenses: "Despesas",
+    balance: "Saldo",
+    noIncomes: "Nenhuma receita cadastrada",
+    noExpenses: "Nenhuma despesa cadastrada",
+    duplicateMonth: {
+      title: "Duplicar dados?",
+      message: "Deseja copiar as receitas e despesas do mês atual para o próximo mês?",
+    },
   },
   home: {
     title: "Bem-vindo ao Projeto Base",
