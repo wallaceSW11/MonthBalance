@@ -1,0 +1,12 @@
+/* Global styles and utilities */
+
+/* Custom utilities */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

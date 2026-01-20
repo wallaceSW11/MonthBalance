@@ -1,0 +1,43 @@
+{
+  "name": "MonthBalance Theme",
+  "version": "1.0.0",
+  "logo": {
+    "light": "/logo-light.png",
+    "dark": "/logo-dark.png",
+    "favicon": "/favicon.ico"
+  },
+  "colors": {
+    "light": {
+      "primary": "#00aab2",
+      "secondary": "#5CBBF6",
+      "accent": "#005CAF",
+      "error": "#DC465D",
+      "info": "#2196F3",
+      "success": "#5EC77E",
+      "warning": "#FB8C00",
+      "background": "#fafafa",
+      "surface": "#FFFFFF"
+    },
+    "dark": {
+      "primary": "#00aab2",
+      "secondary": "#424242",
+      "accent": "#82B1FF",
+      "error": "#DC465D",
+      "info": "#2196F3",
+      "success": "#5EC77E",
+      "warning": "#FFA726",
+      "background": "#1c1c22",
+      "surface": "#2E2E33",
+      "divider": "#3F3F46"
+    }
+  },
+  "fonts": {
+    "primary": "Space Grotesk, sans-serif",
+    "monospace": "Courier New, monospace"
+  },
+  "customization": {
+    "appName": "MonthBalance",
+    "appDescription": "Monthly financial forecast management",
+    "copyrightText": "© 2026 MonthBalance. All rights reserved."
+  }
+}

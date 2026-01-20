@@ -1,0 +1,3 @@
+# robots.txt for Vue 3 TypeScript Base
+User-agent: *
+Allow: /

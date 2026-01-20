@@ -1,0 +1,116 @@
+// Template para adicionar novos idiomas
+// Copie este arquivo e renomeie para o código do locale (ex: es-ES.ts, fr-FR.ts)
+
+export default {
+  common: {
+    appName: "Base Project", // Nome da aplicação
+    loading: "Loading...",
+    save: "Save",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    delete: "Delete",
+    edit: "Edit",
+    close: "Close",
+    back: "Back",
+    next: "Next",
+    search: "Search",
+    filter: "Filter",
+    clear: "Clear",
+    yes: "Yes",
+    no: "No",
+  },
+  navigation: {
+    home: "Home",
+    demo: "Demo",
+  },
+  home: {
+    title: "Welcome to Base Project",
+    subtitle: "A modern template for Vue 3 applications",
+    description:
+      "This is a base project with Vue 3, TypeScript, Vuetify and more.",
+  },
+  demo: {
+    title: "BaseLib - Component Demo",
+    subtitle: "Practical examples of all BaseLib components and utilities",
+    buttons: {
+      title: "Buttons",
+      primary: "Primary",
+      secondary: "Secondary",
+      tertiary: "Tertiary",
+      quartenary: "Quartenary",
+      disabled: "Disabled",
+      clicked: "You clicked the {type} button!", // {type} será substituído dinamicamente
+    },
+    notifications: {
+      title: "Notifications",
+      success: "Success Notification",
+      error: "Error Notification",
+      warning: "Warning Notification",
+      info: "Info Notification",
+      successTitle: "Success!",
+      successMessage: "Operation completed successfully",
+      errorTitle: "Error!",
+      errorMessage: "Something went wrong",
+      warningTitle: "Warning!",
+      warningMessage: "Please check this carefully",
+      infoTitle: "Information",
+      infoMessage: "Here is some useful information",
+    },
+    theme: {
+      title: "Theme Configuration",
+      currentTheme: "Current Theme",
+      appName: "App Name",
+      themeColors: "Theme Colors",
+      toggleTheme: "Toggle Theme",
+    },
+    loading: {
+      title: "Loading Overlay",
+      showButton: "Show Loading (3 seconds)",
+      message: "Processing your request...",
+      doneTitle: "Done!",
+      doneMessage: "Loading completed",
+    },
+    confirm: {
+      title: "Confirm Dialog",
+      showButton: "Show Confirmation",
+      dialogTitle: "Confirm Action",
+      dialogMessage: "Are you sure you want to proceed?",
+      confirmedTitle: "Confirmed",
+      confirmedMessage: "You chose Yes",
+      cancelledTitle: "Cancelled",
+      cancelledMessage: "You chose No",
+    },
+    iconTooltip: {
+      title: "Icon Tooltip",
+      help: "Help tooltip",
+      info: "Information tooltip",
+      delete: "Delete action",
+      edit: "Edit action",
+    },
+    store: {
+      title: "Pinia Store",
+      counter: "Counter",
+      double: "Double",
+      increment: "Increment Counter",
+    },
+  },
+  theme: {
+    title: "Theme",
+    light: "Light",
+    dark: "Dark",
+    toggle: "Toggle theme",
+  },
+  language: {
+    title: "Language",
+    select: "Select language",
+    "pt-BR": "Português (Brasil)",
+    "en-US": "English (US)",
+    // Adicione o nome do novo idioma aqui
+  },
+  messages: {
+    success: "Operation completed successfully",
+    error: "An error occurred",
+    confirmAction: "Are you sure you want to perform this action?",
+    deleteConfirm: "Are you sure you want to delete?",
+  },
+};

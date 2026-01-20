@@ -1,0 +1,12 @@
+// Vuetify SCSS settings
+// Importa os estilos base do Vuetify
+@use "vuetify" with (
+  $utilities: (
+    "margin": true,
+    "padding": true,
+    "display": true,
+    "flex": true,
+  )
+);
+
+// Você pode customizar variáveis SASS do Vuetify aqui se necessário
