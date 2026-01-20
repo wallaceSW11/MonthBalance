@@ -55,14 +55,26 @@ export default defineConfig({
             if (id.includes("vuetify")) {
               return "vuetify";
             }
+            if (id.includes("@mdi/font")) {
+              return "mdi";
+            }
             if (id.includes("vue-router") || id.includes("pinia")) {
+              return "vue-vendor";
+            }
+            if (id.includes("/vue/") || id.includes("/vue@")) {
               return "vue-vendor";
             }
             if (id.includes("vue-i18n")) {
               return "i18n";
             }
-            if (id.includes("vue") || id.includes("@vue")) {
-              return "vue";
+            if (id.includes("@wallacesw11/base-lib")) {
+              return "base-lib";
+            }
+            if (id.includes("axios")) {
+              return "axios";
+            }
+            if (id.includes("workbox")) {
+              return "pwa";
             }
             return "vendor";
           }
@@ -70,5 +82,24 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 650,
+    cssCodeSplit: true,
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: false,
+        drop_debugger: true,
+        passes: 2,
+      },
+      mangle: {
+        safari10: true,
+      },
+    },
+    reportCompressedSize: false,
+    sourcemap: false,
+    assetsInlineLimit: 4096,
+  },
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'pinia', 'vuetify', 'vue-i18n'],
+    exclude: ['@wallacesw11/base-lib', '@mdi/font'],
   },
 });

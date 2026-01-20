@@ -12,21 +12,17 @@ import "@/styles/main.css";
 const app = createApp(App);
 const pinia = createPinia();
 
-function registerPlugins(app: ReturnType<typeof createApp>) {
-  app.use(pinia);
-  app.use(router);
-  app.use(vuetify);
-  app.use(i18n);
-  setupLib(app);
-}
+app.use(pinia);
+app.use(vuetify);
+app.use(i18n);
 
-async function initializeAndMountApp() {
-  const settings = settingsStorageService.getSettings()
-  
-  i18n.global.locale.value = settings.locale
-  
+setupLib(app);
+
+app.use(router);
+
+const settings = settingsStorageService.getSettings()
+i18n.global.locale.value = settings.locale
+
+router.isReady().then(() => {
   app.mount("#app");
-}
-
-registerPlugins(app);
-initializeAndMountApp();
+});
