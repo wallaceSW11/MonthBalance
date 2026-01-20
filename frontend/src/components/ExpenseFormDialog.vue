@@ -9,8 +9,9 @@
       </v-card-title>
 
       <v-card-text>
-        <v-form ref="formRef" @submit.prevent="handleSubmit">
+        <v-form ref="formRef" validate-on="submit" @submit.prevent="handleSubmit">
           <v-text-field
+            ref="nameFieldRef"
             v-model="formData.name"
             :label="t('expenses.form.name')"
             :rules="[rules.required]"
@@ -44,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MoneyField } from '@wallacesw11/base-lib'
 import type { Expense } from '@/models/Expense'
@@ -63,6 +64,7 @@ const { t, locale } = useI18n()
 
 const isOpen = defineModel<boolean>({ default: false })
 const formRef = ref()
+const nameFieldRef = ref()
 
 const formData = ref({
   name: '',
@@ -88,6 +90,13 @@ watch(() => props.expense, (newExpense) => {
   }
 }, { immediate: true })
 
+watch(isOpen, async (opened) => {
+  if (opened && !isEditMode.value) {
+    await nextTick()
+    nameFieldRef.value?.focus()
+  }
+})
+
 function resetForm(): void {
   formData.value = {
     name: '',
@@ -109,6 +118,9 @@ async function handleSubmit(): Promise<void> {
   
   emit('save', expenseData)
   resetForm()
+  
+  await nextTick()
+  nameFieldRef.value?.focus()
 }
 
 function closeDialog(): void {
