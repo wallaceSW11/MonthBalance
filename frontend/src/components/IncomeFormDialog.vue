@@ -206,6 +206,12 @@ async function handleSubmit(): Promise<void> {
   }
   
   emit('save', incomeData)
+  
+  if (isEditMode.value) {
+    closeDialog()
+    return
+  }
+  
   resetForm()
   
   await nextTick()
