@@ -22,31 +22,31 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@wallacesw11/base-lib": "github:wallacesw11/BaseLib#main",
-    "axios": "^1.7.9",
+    "axios": "^1.13.2",
     "pinia": "^3.0.4",
-    "vue": "^3.5.13",
+    "vue": "^3.5.27",
     "vue-i18n": "^11.2.8",
-    "vue-router": "^4.5.0",
-    "vuetify": "^3.7.6"
+    "vue-router": "^4.6.4",
+    "vuetify": "^3.11.7"
   },
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
+    "@eslint/js": "^9.39.2",
     "@types/node": "^22.10.5",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitest/ui": "^2.1.8",
     "@vue/test-utils": "^2.4.6",
     "cypress": "^13.17.0",
-    "eslint": "^9.18.0",
-    "eslint-plugin-vue": "^9.32.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-vue": "^9.33.0",
     "jsdom": "^25.0.1",
     "terser": "^5.46.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.53.1",
     "vite": "^6.0.7",
     "vite-plugin-pwa": "^0.21.2",
-    "vite-plugin-vuetify": "^2.0.4",
+    "vite-plugin-vuetify": "^2.1.3",
     "vitest": "^2.1.8",
     "vue-eslint-parser": "^9.4.3",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.2.12"
   }
 }
