@@ -15,6 +15,8 @@ export default {
     clear: "Clear",
     yes: "Yes",
     no: "No",
+    required: "This field is required",
+    invalidNumber: "Invalid number",
   },
   navigation: {
     home: "Home",
@@ -38,6 +40,26 @@ export default {
   incomes: {
     title: "Manage Incomes",
     description: "Soon you will be able to register and manage your incomes here.",
+    emptyTitle: "No incomes yet",
+    emptyDescription: "Start by adding your first income source",
+    addIncome: "Add Income",
+    editIncome: "Edit Income",
+    deleteTitle: "Delete Income",
+    deleteMessage: "Are you sure you want to delete {name}?",
+    types: {
+      manual: "Manual",
+      hourly: "Hourly",
+    },
+    form: {
+      name: "Name",
+      type: "Type",
+      grossValue: "Gross Value",
+      netValue: "Net Value",
+      hourlyRate: "Hourly Rate",
+      hours: "Hours",
+      minutes: "Minutes",
+      maxMinutesError: "Minutes must be between 0 and 59",
+    },
   },
   expenses: {
     title: "Manage Expenses",

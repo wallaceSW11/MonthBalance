@@ -2,13 +2,20 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h3 mb-6">{{ t('home.title') }}</h1>
-        <p class="text-h6 mb-4">{{ t('home.subtitle') }}</p>
+        <h1 class="text-h3 mb-6">
+          {{ t('home.title') }}
+        </h1>
+        <p class="text-h6 mb-4">
+          {{ t('home.subtitle') }}
+        </p>
       </v-col>
     </v-row>
 
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-card>
           <v-card-title>{{ t('common.appName') }} Features</v-card-title>
           <v-card-text>
@@ -39,7 +46,10 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-card>
           <v-card-title>Quick Start</v-card-title>
           <v-card-text>
@@ -68,9 +78,14 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" to="/demo">
+            <v-btn
+              color="primary"
+              to="/demo"
+            >
               View Demo
-              <v-icon end>mdi-arrow-right</v-icon>
+              <v-icon end>
+                mdi-arrow-right
+              </v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>

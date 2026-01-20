@@ -1,7 +1,16 @@
 <template>
-  <v-container fluid class="settings-view pa-0">
-    <v-app-bar color="primary" density="compact">
-      <v-btn icon @click="goBack">
+  <v-container
+    fluid
+    class="settings-view pa-0"
+  >
+    <v-app-bar
+      color="primary"
+      density="compact"
+    >
+      <v-btn
+        icon
+        @click="goBack"
+      >
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
 
@@ -9,13 +18,23 @@
     </v-app-bar>
 
     <div class="content-container">
-      <v-card class="ma-4" elevation="0" color="surface">
+      <v-card
+        class="ma-4"
+        elevation="0"
+        color="surface"
+      >
         <v-card-text class="text-center pa-8">
-          <v-icon size="64" color="primary" class="mb-4">
+          <v-icon
+            size="64"
+            color="primary"
+            class="mb-4"
+          >
             mdi-cog
           </v-icon>
           
-          <h2 class="text-h6 mb-2">{{ t('settings.title') }}</h2>
+          <h2 class="text-h6 mb-2">
+            {{ t('settings.title') }}
+          </h2>
           <p class="text-body-2 text-medium-emphasis">
             {{ t('settings.description') }}
           </p>

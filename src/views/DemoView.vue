@@ -2,8 +2,12 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h3 mb-6">{{ $t('demo.title') }}</h1>
-        <p class="text-subtitle-1 mb-8">{{ $t('demo.subtitle') }}</p>
+        <h1 class="text-h3 mb-6">
+          {{ $t('demo.title') }}
+        </h1>
+        <p class="text-subtitle-1 mb-8">
+          {{ $t('demo.subtitle') }}
+        </p>
       </v-col>
     </v-row>
 
@@ -13,15 +17,30 @@
           <v-card-title>{{ $t('demo.buttons.title') }}</v-card-title>
           <v-card-text>
             <div class="d-flex flex-wrap ga-4">
-              <PrimaryButton :text="$t('demo.buttons.primary')" prepend-icon="mdi-check"
-                @click="handleButtonClick('Primary')" />
-              <SecondaryButton :text="$t('demo.buttons.secondary')" prepend-icon="mdi-information"
-                @click="handleButtonClick('Secondary')" />
-              <TertiaryButton :text="$t('demo.buttons.tertiary')" prepend-icon="mdi-star"
-                @click="handleButtonClick('Tertiary')" />
-              <QuartenaryButton :text="$t('demo.buttons.quartenary')" prepend-icon="mdi-alert"
-                @click="handleButtonClick('Quartenary')" />
-              <PrimaryButton :text="$t('demo.buttons.disabled')" :disabled="true" />
+              <PrimaryButton
+                :text="$t('demo.buttons.primary')"
+                prepend-icon="mdi-check"
+                @click="handleButtonClick('Primary')"
+              />
+              <SecondaryButton
+                :text="$t('demo.buttons.secondary')"
+                prepend-icon="mdi-information"
+                @click="handleButtonClick('Secondary')"
+              />
+              <TertiaryButton
+                :text="$t('demo.buttons.tertiary')"
+                prepend-icon="mdi-star"
+                @click="handleButtonClick('Tertiary')"
+              />
+              <QuartenaryButton
+                :text="$t('demo.buttons.quartenary')"
+                prepend-icon="mdi-alert"
+                @click="handleButtonClick('Quartenary')"
+              />
+              <PrimaryButton
+                :text="$t('demo.buttons.disabled')"
+                :disabled="true"
+              />
             </div>
           </v-card-text>
         </v-card>
@@ -34,16 +53,32 @@
           <v-card-title>{{ $t('demo.notifications.title') }}</v-card-title>
           <v-card-text>
             <div class="d-flex flex-wrap">
-              <v-btn class="mr-4 mb-2" color="success" @click="showNotification('success')">
+              <v-btn
+                class="mr-4 mb-2"
+                color="success"
+                @click="showNotification('success')"
+              >
                 {{ $t('demo.notifications.success') }}
               </v-btn>
-              <v-btn class="mr-4 mb-2" color="error" @click="showNotification('error')">
+              <v-btn
+                class="mr-4 mb-2"
+                color="error"
+                @click="showNotification('error')"
+              >
                 {{ $t('demo.notifications.error') }}
               </v-btn>
-              <v-btn class="mr-4 mb-2" color="warning" @click="showNotification('warning')">
+              <v-btn
+                class="mr-4 mb-2"
+                color="warning"
+                @click="showNotification('warning')"
+              >
                 {{ $t('demo.notifications.warning') }}
               </v-btn>
-              <v-btn class="mb-2" color="info" @click="showNotification('info')">
+              <v-btn
+                class="mb-2"
+                color="info"
+                @click="showNotification('info')"
+              >
                 {{ $t('demo.notifications.info') }}
               </v-btn>
             </div>
@@ -58,23 +93,35 @@
           <v-card-title>{{ $t('demo.theme.title') }}</v-card-title>
           <v-card-text>
             <div class="mb-4">
-              <p class="text-subtitle-2 mb-2">{{ $t('demo.theme.currentTheme') }}: <strong>{{ currentTheme }}</strong>
+              <p class="text-subtitle-2 mb-2">
+                {{ $t('demo.theme.currentTheme') }}: <strong>{{ currentTheme }}</strong>
               </p>
-              <p class="text-subtitle-2 mb-4">{{ $t('demo.theme.appName') }}: <strong>{{ themeStore.appName }}</strong>
+              <p class="text-subtitle-2 mb-4">
+                {{ $t('demo.theme.appName') }}: <strong>{{ themeStore.appName }}</strong>
               </p>
             </div>
 
             <div class="mb-4">
-              <h4 class="mb-2">{{ $t('demo.theme.themeColors') }}:</h4>
+              <h4 class="mb-2">
+                {{ $t('demo.theme.themeColors') }}:
+              </h4>
               <div class="d-flex flex-wrap">
-                <v-chip v-for="(value, name) in themeStore.currentColors" :key="name" :color="String(name)"
-                  class="mr-2 mb-2" label>
+                <v-chip
+                  v-for="(value, name) in themeStore.currentColors"
+                  :key="name"
+                  :color="String(name)"
+                  class="mr-2 mb-2"
+                  label
+                >
                   {{ name }}: {{ value }}
                 </v-chip>
               </div>
             </div>
 
-            <v-btn color="primary" @click="themeStore.toggleTheme()">
+            <v-btn
+              color="primary"
+              @click="themeStore.toggleTheme()"
+            >
               {{ $t('demo.theme.toggleTheme') }}
             </v-btn>
           </v-card-text>
@@ -87,7 +134,10 @@
         <v-card class="mb-6">
           <v-card-title>{{ $t('demo.loading.title') }}</v-card-title>
           <v-card-text>
-            <v-btn color="primary" @click="showLoading">
+            <v-btn
+              color="primary"
+              @click="showLoading"
+            >
               {{ $t('demo.loading.showButton') }}
             </v-btn>
           </v-card-text>
@@ -100,7 +150,10 @@
         <v-card class="mb-6">
           <v-card-title>{{ $t('demo.confirm.title') }}</v-card-title>
           <v-card-text>
-            <v-btn color="primary" @click="showConfirm">
+            <v-btn
+              color="primary"
+              @click="showConfirm"
+            >
               {{ $t('demo.confirm.showButton') }}
             </v-btn>
           </v-card-text>
@@ -114,10 +167,27 @@
           <v-card-title>{{ $t('demo.iconTooltip.title') }}</v-card-title>
           <v-card-text>
             <div class="d-flex align-center">
-              <IconToolTip class="mr-4" icon="mdi-help-circle" :text="$t('demo.iconTooltip.help')" />
-              <IconToolTip class="mr-4" icon="mdi-information" :text="$t('demo.iconTooltip.info')" />
-              <IconToolTip class="mr-4" icon="mdi-delete" :text="$t('demo.iconTooltip.delete')" as-button />
-              <IconToolTip icon="mdi-pencil" :text="$t('demo.iconTooltip.edit')" :as-button="true" />
+              <IconToolTip
+                class="mr-4"
+                icon="mdi-help-circle"
+                :text="$t('demo.iconTooltip.help')"
+              />
+              <IconToolTip
+                class="mr-4"
+                icon="mdi-information"
+                :text="$t('demo.iconTooltip.info')"
+              />
+              <IconToolTip
+                class="mr-4"
+                icon="mdi-delete"
+                :text="$t('demo.iconTooltip.delete')"
+                as-button
+              />
+              <IconToolTip
+                icon="mdi-pencil"
+                :text="$t('demo.iconTooltip.edit')"
+                :as-button="true"
+              />
             </div>
           </v-card-text>
         </v-card>
@@ -129,9 +199,14 @@
         <v-card>
           <v-card-title>{{ $t('demo.store.title') }}</v-card-title>
           <v-card-text>
-            <p class="mb-4">{{ $t('demo.store.counter') }}: {{ appStore.counter }} ({{ $t('demo.store.double') }}: {{
-              appStore.doubleCounter }})</p>
-            <v-btn color="primary" @click="appStore.increment()">
+            <p class="mb-4">
+              {{ $t('demo.store.counter') }}: {{ appStore.counter }} ({{ $t('demo.store.double') }}: {{
+                appStore.doubleCounter }})
+            </p>
+            <v-btn
+              color="primary"
+              @click="appStore.increment()"
+            >
               {{ $t('demo.store.increment') }}
             </v-btn>
           </v-card-text>

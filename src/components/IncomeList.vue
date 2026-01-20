@@ -1,14 +1,24 @@
 <template>
   <div class="income-list">
-    <button class="section-header" @click="toggleCollapse">
+    <button
+      class="section-header"
+      @click="toggleCollapse"
+    >
       <div class="header-content">
-        <v-icon :class="{ 'rotated': collapsed }">mdi-chevron-down</v-icon>
-        <h3 class="section-title">{{ t('dashboard.incomes') }}</h3>
+        <v-icon :class="{ 'rotated': collapsed }">
+          mdi-chevron-down
+        </v-icon>
+        <h3 class="section-title">
+          {{ t('dashboard.incomes') }}
+        </h3>
       </div>
       <div class="divider" />
     </button>
 
-    <div v-show="!collapsed" class="items-container">
+    <div
+      v-show="!collapsed"
+      class="items-container"
+    >
       <div
         v-for="income in incomes"
         :key="income.id"
@@ -26,11 +36,14 @@
             class="value-input"
             @input="handleValueChange(income, $event)"
             @blur="saveIncome(income)"
-          />
+          >
         </div>
       </div>
 
-      <div v-if="incomes.length === 0" class="empty-state">
+      <div
+        v-if="incomes.length === 0"
+        class="empty-state"
+      >
         {{ t('dashboard.noIncomes') }}
       </div>
     </div>

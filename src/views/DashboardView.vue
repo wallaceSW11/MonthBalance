@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid class="dashboard-container pa-0">
+  <v-container
+    fluid
+    class="dashboard-container pa-0"
+  >
     <NavigationDrawer v-model="drawerOpen" />
 
     <div class="sticky-header">
@@ -34,7 +37,9 @@
       class="fab"
       elevation="8"
     >
-      <v-icon size="28">mdi-plus</v-icon>
+      <v-icon size="28">
+        mdi-plus
+      </v-icon>
     </v-btn>
   </v-container>
 </template>

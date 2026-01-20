@@ -17,7 +17,6 @@ import {
   LoadingOverlay,
   ConfirmDialog,
   useThemeSync,
-  useThemeStore,
   useNotifyStore,
   useLoadingStore,
   useConfirmStore
@@ -28,7 +27,6 @@ const floatingNotifyRef = ref()
 const loadingOverlayRef = ref()
 const confirmDialogRef = ref()
 
-const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 const notifyStore = useNotifyStore()
 const loadingStore = useLoadingStore()

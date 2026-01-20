@@ -16,7 +16,7 @@
     "test:unit:watch": "vitest",
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
@@ -40,6 +40,7 @@
     "eslint-plugin-vue": "^9.32.0",
     "jsdom": "^25.0.1",
     "typescript": "^5.7.2",
+    "typescript-eslint": "^8.53.1",
     "vite": "^6.0.7",
     "vite-plugin-pwa": "^0.21.2",
     "vite-plugin-vuetify": "^2.0.4",

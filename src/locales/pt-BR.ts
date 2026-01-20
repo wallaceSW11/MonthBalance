@@ -15,6 +15,8 @@ export default {
     clear: "Limpar",
     yes: "Sim",
     no: "Não",
+    required: "Este campo é obrigatório",
+    invalidNumber: "Número inválido",
   },
   navigation: {
     home: "Início",
@@ -38,6 +40,26 @@ export default {
   incomes: {
     title: "Gerenciar Receitas",
     description: "Em breve você poderá cadastrar e gerenciar suas receitas aqui.",
+    emptyTitle: "Nenhuma receita ainda",
+    emptyDescription: "Comece adicionando sua primeira fonte de receita",
+    addIncome: "Adicionar Receita",
+    editIncome: "Editar Receita",
+    deleteTitle: "Excluir Receita",
+    deleteMessage: "Tem certeza que deseja excluir {name}?",
+    types: {
+      manual: "Manual",
+      hourly: "Por Hora",
+    },
+    form: {
+      name: "Nome",
+      type: "Tipo",
+      grossValue: "Valor Bruto",
+      netValue: "Valor Líquido",
+      hourlyRate: "Valor por Hora",
+      hours: "Horas",
+      minutes: "Minutos",
+      maxMinutesError: "Minutos devem estar entre 0 e 59",
+    },
   },
   expenses: {
     title: "Gerenciar Despesas",

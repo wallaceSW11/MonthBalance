@@ -7,12 +7,20 @@
   >
     <div class="drawer-header">
       <div class="app-logo">
-        <v-icon size="32" color="primary">mdi-chart-line</v-icon>
+        <v-icon
+          size="32"
+          color="primary"
+        >
+          mdi-chart-line
+        </v-icon>
         <span class="app-name">{{ t('common.appName') }}</span>
       </div>
     </div>
 
-    <v-list nav density="comfortable">
+    <v-list
+      nav
+      density="comfortable"
+    >
       <v-list-item
         v-for="item in menuItems"
         :key="item.route"

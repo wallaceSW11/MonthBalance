@@ -9,7 +9,9 @@
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
 
-    <h2 class="month-title">{{ formattedMonth }}</h2>
+    <h2 class="month-title">
+      {{ formattedMonth }}
+    </h2>
 
     <v-btn
       icon
@@ -52,7 +54,11 @@ async function handleNext(): Promise<void> {
   const monthExists = monthStore.checkMonthExists(nextYear, nextMonth)
   
   if (!monthExists) {
-    const confirmed = await confirmStore.confirm(
+    const confirmRef = confirmStore.confirmRef
+    
+    if (!confirmRef || !confirmRef.$confirm) return
+    
+    const confirmed = await confirmRef.$confirm.show(
       t('dashboard.duplicateMonth.title'),
       t('dashboard.duplicateMonth.message')
     )
