@@ -1,4 +1,4 @@
-export default {
+export const ptBR = {
   common: {
     appName: "MonthBalance",
     loading: "Carregando...",

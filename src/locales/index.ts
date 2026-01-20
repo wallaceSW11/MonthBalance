@@ -1,5 +1,5 @@
-import ptBR from "@/locales/pt-BR";
-import enUS from "@/locales/en-US";
+import { ptBR } from "@/locales/pt-BR";
+import { enUS } from "@/locales/en-US";
 
 export const messages = {
   "pt-BR": ptBR,

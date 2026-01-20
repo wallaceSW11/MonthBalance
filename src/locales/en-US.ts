@@ -1,4 +1,4 @@
-export default {
+export const enUS = {
   common: {
     appName: "MonthBalance",
     loading: "Loading...",
