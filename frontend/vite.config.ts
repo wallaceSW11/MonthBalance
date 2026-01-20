@@ -14,21 +14,25 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
-        name: "MonthBalance",
-        short_name: "MonthBalance",
+        name: "MB - Month Balance",
+        short_name: "MB",
         description: "Monthly financial forecast management",
-        theme_color: "#00aab2",
+        theme_color: "#1c1c22",
         background_color: "#1c1c22",
+        display: "standalone",
+        orientation: "portrait",
         icons: [
           {
             src: "pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
+            purpose: "any maskable",
           },
           {
             src: "pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any maskable",
           },
           {
             src: "apple-touch-icon.png",
@@ -39,6 +43,22 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-cache",
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
       },
     }),
   ],
@@ -81,20 +101,24 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 650,
+    chunkSizeWarningLimit: 700,
     cssCodeSplit: true,
     minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: false,
+        drop_console: true,
         drop_debugger: true,
         passes: 2,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
       mangle: {
         safari10: true,
       },
+      format: {
+        comments: false,
+      },
     },
-    reportCompressedSize: false,
+    reportCompressedSize: true,
     sourcemap: false,
     assetsInlineLimit: 4096,
   },
