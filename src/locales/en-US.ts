@@ -78,6 +78,17 @@ export default {
   settings: {
     title: "Settings",
     description: "Soon you will be able to configure theme and language here.",
+    appearance: "Appearance",
+    about: "About",
+    version: "Version",
+    theme: {
+      title: "Theme",
+      description: "Choose between light or dark theme",
+    },
+    language: {
+      title: "Language",
+      description: "Select the application language",
+    },
   },
   home: {
     title: "Welcome to Base Project",
