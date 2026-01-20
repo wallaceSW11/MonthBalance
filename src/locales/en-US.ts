@@ -64,6 +64,16 @@ export default {
   expenses: {
     title: "Manage Expenses",
     description: "Soon you will be able to register and manage your expenses here.",
+    emptyTitle: "No expenses yet",
+    emptyDescription: "Start by adding your first expense",
+    addExpense: "Add Expense",
+    editExpense: "Edit Expense",
+    deleteTitle: "Delete Expense",
+    deleteMessage: "Are you sure you want to delete {name}?",
+    form: {
+      name: "Name",
+      value: "Value",
+    },
   },
   settings: {
     title: "Settings",

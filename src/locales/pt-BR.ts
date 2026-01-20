@@ -64,6 +64,16 @@ export default {
   expenses: {
     title: "Gerenciar Despesas",
     description: "Em breve você poderá cadastrar e gerenciar suas despesas aqui.",
+    emptyTitle: "Nenhuma despesa ainda",
+    emptyDescription: "Comece adicionando sua primeira despesa",
+    addExpense: "Adicionar Despesa",
+    editExpense: "Editar Despesa",
+    deleteTitle: "Excluir Despesa",
+    deleteMessage: "Tem certeza que deseja excluir {name}?",
+    form: {
+      name: "Nome",
+      value: "Valor",
+    },
   },
   settings: {
     title: "Configurações",
