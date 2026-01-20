@@ -14,10 +14,11 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
-        name: "Vue 3 TypeScript Base",
-        short_name: "Vue3Base",
-        description: "A professional Vue 3 + TypeScript starter kit",
-        theme_color: "#1867C0",
+        name: "MonthBalance",
+        short_name: "MonthBalance",
+        description: "Monthly financial forecast management",
+        theme_color: "#00aab2",
+        background_color: "#1c1c22",
         icons: [
           {
             src: "pwa-192x192.png",
@@ -27,6 +28,11 @@ export default defineConfig({
           {
             src: "pwa-512x512.png",
             sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "apple-touch-icon.png",
+            sizes: "180x180",
             type: "image/png",
           },
         ],
