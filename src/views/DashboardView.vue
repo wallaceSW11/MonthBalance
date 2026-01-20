@@ -1,5 +1,7 @@
 <template>
   <v-container fluid class="dashboard-container pa-0">
+    <NavigationDrawer v-model="drawerOpen" />
+
     <div class="sticky-header">
       <div class="header-top">
         <v-btn
@@ -7,6 +9,7 @@
           size="small"
           variant="text"
           class="menu-button"
+          @click="toggleDrawer"
         >
           <v-icon>mdi-menu</v-icon>
         </v-btn>
@@ -37,14 +40,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useMonthStore } from '@/stores/month'
+import NavigationDrawer from '@/components/NavigationDrawer.vue'
 import MonthNavigation from '@/components/MonthNavigation.vue'
 import MonthSummary from '@/components/MonthSummary.vue'
 import IncomeList from '@/components/IncomeList.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 
 const monthStore = useMonthStore()
+const drawerOpen = ref(false)
+
+function toggleDrawer(): void {
+  drawerOpen.value = !drawerOpen.value
+}
 
 onMounted(() => {
   monthStore.initializeCurrentMonth()

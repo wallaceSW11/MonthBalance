@@ -1,6 +1,6 @@
 export default {
   common: {
-    appName: "Base Project",
+    appName: "MonthBalance",
     loading: "Loading...",
     save: "Save",
     cancel: "Cancel",
@@ -34,6 +34,18 @@ export default {
       title: "Duplicate data?",
       message: "Do you want to copy incomes and expenses from the current month to the next month?",
     },
+  },
+  incomes: {
+    title: "Manage Incomes",
+    description: "Soon you will be able to register and manage your incomes here.",
+  },
+  expenses: {
+    title: "Manage Expenses",
+    description: "Soon you will be able to register and manage your expenses here.",
+  },
+  settings: {
+    title: "Settings",
+    description: "Soon you will be able to configure theme and language here.",
   },
   home: {
     title: "Welcome to Base Project",

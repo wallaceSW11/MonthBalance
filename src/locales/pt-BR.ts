@@ -1,6 +1,6 @@
 export default {
   common: {
-    appName: "Projeto Base",
+    appName: "MonthBalance",
     loading: "Carregando...",
     save: "Salvar",
     cancel: "Cancelar",
@@ -34,6 +34,18 @@ export default {
       title: "Duplicar dados?",
       message: "Deseja copiar as receitas e despesas do mês atual para o próximo mês?",
     },
+  },
+  incomes: {
+    title: "Gerenciar Receitas",
+    description: "Em breve você poderá cadastrar e gerenciar suas receitas aqui.",
+  },
+  expenses: {
+    title: "Gerenciar Despesas",
+    description: "Em breve você poderá cadastrar e gerenciar suas despesas aqui.",
+  },
+  settings: {
+    title: "Configurações",
+    description: "Em breve você poderá configurar tema e idioma aqui.",
   },
   home: {
     title: "Bem-vindo ao Projeto Base",
