@@ -12,8 +12,8 @@ importers:
         specifier: ^7.4.47
         version: 7.4.47
       '@wallacesw11/base-lib':
-        specifier: github:wallaceSW11/BaseLib#main
-        version: https://codeload.github.com/wallaceSW11/BaseLib/tar.gz/a964a7fcb0ce7ce693af308fe3ffe9943ce79c44(axios@1.13.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue-i18n@11.2.8(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))(vuetify@3.10.8)
+        specifier: github:wallacesw11/BaseLib#main
+        version: https://codeload.github.com/wallacesw11/BaseLib/tar.gz/6dc9649eb2b9a78ba87a45af12f8c41c95f561b2(axios@1.13.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue-i18n@11.2.8(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))(vuetify@3.10.8)
       axios:
         specifier: ^1.7.9
         version: 1.13.1
@@ -1394,9 +1394,9 @@ packages:
       vue: ^3.0.0
       vuetify: ^3.0.0
 
-  '@wallacesw11/base-lib@https://codeload.github.com/wallaceSW11/BaseLib/tar.gz/a964a7fcb0ce7ce693af308fe3ffe9943ce79c44':
-    resolution: {tarball: https://codeload.github.com/wallaceSW11/BaseLib/tar.gz/a964a7fcb0ce7ce693af308fe3ffe9943ce79c44}
-    version: 1.0.0
+  '@wallacesw11/base-lib@https://codeload.github.com/wallacesw11/BaseLib/tar.gz/6dc9649eb2b9a78ba87a45af12f8c41c95f561b2':
+    resolution: {tarball: https://codeload.github.com/wallacesw11/BaseLib/tar.gz/6dc9649eb2b9a78ba87a45af12f8c41c95f561b2}
+    version: 1.0.1
     peerDependencies:
       axios: ^1.0.0
       pinia: ^3.0.0
@@ -4950,7 +4950,7 @@ snapshots:
       vue: 3.5.22(typescript@5.9.3)
       vuetify: 3.10.8(typescript@5.9.3)(vite-plugin-vuetify@2.1.2)(vue@3.5.22(typescript@5.9.3))
 
-  '@wallacesw11/base-lib@https://codeload.github.com/wallaceSW11/BaseLib/tar.gz/a964a7fcb0ce7ce693af308fe3ffe9943ce79c44(axios@1.13.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue-i18n@11.2.8(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))(vuetify@3.10.8)':
+  '@wallacesw11/base-lib@https://codeload.github.com/wallacesw11/BaseLib/tar.gz/6dc9649eb2b9a78ba87a45af12f8c41c95f561b2(axios@1.13.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3)))(vue-i18n@11.2.8(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))(vuetify@3.10.8)':
     dependencies:
       axios: 1.13.1
       pinia: 3.0.4(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))

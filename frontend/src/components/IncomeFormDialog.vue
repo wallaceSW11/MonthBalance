@@ -14,7 +14,6 @@
             v-model="formData.name"
             :label="t('incomes.form.name')"
             :rules="[rules.required]"
-            variant="outlined"
             density="comfortable"
             class="mb-2"
           />
@@ -26,70 +25,63 @@
             item-title="label"
             item-value="value"
             :rules="[rules.required]"
-            variant="outlined"
             density="comfortable"
             class="mb-2"
           />
 
           <template v-if="formData.type === 'manual'">
-            <v-text-field
+            <MoneyField
               v-model="formData.grossValue"
               :label="t('incomes.form.grossValue')"
-              :rules="[rules.required, rules.number]"
-              variant="outlined"
+              :rules="[rules.required]"
+              :currency="locale === 'pt-BR' ? 'BRL' : 'USD'"
+              :locale="locale"
               density="comfortable"
-              type="number"
-              step="0.01"
               class="mb-2"
             />
 
-            <v-text-field
+            <MoneyField
               v-model="formData.netValue"
               :label="t('incomes.form.netValue')"
-              :rules="[rules.required, rules.number]"
-              variant="outlined"
+              :rules="[rules.required]"
+              :currency="locale === 'pt-BR' ? 'BRL' : 'USD'"
+              :locale="locale"
               density="comfortable"
-              type="number"
-              step="0.01"
               class="mb-2"
             />
           </template>
 
           <template v-if="formData.type === 'hourly'">
-            <v-text-field
+            <MoneyField
               v-model="formData.hourlyRate"
               :label="t('incomes.form.hourlyRate')"
-              :rules="[rules.required, rules.number]"
-              variant="outlined"
+              :rules="[rules.required]"
+              :currency="locale === 'pt-BR' ? 'BRL' : 'USD'"
+              :locale="locale"
               density="comfortable"
-              type="number"
-              step="0.01"
               class="mb-2"
             />
 
             <v-row no-gutters>
               <v-col cols="6" class="pr-1">
-                <v-text-field
+                <NumberField
                   v-model="formData.hours"
                   :label="t('incomes.form.hours')"
-                  :rules="[rules.required, rules.number]"
-                  variant="outlined"
+                  :rules="[rules.required]"
+                  :decimal-places="0"
+                  :locale="locale"
                   density="comfortable"
-                  type="number"
-                  min="0"
                 />
               </v-col>
 
               <v-col cols="6" class="pl-1">
-                <v-text-field
+                <NumberField
                   v-model="formData.minutes"
                   :label="t('incomes.form.minutes')"
-                  :rules="[rules.required, rules.number, rules.maxMinutes]"
-                  variant="outlined"
+                  :rules="[rules.required, rules.maxMinutes]"
+                  :decimal-places="0"
+                  :locale="locale"
                   density="comfortable"
-                  type="number"
-                  min="0"
-                  max="59"
                 />
               </v-col>
             </v-row>
@@ -113,6 +105,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { MoneyField, NumberField } from '@wallacesw11/base-lib'
 import type { Income } from '@/models/Income'
 
 interface Props {
@@ -125,7 +118,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const isOpen = defineModel<boolean>({ default: false })
 const formRef = ref()
@@ -149,7 +142,6 @@ const isEditMode = computed(() => !!props.income)
 
 const rules = {
   required: (value: string | number) => !!value || value === 0 || t('common.required'),
-  number: (value: string | number) => !isNaN(Number(value)) || t('common.invalidNumber'),
   maxMinutes: (value: string | number) => Number(value) <= 59 || t('incomes.form.maxMinutesError'),
 }
 

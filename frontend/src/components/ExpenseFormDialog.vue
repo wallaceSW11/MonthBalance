@@ -14,19 +14,17 @@
             v-model="formData.name"
             :label="t('expenses.form.name')"
             :rules="[rules.required]"
-            variant="outlined"
             density="comfortable"
             class="mb-2"
           />
 
-          <v-text-field
+          <MoneyField
             v-model="formData.value"
             :label="t('expenses.form.value')"
-            :rules="[rules.required, rules.number]"
-            variant="outlined"
+            :rules="[rules.required]"
+            :currency="locale === 'pt-BR' ? 'BRL' : 'USD'"
+            :locale="locale"
             density="comfortable"
-            type="number"
-            step="0.01"
             class="mb-2"
           />
         </v-form>
@@ -48,6 +46,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { MoneyField } from '@wallacesw11/base-lib'
 import type { Expense } from '@/models/Expense'
 
 interface Props {
@@ -60,7 +59,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const isOpen = defineModel<boolean>({ default: false })
 const formRef = ref()
@@ -74,7 +73,6 @@ const isEditMode = computed(() => !!props.expense)
 
 const rules = {
   required: (value: string | number) => !!value || value === 0 || t('common.required'),
-  number: (value: string | number) => !isNaN(Number(value)) || t('common.invalidNumber'),
 }
 
 watch(() => props.expense, (newExpense) => {
