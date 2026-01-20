@@ -72,6 +72,14 @@ export const useIncomeStore = defineStore('income', () => {
     incomeStorageService.saveIncomesByMonth(targetYear, targetMonth, duplicatedIncomes)
   }
 
+  function clearMonth(year: number, month: number): void {
+    incomeStorageService.saveIncomesByMonth(year, month, [])
+    
+    if (year === currentYear.value && month === currentMonth.value) {
+      incomes.value = []
+    }
+  }
+
   return {
     incomes,
     currentYear,
@@ -83,5 +91,6 @@ export const useIncomeStore = defineStore('income', () => {
     deleteIncome,
     calculateIncomeValue,
     duplicateToMonth,
+    clearMonth,
   }
 })

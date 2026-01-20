@@ -88,6 +88,21 @@ export const useMonthStore = defineStore('month', () => {
     loadMonth(currentYear.value, currentMonth.value)
   }
 
+  function duplicateToMonth(targetYear: number, targetMonth: number): void {
+    incomeStore.duplicateToMonth(targetYear, targetMonth)
+    expenseStore.duplicateToMonth(targetYear, targetMonth)
+    
+    currentMonth.value = targetMonth
+    currentYear.value = targetYear
+    loadMonth(currentYear.value, currentMonth.value)
+  }
+
+  function clearCurrentMonth(): void {
+    incomeStore.clearMonth(currentYear.value, currentMonth.value)
+    expenseStore.clearMonth(currentYear.value, currentMonth.value)
+    loadMonth(currentYear.value, currentMonth.value)
+  }
+
   function calculateMonthsAhead(targetYear: number, targetMonth: number): number {
     const now = new Date()
     const currentDate = new Date(now.getFullYear(), now.getMonth())
@@ -116,6 +131,8 @@ export const useMonthStore = defineStore('month', () => {
     checkMonthExists,
     canNavigateForward,
     duplicateCurrentMonth,
+    duplicateToMonth,
+    clearCurrentMonth,
     initializeCurrentMonth,
   }
 })

@@ -13,6 +13,7 @@ export const enUS = {
     search: "Search",
     filter: "Filter",
     clear: "Clear",
+    duplicate: "Duplicate",
     yes: "Yes",
     no: "No",
     required: "This field is required",
@@ -35,6 +36,20 @@ export const enUS = {
     duplicateMonth: {
       title: "Duplicate data?",
       message: "Do you want to copy incomes and expenses from the current month to the next month?",
+    },
+    monthMenu: {
+      duplicate: "Duplicate",
+      clear: "Clear",
+    },
+    duplicateMonthDialog: {
+      title: "Duplicate Month",
+      month: "Month",
+      year: "Year",
+      warning: "Target month entries will be replaced!",
+    },
+    clearMonth: {
+      title: "Clear Month",
+      message: "Are you sure you want to clear all incomes and expenses for this month?",
     },
   },
   incomes: {

@@ -13,6 +13,7 @@ export const ptBR = {
     search: "Buscar",
     filter: "Filtrar",
     clear: "Limpar",
+    duplicate: "Duplicar",
     yes: "Sim",
     no: "Não",
     required: "Este campo é obrigatório",
@@ -35,6 +36,20 @@ export const ptBR = {
     duplicateMonth: {
       title: "Duplicar dados?",
       message: "Deseja copiar as receitas e despesas do mês atual para o próximo mês?",
+    },
+    monthMenu: {
+      duplicate: "Duplicar",
+      clear: "Limpar",
+    },
+    duplicateMonthDialog: {
+      title: "Duplicar Mês",
+      month: "Mês",
+      year: "Ano",
+      warning: "Os lançamentos do mês de destino serão substituídos!",
+    },
+    clearMonth: {
+      title: "Limpar Mês",
+      message: "Tem certeza que deseja limpar todas as receitas e despesas deste mês?",
     },
   },
   incomes: {

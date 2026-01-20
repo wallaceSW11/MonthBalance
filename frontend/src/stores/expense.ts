@@ -52,6 +52,14 @@ export const useExpenseStore = defineStore('expense', () => {
     expenseStorageService.saveExpensesByMonth(targetYear, targetMonth, duplicatedExpenses)
   }
 
+  function clearMonth(year: number, month: number): void {
+    expenseStorageService.saveExpensesByMonth(year, month, [])
+    
+    if (year === currentYear.value && month === currentMonth.value) {
+      expenses.value = []
+    }
+  }
+
   return {
     expenses,
     currentYear,
@@ -62,5 +70,6 @@ export const useExpenseStore = defineStore('expense', () => {
     updateExpense,
     deleteExpense,
     duplicateToMonth,
+    clearMonth,
   }
 })
