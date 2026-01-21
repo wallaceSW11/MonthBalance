@@ -30,62 +30,93 @@ interface PublicKeyCredentialRequestOptionsJSON {
 
 const AUTH_KEY = 'mb_auth_registered'
 const PIN_KEY = 'mb_pin_hash'
+const LAST_AUTH_KEY = 'mb_last_auth'
+const HIDDEN_AT_KEY = 'mb_hidden_at'
 
 class AuthService {
-  private lastAuthTime = 0
-  private readonly AUTH_TIMEOUT = 30 * 1000 // 30 segundos
+  private readonly AUTH_TIMEOUT = 30 * 1000
   private isListenerSetup = false
-  private wasInBackground = false
+
+  private get lastAuthTime(): number {
+    return Number(localStorage.getItem(LAST_AUTH_KEY) || 0)
+  }
+
+  private set lastAuthTime(value: number) {
+    localStorage.setItem(LAST_AUTH_KEY, String(value))
+  }
+
+  private get hiddenAt(): number {
+    return Number(localStorage.getItem(HIDDEN_AT_KEY) || 0)
+  }
+
+  private set hiddenAt(value: number) {
+    localStorage.setItem(HIDDEN_AT_KEY, String(value))
+  }
 
   isDevMode(): boolean {
     return import.meta.env.DEV
-  }
-
-  isAuthRequired(): boolean {
-    if (this.isDevMode()) return false
-    
-    if (this.lastAuthTime === 0) return true
-    
-    if (this.wasInBackground) {
-      this.wasInBackground = false
-      return true
-    }
-    
-    const now = Date.now()
-    const timeSinceAuth = now - this.lastAuthTime
-    
-    return timeSinceAuth > this.AUTH_TIMEOUT
   }
 
   isRegistered(): boolean {
     return localStorage.getItem(AUTH_KEY) === 'true'
   }
 
-  setupPageShowListener(): void {
+  hasPIN(): boolean {
+    return !!localStorage.getItem(PIN_KEY)
+  }
+
+  setupLifecycleGuards(): void {
     if (this.isListenerSetup || typeof window === 'undefined') return
     
     this.isListenerSetup = true
-    
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) {
-        this.wasInBackground = true
-      }
-    })
-    
+
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.wasInBackground = true
+      if (document.visibilityState === 'hidden') {
+        this.hiddenAt = Date.now()
       }
     })
+
+    window.addEventListener('pageshow', () => {
+      this.checkResumeLock()
+    })
+
+    setInterval(() => {
+      this.checkResumeLock()
+    }, 1000)
+  }
+
+  private checkResumeLock(): void {
+    if (!this.hiddenAt) return
+    
+    const diff = Date.now() - this.hiddenAt
+    
+    if (diff > this.AUTH_TIMEOUT) {
+      this.forceLock()
+    }
+  }
+
+  private forceLock(): void {
+    localStorage.removeItem(LAST_AUTH_KEY)
+    localStorage.removeItem(HIDDEN_AT_KEY)
+  }
+
+  isAuthRequired(): boolean {
+    if (this.isDevMode()) return false
+    
+    const last = this.lastAuthTime
+    
+    if (!last) return true
+    
+    const diff = Date.now() - last
+    
+    return diff > this.AUTH_TIMEOUT
   }
 
   async isBiometricAvailable(): Promise<boolean> {
     if (!window.PublicKeyCredential) return false
     
     try {
-      const available = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-      
-      return available
+      return await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
     } catch {
       return false
     }
@@ -125,8 +156,8 @@ class AuthService {
       this.lastAuthTime = Date.now()
       
       return true
-    } catch (error) {
-      console.error('Biometric registration failed:', error)
+    } catch (err) {
+      console.error('Biometric registration failed:', err)
       
       return false
     }
@@ -144,10 +175,11 @@ class AuthService {
       await startAuthentication({ optionsJSON: options })
       
       this.lastAuthTime = Date.now()
+      this.hiddenAt = 0
       
       return true
-    } catch (error) {
-      console.error('Biometric authentication failed:', error)
+    } catch (err) {
+      console.error('Biometric authentication failed:', err)
       
       return false
     }
@@ -162,6 +194,7 @@ class AuthService {
     localStorage.setItem(PIN_KEY, hash)
     
     this.lastAuthTime = Date.now()
+    this.hiddenAt = 0
     
     return true
   }
@@ -176,12 +209,9 @@ class AuthService {
     if (hash !== storedHash) return false
     
     this.lastAuthTime = Date.now()
+    this.hiddenAt = 0
     
     return true
-  }
-
-  hasPIN(): boolean {
-    return !!localStorage.getItem(PIN_KEY)
   }
 
   private generateChallenge(): string {
