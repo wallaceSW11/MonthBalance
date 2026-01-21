@@ -75,8 +75,10 @@ const duplicateDialogOpen = ref(false)
 
 const formattedMonth = computed(() => {
   const date = new Date(monthStore.currentYear, monthStore.currentMonth - 1)
+  const currentYear = new Date().getFullYear()
+  const monthName = date.toLocaleDateString(locale.value, { month: 'long' })
   
-  return date.toLocaleDateString(locale.value, { month: 'long', year: 'numeric' })
+  return monthStore.currentYear === currentYear ? monthName : `${monthName}/${monthStore.currentYear}`
 })
 
 const canGoForward = computed(() => monthStore.canNavigateForward())
