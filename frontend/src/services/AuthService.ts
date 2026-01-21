@@ -33,7 +33,7 @@ const PIN_KEY = 'mb_pin_hash'
 
 class AuthService {
   private lastAuthTime = 0
-  private readonly AUTH_TIMEOUT = 60 * 1000 // 1 minuto
+  private readonly AUTH_TIMEOUT = 5 * 1000 // 5 segundos
   private isListenerSetup = false
 
   isDevMode(): boolean {
