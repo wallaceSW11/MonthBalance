@@ -32,9 +32,8 @@ const AUTH_KEY = 'mb_auth_registered'
 const PIN_KEY = 'mb_pin_hash'
 
 class AuthService {
-  private isAuthenticated = false
   private lastAuthTime = 0
-  private readonly AUTH_TIMEOUT = 15 * 1000 // 30 segundos
+  private readonly AUTH_TIMEOUT = 0 // Sempre pede
 
   isDevMode(): boolean {
     return import.meta.env.DEV
@@ -43,27 +42,14 @@ class AuthService {
   isAuthRequired(): boolean {
     if (this.isDevMode()) return false
     
-    return !this.isAuthenticated || this.isSessionExpired()
+    const now = Date.now()
+    const timeSinceAuth = now - this.lastAuthTime
+    
+    return timeSinceAuth > this.AUTH_TIMEOUT
   }
 
   isRegistered(): boolean {
     return localStorage.getItem(AUTH_KEY) === 'true'
-  }
-
-  private isSessionExpired(): boolean {
-    const now = Date.now()
-    
-    return now - this.lastAuthTime > this.AUTH_TIMEOUT
-  }
-
-  setupVisibilityListener(): void {
-    if (typeof document === 'undefined') return
-    
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        this.invalidateSession()
-      }
-    })
   }
 
   async isBiometricAvailable(): Promise<boolean> {
@@ -109,7 +95,7 @@ class AuthService {
       localStorage.setItem(AUTH_KEY, 'true')
       localStorage.setItem('mb_credential', JSON.stringify(credential))
       
-      this.markAuthenticated()
+      this.lastAuthTime = Date.now()
       
       return true
     } catch (error) {
@@ -130,7 +116,7 @@ class AuthService {
 
       await startAuthentication({ optionsJSON: options })
       
-      this.markAuthenticated()
+      this.lastAuthTime = Date.now()
       
       return true
     } catch (error) {
@@ -148,7 +134,7 @@ class AuthService {
     localStorage.setItem(AUTH_KEY, 'true')
     localStorage.setItem(PIN_KEY, hash)
     
-    this.markAuthenticated()
+    this.lastAuthTime = Date.now()
     
     return true
   }
@@ -162,23 +148,13 @@ class AuthService {
     
     if (hash !== storedHash) return false
     
-    this.markAuthenticated()
+    this.lastAuthTime = Date.now()
     
     return true
   }
 
   hasPIN(): boolean {
     return !!localStorage.getItem(PIN_KEY)
-  }
-
-  private markAuthenticated(): void {
-    this.isAuthenticated = true
-    this.lastAuthTime = Date.now()
-  }
-
-  private invalidateSession(): void {
-    this.isAuthenticated = false
-    this.lastAuthTime = 0
   }
 
   private generateChallenge(): string {

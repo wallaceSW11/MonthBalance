@@ -24,7 +24,6 @@ import { useThemeStore } from '@wallacesw11/base-lib/stores'
 import { useThemeSync } from '@wallacesw11/base-lib/composables'
 import { useLocaleStore } from '@/stores/locale'
 import { settingsStorageService } from '@/services/storage/SettingsStorageService'
-import { authService } from '@/services/AuthService'
 
 const floatingNotifyRef = ref()
 const loadingOverlayRef = ref()
@@ -58,8 +57,6 @@ async function initializeApp() {
   
   await themeStore.loadTheme()
   syncTheme()
-  
-  authService.setupVisibilityListener()
 }
 
 onMounted(initializeApp)
