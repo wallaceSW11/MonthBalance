@@ -298,6 +298,11 @@ function closePinAuth(): void {
 }
 
 onMounted(async () => {
+  if (authService.isDevMode()) {
+    router.push('/dashboard')
+    return
+  }
+  
   biometricAvailable.value = await authService.isBiometricAvailable()
   isRegistered.value = authService.isRegistered()
   hasPinOnly.value = authService.hasPIN() && !biometricAvailable.value
