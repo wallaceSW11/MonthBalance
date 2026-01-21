@@ -61,7 +61,7 @@ class AuthService {
     this.isListenerSetup = true
     
     window.addEventListener('pageshow', (event) => {
-      if (event.persisted || performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
+      if (event.persisted) {
         this.invalidateSession()
       }
     })
