@@ -163,6 +163,12 @@
           <v-card-actions>
             <v-spacer />
             <v-btn
+              variant="text"
+              @click="closePinAuth"
+            >
+              {{ t('common.cancel') }}
+            </v-btn>
+            <v-btn
               color="primary"
               variant="flat"
               :loading="loading"
@@ -283,6 +289,12 @@ async function handlePinAuth(): Promise<void> {
   }
   
   router.push('/dashboard')
+}
+
+function closePinAuth(): void {
+  showPinAuth.value = false
+  pin.value = ''
+  pinError.value = false
 }
 
 onMounted(async () => {

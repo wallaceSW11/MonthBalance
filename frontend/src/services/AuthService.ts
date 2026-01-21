@@ -33,7 +33,7 @@ const PIN_KEY = 'mb_pin_hash'
 
 class AuthService {
   private lastAuthTime = 0
-  private readonly AUTH_TIMEOUT = 0 // Sempre pede
+  private readonly AUTH_TIMEOUT = 60 * 1000 // 1 minuto
 
   isDevMode(): boolean {
     return import.meta.env.DEV
@@ -41,6 +41,8 @@ class AuthService {
 
   isAuthRequired(): boolean {
     if (this.isDevMode()) return false
+    
+    if (this.lastAuthTime === 0) return true
     
     const now = Date.now()
     const timeSinceAuth = now - this.lastAuthTime
