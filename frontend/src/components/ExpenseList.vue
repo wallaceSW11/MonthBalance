@@ -55,7 +55,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useExpenseStore } from '@/stores/expense'
-import { formatCurrency, parseCurrency } from '@/utils/currency'
+import { formatCurrency } from '@/utils/currency'
 import { uiStorageService } from '@/services/storage/UIStorageService'
 import type { Expense } from '@/models/Expense'
 
@@ -98,7 +98,6 @@ function handleValueChange(expense: Expense, event: Event): void {
   
   target.value = formattedValue
   
-  const digitsDiff = formattedValue.replace(/\D/g, '').length - oldValue.replace(/\D/g, '').length
   const newPosition = cursorPosition + (formattedValue.length - oldValue.length)
   
   target.setSelectionRange(newPosition, newPosition)
