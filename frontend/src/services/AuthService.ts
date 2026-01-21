@@ -51,7 +51,7 @@ class AuthService {
   }
 
   isSessionActive(): boolean {
-    const sessionData = localStorage.getItem(SESSION_KEY)
+    const sessionData = sessionStorage.getItem(SESSION_KEY)
     
     if (!sessionData) return false
     
@@ -171,18 +171,33 @@ class AuthService {
       timestamp: Date.now(),
     }
     
-    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData))
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionData))
     
     this.resetSessionTimer()
+    this.setupSessionListeners()
   }
 
   endSession(): void {
-    localStorage.removeItem(SESSION_KEY)
+    sessionStorage.removeItem(SESSION_KEY)
     
     if (this.sessionTimer) {
       clearTimeout(this.sessionTimer)
       this.sessionTimer = null
     }
+  }
+
+  private setupSessionListeners(): void {
+    if (typeof window === 'undefined') return
+    
+    window.addEventListener('beforeunload', () => {
+      this.endSession()
+    })
+    
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.endSession()
+      }
+    })
   }
 
   private resetSessionTimer(): void {
