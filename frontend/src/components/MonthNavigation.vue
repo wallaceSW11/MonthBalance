@@ -19,7 +19,10 @@
           <h2 class="month-title">
             {{ formattedMonth }}
           </h2>
-          <v-icon size="small" class="ml-1">
+          <v-icon
+            size="small"
+            class="ml-1"
+          >
             mdi-chevron-down
           </v-icon>
         </v-btn>

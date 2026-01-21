@@ -11,12 +11,12 @@ interface PublicKeyCredentialCreationOptionsJSON {
     name: string
     displayName: string
   }
-  pubKeyCredParams: Array<{ alg: number; type: string }>
+  pubKeyCredParams: Array<{ alg: number; type: 'public-key' }>
   timeout: number
-  attestation: string
+  attestation: 'none' | 'indirect' | 'direct'
   authenticatorSelection: {
-    authenticatorAttachment: string
-    userVerification: string
+    authenticatorAttachment: 'platform' | 'cross-platform'
+    userVerification: 'required' | 'preferred' | 'discouraged'
     requireResidentKey: boolean
   }
 }
@@ -24,7 +24,7 @@ interface PublicKeyCredentialCreationOptionsJSON {
 interface PublicKeyCredentialRequestOptionsJSON {
   challenge: string
   timeout: number
-  userVerification: string
+  userVerification: 'required' | 'preferred' | 'discouraged'
   rpId: string
 }
 
@@ -99,7 +99,7 @@ class AuthService {
         },
       }
 
-      const credential = await startRegistration(options)
+      const credential = await startRegistration({ optionsJSON: options })
       
       localStorage.setItem(AUTH_KEY, 'true')
       localStorage.setItem('mb_credential', JSON.stringify(credential))
@@ -123,7 +123,7 @@ class AuthService {
         rpId: window.location.hostname,
       }
 
-      await startAuthentication(options)
+      await startAuthentication({ optionsJSON: options })
       
       this.startSession()
       
