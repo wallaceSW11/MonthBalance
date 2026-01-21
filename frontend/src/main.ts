@@ -7,7 +7,6 @@ import i18n from "@/plugins/i18n";
 import { setupLib } from "@wallacesw11/base-lib";
 import { useThemeStore } from "@wallacesw11/base-lib/stores";
 import { settingsStorageService } from "@/services/storage/SettingsStorageService";
-import { authService } from "@/services/AuthService";
 import "@wallacesw11/base-lib/style.css";
 import "@/styles/main.css";
 
@@ -20,8 +19,6 @@ app.use(vuetify);
 app.use(i18n);
 
 setupLib(app);
-
-authService.setupLifecycleGuards();
 
 async function initializeAndMountApp() {
   const settings = settingsStorageService.getSettings()
