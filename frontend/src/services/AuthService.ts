@@ -79,11 +79,6 @@ class AuthService {
     })
   }
 
-  private invalidateSession(): void {
-    this.lastAuthTime = 0
-    this.wasInBackground = true
-  }
-
   async isBiometricAvailable(): Promise<boolean> {
     if (!window.PublicKeyCredential) return false
     
