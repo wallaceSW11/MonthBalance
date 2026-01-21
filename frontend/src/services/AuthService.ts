@@ -33,8 +33,9 @@ const PIN_KEY = 'mb_pin_hash'
 
 class AuthService {
   private lastAuthTime = 0
-  private readonly AUTH_TIMEOUT = 5 * 1000 // 5 segundos
+  private readonly AUTH_TIMEOUT = 0 // Sempre expira
   private isListenerSetup = false
+  private wasInBackground = false
 
   isDevMode(): boolean {
     return import.meta.env.DEV
@@ -44,6 +45,11 @@ class AuthService {
     if (this.isDevMode()) return false
     
     if (this.lastAuthTime === 0) return true
+    
+    if (this.wasInBackground) {
+      this.wasInBackground = false
+      return true
+    }
     
     const now = Date.now()
     const timeSinceAuth = now - this.lastAuthTime
@@ -62,19 +68,20 @@ class AuthService {
     
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
-        this.invalidateSession()
+        this.wasInBackground = true
       }
     })
     
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        this.invalidateSession()
+      if (document.hidden) {
+        this.wasInBackground = true
       }
     })
   }
 
   private invalidateSession(): void {
     this.lastAuthTime = 0
+    this.wasInBackground = true
   }
 
   async isBiometricAvailable(): Promise<boolean> {
