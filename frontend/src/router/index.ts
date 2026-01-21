@@ -33,6 +33,11 @@ const routes: RouteRecordRaw[] = [
     name: "Demo",
     component: () => import("@/views/DemoView.vue"),
   },
+  {
+    path: "/debug",
+    name: "Debug",
+    component: () => import("@/views/DebugView.vue"),
+  },
 ];
 
 const router = createRouter({
