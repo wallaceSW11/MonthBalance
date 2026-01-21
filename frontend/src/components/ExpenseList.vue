@@ -35,6 +35,7 @@
             inputmode="decimal"
             class="value-input"
             @input="handleValueChange(expense, $event)"
+            @focus="handleFocus"
             @blur="saveExpense(expense)"
           >
         </div>
@@ -75,13 +76,36 @@ function formatValue(value: number): string {
   return formatCurrency(value, locale.value)
 }
 
+function handleFocus(event: Event): void {
+  const target = event.target as HTMLInputElement
+  
+  setTimeout(() => {
+    target.setSelectionRange(target.value.length, target.value.length)
+  }, 0)
+}
+
 function handleValueChange(expense: Expense, event: Event): void {
   const target = event.target as HTMLInputElement
-  const newValue = parseCurrency(target.value, locale.value)
+  const cursorPosition = target.selectionStart || 0
+  const oldValue = target.value
+  
+  let numericValue = target.value.replace(/\D/g, '')
+  
+  if (!numericValue) numericValue = '0'
+  
+  const numberValue = parseInt(numericValue, 10) / 100
+  const formattedValue = formatCurrency(numberValue, locale.value)
+  
+  target.value = formattedValue
+  
+  const digitsDiff = formattedValue.replace(/\D/g, '').length - oldValue.replace(/\D/g, '').length
+  const newPosition = cursorPosition + (formattedValue.length - oldValue.length)
+  
+  target.setSelectionRange(newPosition, newPosition)
   
   const updatedExpense: Expense = {
     ...expense,
-    value: newValue,
+    value: numberValue,
   }
   
   pendingChanges.value.set(expense.id, updatedExpense)
@@ -174,7 +198,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 8px 16px;
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   transition: background-color 0.2s;
 }

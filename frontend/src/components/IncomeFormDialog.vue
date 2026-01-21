@@ -1,11 +1,8 @@
 <template>
   <v-dialog v-model="isOpen" max-width="500" persistent>
     <v-card>
-      <v-card-title class="d-flex justify-space-between align-center">
+      <v-card-title>
         <span>{{ isEditMode ? t('incomes.editIncome') : t('incomes.addIncome') }}</span>
-        <v-btn icon size="small" variant="text" @click="closeDialog">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
       </v-card-title>
 
       <v-card-text>
