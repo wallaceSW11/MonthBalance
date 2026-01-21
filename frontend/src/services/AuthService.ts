@@ -1,57 +1,9 @@
-import { startAuthentication, startRegistration } from '@simplewebauthn/browser'
-
-interface PublicKeyCredentialCreationOptionsJSON {
-  challenge: string
-  rp: {
-    name: string
-    id: string
-  }
-  user: {
-    id: string
-    name: string
-    displayName: string
-  }
-  pubKeyCredParams: Array<{ alg: number; type: 'public-key' }>
-  timeout: number
-  attestation: 'none' | 'indirect' | 'direct'
-  authenticatorSelection: {
-    authenticatorAttachment: 'platform' | 'cross-platform'
-    userVerification: 'required' | 'preferred' | 'discouraged'
-    requireResidentKey: boolean
-  }
-}
-
-interface PublicKeyCredentialRequestOptionsJSON {
-  challenge: string
-  timeout: number
-  userVerification: 'required' | 'preferred' | 'discouraged'
-  rpId: string
-}
-
 const AUTH_KEY = 'mb_auth_registered'
 const PIN_KEY = 'mb_pin_hash'
-const LAST_AUTH_KEY = 'mb_last_auth'
-const HIDDEN_AT_KEY = 'mb_hidden_at'
+const SESSION_AUTH_KEY = 'mb_session_authenticated'
 
 class AuthService {
-  private readonly AUTH_TIMEOUT = 30 * 1000
-  private isListenerSetup = false
-
-  private get lastAuthTime(): number {
-    return Number(localStorage.getItem(LAST_AUTH_KEY) || 0)
-  }
-
-  private set lastAuthTime(value: number) {
-    localStorage.setItem(LAST_AUTH_KEY, String(value))
-  }
-
-  private get hiddenAt(): number {
-    return Number(localStorage.getItem(HIDDEN_AT_KEY) || 0)
-  }
-
-  private set hiddenAt(value: number) {
-    localStorage.setItem(HIDDEN_AT_KEY, String(value))
-  }
+  private listenerSetup = false
 
   isDevMode(): boolean {
     return import.meta.env.DEV
@@ -65,56 +17,58 @@ class AuthService {
     return !!localStorage.getItem(PIN_KEY)
   }
 
-  setupLifecycleGuards(): void {
-    if (this.isListenerSetup || typeof window === 'undefined') return
-    
-    this.isListenerSetup = true
+  isSessionAuthenticated(): boolean {
+    return sessionStorage.getItem(SESSION_AUTH_KEY) === 'true'
+  }
+
+  private setSessionAuthenticated(value: boolean): void {
+    if (value) {
+      sessionStorage.setItem(SESSION_AUTH_KEY, 'true')
+      return
+    }
+
+    sessionStorage.removeItem(SESSION_AUTH_KEY)
+  }
+
+  setupVisibilityGuard(onLockRequired: () => void): void {
+    if (this.listenerSetup || typeof window === 'undefined') return
+
+    this.listenerSetup = true
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
-        this.hiddenAt = Date.now()
+        this.setSessionAuthenticated(false)
+        return
+      }
+
+      if (document.visibilityState === 'visible' && !this.isDevMode()) {
+        onLockRequired()
       }
     })
 
-    window.addEventListener('pageshow', () => {
-      this.checkResumeLock()
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted && !this.isDevMode()) {
+        this.setSessionAuthenticated(false)
+        onLockRequired()
+      }
     })
 
-    setInterval(() => {
-      this.checkResumeLock()
-    }, 1000)
-  }
-
-  private checkResumeLock(): void {
-    if (!this.hiddenAt) return
-    
-    const diff = Date.now() - this.hiddenAt
-    
-    if (diff > this.AUTH_TIMEOUT) {
-      this.forceLock()
-    }
-  }
-
-  private forceLock(): void {
-    localStorage.removeItem(LAST_AUTH_KEY)
-    localStorage.removeItem(HIDDEN_AT_KEY)
+    window.addEventListener('focus', () => {
+      if (!this.isSessionAuthenticated() && !this.isDevMode()) {
+        onLockRequired()
+      }
+    })
   }
 
   isAuthRequired(): boolean {
     if (this.isDevMode()) return false
-    
-    const last = this.lastAuthTime
-    
-    if (!last) return true
-    
-    const diff = Date.now() - last
-    
-    return diff > this.AUTH_TIMEOUT
+
+    return !this.isSessionAuthenticated()
   }
 
   async isBiometricAvailable(): Promise<boolean> {
     if (!window.PublicKeyCredential) return false
-    
+
     try {
       return await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
     } catch {
@@ -124,7 +78,9 @@ class AuthService {
 
   async registerBiometric(): Promise<boolean> {
     try {
-      const options: PublicKeyCredentialCreationOptionsJSON = {
+      const { startRegistration } = await import('@simplewebauthn/browser')
+
+      const options = {
         challenge: this.generateChallenge(),
         rp: {
           name: 'MonthBalance',
@@ -136,95 +92,91 @@ class AuthService {
           displayName: 'MonthBalance User',
         },
         pubKeyCredParams: [
-          { alg: -7, type: 'public-key' },
-          { alg: -257, type: 'public-key' },
+          { alg: -7, type: 'public-key' as const },
+          { alg: -257, type: 'public-key' as const },
         ],
         timeout: 60000,
-        attestation: 'none',
+        attestation: 'none' as const,
         authenticatorSelection: {
-          authenticatorAttachment: 'platform',
-          userVerification: 'required',
+          authenticatorAttachment: 'platform' as const,
+          userVerification: 'required' as const,
           requireResidentKey: false,
         },
       }
 
       const credential = await startRegistration({ optionsJSON: options })
-      
+
       localStorage.setItem(AUTH_KEY, 'true')
       localStorage.setItem('mb_credential', JSON.stringify(credential))
-      
-      this.lastAuthTime = Date.now()
-      
+      this.setSessionAuthenticated(true)
+
       return true
     } catch (err) {
       console.error('Biometric registration failed:', err)
-      
+
       return false
     }
   }
 
   async authenticateBiometric(): Promise<boolean> {
     try {
-      const options: PublicKeyCredentialRequestOptionsJSON = {
+      const { startAuthentication } = await import('@simplewebauthn/browser')
+
+      const options = {
         challenge: this.generateChallenge(),
         timeout: 60000,
-        userVerification: 'required',
+        userVerification: 'required' as const,
         rpId: window.location.hostname,
       }
 
       await startAuthentication({ optionsJSON: options })
-      
-      this.lastAuthTime = Date.now()
-      this.hiddenAt = 0
-      
+      this.setSessionAuthenticated(true)
+
       return true
     } catch (err) {
       console.error('Biometric authentication failed:', err)
-      
+
       return false
     }
   }
 
   async registerPIN(pin: string): Promise<boolean> {
     if (pin.length < 4) return false
-    
+
     const hash = await this.hashPIN(pin)
-    
+
     localStorage.setItem(AUTH_KEY, 'true')
     localStorage.setItem(PIN_KEY, hash)
-    
-    this.lastAuthTime = Date.now()
-    this.hiddenAt = 0
-    
+    this.setSessionAuthenticated(true)
+
     return true
   }
 
   async authenticatePIN(pin: string): Promise<boolean> {
     const storedHash = localStorage.getItem(PIN_KEY)
-    
+
     if (!storedHash) return false
-    
+
     const hash = await this.hashPIN(pin)
-    
+
     if (hash !== storedHash) return false
-    
-    this.lastAuthTime = Date.now()
-    this.hiddenAt = 0
-    
+
+    this.setSessionAuthenticated(true)
+
     return true
   }
 
   private generateChallenge(): string {
     const array = new Uint8Array(32)
     crypto.getRandomValues(array)
-    
+
     return btoa(String.fromCharCode(...array))
   }
 
   private generateUserId(): string {
     const array = new Uint8Array(16)
     crypto.getRandomValues(array)
-    
+
     return btoa(String.fromCharCode(...array))
   }
 
@@ -233,7 +185,7 @@ class AuthService {
     const data = encoder.encode(pin + 'mb_salt_2026')
     const hashBuffer = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
-    
+
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
   }
 }
