@@ -29,12 +29,12 @@ interface PublicKeyCredentialRequestOptionsJSON {
 }
 
 const AUTH_KEY = 'mb_auth_registered'
-const SESSION_KEY = 'mb_session_active'
 const PIN_KEY = 'mb_pin_hash'
-const SESSION_TIMEOUT = 5 * 60 * 1000
 
 class AuthService {
-  private sessionTimer: number | null = null
+  private isAuthenticated = false
+  private lastAuthTime = 0
+  private readonly AUTH_TIMEOUT = 15 * 1000 // 30 segundos
 
   isDevMode(): boolean {
     return import.meta.env.DEV
@@ -43,22 +43,27 @@ class AuthService {
   isAuthRequired(): boolean {
     if (this.isDevMode()) return false
     
-    return !this.isSessionActive()
+    return !this.isAuthenticated || this.isSessionExpired()
   }
 
   isRegistered(): boolean {
     return localStorage.getItem(AUTH_KEY) === 'true'
   }
 
-  isSessionActive(): boolean {
-    const sessionData = sessionStorage.getItem(SESSION_KEY)
-    
-    if (!sessionData) return false
-    
-    const { timestamp } = JSON.parse(sessionData)
+  private isSessionExpired(): boolean {
     const now = Date.now()
     
-    return now - timestamp < SESSION_TIMEOUT
+    return now - this.lastAuthTime > this.AUTH_TIMEOUT
+  }
+
+  setupVisibilityListener(): void {
+    if (typeof document === 'undefined') return
+    
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        this.invalidateSession()
+      }
+    })
   }
 
   async isBiometricAvailable(): Promise<boolean> {
@@ -104,7 +109,7 @@ class AuthService {
       localStorage.setItem(AUTH_KEY, 'true')
       localStorage.setItem('mb_credential', JSON.stringify(credential))
       
-      this.startSession()
+      this.markAuthenticated()
       
       return true
     } catch (error) {
@@ -125,7 +130,7 @@ class AuthService {
 
       await startAuthentication({ optionsJSON: options })
       
-      this.startSession()
+      this.markAuthenticated()
       
       return true
     } catch (error) {
@@ -143,7 +148,7 @@ class AuthService {
     localStorage.setItem(AUTH_KEY, 'true')
     localStorage.setItem(PIN_KEY, hash)
     
-    this.startSession()
+    this.markAuthenticated()
     
     return true
   }
@@ -157,7 +162,7 @@ class AuthService {
     
     if (hash !== storedHash) return false
     
-    this.startSession()
+    this.markAuthenticated()
     
     return true
   }
@@ -166,48 +171,14 @@ class AuthService {
     return !!localStorage.getItem(PIN_KEY)
   }
 
-  startSession(): void {
-    const sessionData = {
-      timestamp: Date.now(),
-    }
-    
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionData))
-    
-    this.resetSessionTimer()
-    this.setupSessionListeners()
+  private markAuthenticated(): void {
+    this.isAuthenticated = true
+    this.lastAuthTime = Date.now()
   }
 
-  endSession(): void {
-    sessionStorage.removeItem(SESSION_KEY)
-    
-    if (this.sessionTimer) {
-      clearTimeout(this.sessionTimer)
-      this.sessionTimer = null
-    }
-  }
-
-  private setupSessionListeners(): void {
-    if (typeof window === 'undefined') return
-    
-    window.addEventListener('beforeunload', () => {
-      this.endSession()
-    })
-    
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.endSession()
-      }
-    })
-  }
-
-  private resetSessionTimer(): void {
-    if (this.sessionTimer) {
-      clearTimeout(this.sessionTimer)
-    }
-    
-    this.sessionTimer = window.setTimeout(() => {
-      this.endSession()
-    }, SESSION_TIMEOUT)
+  private invalidateSession(): void {
+    this.isAuthenticated = false
+    this.lastAuthTime = 0
   }
 
   private generateChallenge(): string {
