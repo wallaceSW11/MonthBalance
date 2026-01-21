@@ -34,6 +34,7 @@ const PIN_KEY = 'mb_pin_hash'
 class AuthService {
   private lastAuthTime = 0
   private readonly AUTH_TIMEOUT = 60 * 1000 // 1 minuto
+  private isListenerSetup = false
 
   isDevMode(): boolean {
     return import.meta.env.DEV
@@ -52,6 +53,28 @@ class AuthService {
 
   isRegistered(): boolean {
     return localStorage.getItem(AUTH_KEY) === 'true'
+  }
+
+  setupPageShowListener(): void {
+    if (this.isListenerSetup || typeof window === 'undefined') return
+    
+    this.isListenerSetup = true
+    
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted || performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
+        this.invalidateSession()
+      }
+    })
+    
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        this.invalidateSession()
+      }
+    })
+  }
+
+  private invalidateSession(): void {
+    this.lastAuthTime = 0
   }
 
   async isBiometricAvailable(): Promise<boolean> {

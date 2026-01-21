@@ -298,6 +298,8 @@ function closePinAuth(): void {
 }
 
 onMounted(async () => {
+  authService.setupPageShowListener()
+  
   if (authService.isDevMode()) {
     router.push('/dashboard')
     return
