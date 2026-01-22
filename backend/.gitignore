@@ -1,0 +1,36 @@
+## .NET
+bin/
+obj/
+out/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.log
+
+## Visual Studio
+.vs/
+.vscode/
+*.csproj.user
+
+## Entity Framework
+Migrations/
+
+## Environment
+appsettings.*.json
+!appsettings.Development.json
+!appsettings.json
+
+## wwwroot (frontend build)
+wwwroot/
+
+## Rider
+.idea/
+
+## macOS
+.DS_Store
+
+## Windows
+Thumbs.db
