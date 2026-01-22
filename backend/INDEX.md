@@ -21,6 +21,8 @@ Guia completo de toda a documentação disponível.
 | [DATABASE_MIGRATIONS.md](DATABASE_MIGRATIONS.md) | 🔧 Guia completo de migrations | Criar/gerenciar migrations |
 | [DATABASE_SETUP.md](DATABASE_SETUP.md) | 🛠️ Setup inicial do banco | Configurar PostgreSQL |
 | [DOCKER_SETUP.md](DOCKER_SETUP.md) | 🐳 Configuração Docker | Instalar/configurar Docker |
+| [INICIAR_DOCKER.md](INICIAR_DOCKER.md) | 🚀 Como iniciar Docker Desktop | Docker não está rodando |
+| [FIX_DOCKER.md](FIX_DOCKER.md) | 🔧 Resolver problemas Docker | Troubleshooting Docker |
 
 ---
 
