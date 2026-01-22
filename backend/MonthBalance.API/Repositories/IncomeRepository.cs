@@ -1,0 +1,55 @@
+using Microsoft.EntityFrameworkCore;
+using MonthBalance.API.Data;
+using MonthBalance.API.Models;
+
+namespace MonthBalance.API.Repositories;
+
+public class IncomeRepository : IIncomeRepository
+{
+    private readonly ApplicationDbContext _context;
+
+    public IncomeRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<Income?> GetByIdAsync(int id)
+    {
+        return await _context.Incomes.FindAsync(id);
+    }
+
+    public async Task<IEnumerable<Income>> GetByMonthDataIdAsync(int monthDataId)
+    {
+        return await _context.Incomes
+            .Where(i => i.MonthDataId == monthDataId)
+            .ToListAsync();
+    }
+
+    public async Task<Income> CreateAsync(Income income)
+    {
+        _context.Incomes.Add(income);
+        await _context.SaveChangesAsync();
+
+        return income;
+    }
+
+    public async Task<Income> UpdateAsync(Income income)
+    {
+        income.UpdatedAt = DateTime.UtcNow;
+        _context.Incomes.Update(income);
+        await _context.SaveChangesAsync();
+
+        return income;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var income = await _context.Incomes.FindAsync(id);
+
+        if (income != null)
+        {
+            _context.Incomes.Remove(income);
+            await _context.SaveChangesAsync();
+        }
+    }
+}

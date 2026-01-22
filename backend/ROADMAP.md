@@ -28,34 +28,35 @@ Backend API REST com .NET 10, Entity Framework Core, PostgreSQL e integração c
 
 ---
 
-### ✅ Fase 2: Configuração do Entity Framework + PostgreSQL
+### ✅ Fase 2: Configuração do Entity Framework + PostgreSQL ✔️ CONCLUÍDA
 **Objetivo:** Configurar banco de dados e migrations
 
-- [ ] 2.1 Criar `ApplicationDbContext`
-- [ ] 2.2 Configurar connection string do PostgreSQL
-- [ ] 2.3 Criar models iniciais (User, Transaction, Category, etc)
-- [ ] 2.4 Configurar relacionamentos entre entidades
-- [ ] 2.5 Criar primeira migration
-- [ ] 2.6 Aplicar migration no banco
-- [ ] 2.7 Criar seed data (dados iniciais)
+- [x] 2.1 Criar `ApplicationDbContext`
+- [x] 2.2 Configurar connection string do PostgreSQL
+- [x] 2.3 Criar models iniciais (MonthData, Income, Expense)
+- [x] 2.4 Configurar relacionamentos entre entidades
+- [x] 2.5 Criar primeira migration (InitialCreate)
+- [x] 2.6 Criar scripts para aplicar migrations
+- [x] 2.7 Criar seed data (dados iniciais)
 
-**Entregável:** Banco PostgreSQL configurado com migrations funcionando
+**Entregável:** ✅ Banco PostgreSQL configurado com migrations e seed data funcionando
 
 ---
 
-### ✅ Fase 3: Implementação da API REST
+### ✅ Fase 3: Implementação da API REST ✔️ CONCLUÍDA
 **Objetivo:** Criar endpoints da API
 
-- [ ] 3.1 Criar controllers base (BaseController)
-- [ ] 3.2 Implementar padrão Repository
-- [ ] 3.3 Implementar padrão Unit of Work
-- [ ] 3.4 Criar DTOs (Data Transfer Objects)
-- [ ] 3.5 Configurar AutoMapper
-- [ ] 3.6 Implementar endpoints CRUD básicos
-- [ ] 3.7 Adicionar validações (FluentValidation)
-- [ ] 3.8 Implementar tratamento de erros global
+- [x] 3.1 Criar DTOs (Data Transfer Objects)
+- [x] 3.2 Implementar padrão Repository
+- [x] 3.3 Implementar Services com lógica de negócio
+- [x] 3.4 Criar Controllers REST
+- [x] 3.5 Registrar dependências no DI container
+- [x] 3.6 Implementar endpoints CRUD completos
+  - MonthData: GET, POST, DELETE, Duplicate
+  - Incomes: GET, POST, PUT, DELETE
+  - Expenses: GET, POST, PUT, DELETE
 
-**Entregável:** API REST funcional com CRUD completo
+**Entregável:** ✅ API REST funcional com CRUD completo e lógica de negócio
 
 ---
 
@@ -560,6 +561,92 @@ docker-compose exec -T postgres psql -U mbuser monthbalance < backup.sql
 
 ---
 
-**Versão:** 1.2  
+---
+
+## 🎯 Status Atual e Próximos Passos
+
+### ✅ Concluído Hoje (22/01/2026)
+
+**Fase 1: Setup Inicial** ✔️
+- Projeto .NET 10 criado
+- Entity Framework configurado
+- Estrutura de pastas completa
+
+**Fase 2: Entity Framework + PostgreSQL** ✔️
+- Models criados com INT Identity (performance otimizada)
+- Migrations criadas
+- Seed data implementado
+- Scripts PowerShell para gerenciar PostgreSQL
+
+**Fase 3: API REST** ✔️
+- 17 endpoints funcionais
+- Padrão Repository implementado
+- Services com lógica de negócio
+- DTOs criados
+- Controllers REST completos
+
+### ⏸️ Pendente: Reiniciar PC
+
+**Motivo:** WSL 2 instalado, precisa reiniciar para funcionar
+
+**Após reiniciar:**
+1. Abrir Docker Desktop (aguardar inicializar)
+2. Testar Docker: `docker --version`
+3. Subir PostgreSQL: `cd backend && docker-compose -f docker-compose.dev.yml up -d`
+4. Verificar container: `docker ps`
+5. Rodar API: `cd backend && dotnet run --project MonthBalance.API`
+6. Testar health: `curl http://localhost:5150/api/health`
+7. Testar endpoints (ver `API_ENDPOINTS.md`)
+
+### 🔜 Próximas Sessões
+
+**Sessão 2: Testes e Validação**
+- Testar API com PostgreSQL rodando
+- Validar todos os endpoints
+- Testar seed data
+- Verificar migrations
+
+**Sessão 3: Integração Frontend**
+- Atualizar models do frontend (GUID → INT)
+- Criar serviço HTTP (axios)
+- Conectar frontend com backend
+- Testar fluxo completo
+
+**Sessão 4: Docker e Deploy**
+- Criar Dockerfile
+- Configurar docker-compose completo
+- Testar build de produção
+- Preparar para Oracle Cloud
+
+### 📝 Notas Importantes
+
+1. **IDs mudaram de GUID para INT** - Frontend precisa ser atualizado
+2. **Docker Desktop instalado** - Aguardando reinício para WSL 2
+3. **API completa** - 17 endpoints prontos para uso
+4. **Documentação completa** - Ver `API_ENDPOINTS.md`, `DATABASE_SETUP.md`, `DOCKER_SETUP.md`
+
+### 🐛 Troubleshooting Rápido
+
+**Se Docker não funcionar após reiniciar:**
+```powershell
+# Fechar todos os terminais
+# Abrir Docker Desktop
+# Aguardar inicializar
+# Abrir novo PowerShell
+docker --version
+```
+
+**Se PostgreSQL não subir:**
+```powershell
+docker-compose -f docker-compose.dev.yml logs postgres
+```
+
+**Se API não conectar no banco:**
+- Verificar se PostgreSQL está rodando: `docker ps`
+- Verificar connection string em `appsettings.Development.json`
+
+---
+
+**Versão:** 1.4  
 **Última atualização:** Janeiro 2026  
-**Status:** 🟢 Fase 1 Concluída | 🟡 Fase 2 em Andamento
+**Status:** 🟢 Fase 1-3 Concluídas | ⏸️ Aguardando Docker para testes

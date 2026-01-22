@@ -31,19 +31,31 @@ Edite `appsettings.Development.json` com suas credenciais PostgreSQL:
 
 ### 3. Criar Banco de Dados
 
-```bash
-# Criar banco manualmente no PostgreSQL
-createdb -U postgres monthbalance
+**Opção 1: Docker (Recomendado)**
 
-# OU via Docker
-docker run --name mb-postgres -e POSTGRES_DB=monthbalance -e POSTGRES_USER=mbuser -e POSTGRES_PASSWORD=mbpass123 -p 5432:5432 -d postgres:16-alpine
+```bash
+cd backend/scripts
+.\start-postgres.ps1
+```
+
+**Opção 2: PostgreSQL Local**
+
+```bash
+createdb -U postgres monthbalance
 ```
 
 ### 4. Aplicar Migrations
 
+As migrations são aplicadas automaticamente ao rodar a API em Development.
+
+Ou manualmente:
+
 ```bash
-dotnet ef database update
+cd backend/scripts
+.\apply-migrations.ps1
 ```
+
+Veja mais detalhes em [DATABASE_SETUP.md](DATABASE_SETUP.md)
 
 ## 🚀 Executar
 
