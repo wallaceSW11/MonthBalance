@@ -69,8 +69,8 @@ import IncomeList from '@/components/IncomeList.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 import IncomeFormDialog from '@/components/IncomeFormDialog.vue'
 import ExpenseFormDialog from '@/components/ExpenseFormDialog.vue'
-import type { Income } from '@/models/Income'
-import type { Expense } from '@/models/Expense'
+import type { Income, IncomeFormData } from '@/models/Income'
+import type { Expense, ExpenseFormData } from '@/models/Expense'
 
 const monthStore = useMonthStore()
 const incomeStore = useIncomeStore()
@@ -91,12 +91,9 @@ function handleEditIncome(income: Income): void {
   incomeDialogOpen.value = true
 }
 
-function handleSaveIncome(incomeData: Omit<Income, 'id'>): void {
+function handleSaveIncome(incomeData: IncomeFormData): void {
   if (selectedIncome.value) {
-    incomeStore.updateIncome({
-      ...selectedIncome.value,
-      ...incomeData,
-    })
+    incomeStore.updateIncome(selectedIncome.value.id, incomeData)
     selectedIncome.value = null
   } else {
     incomeStore.addIncome(incomeData)
@@ -108,12 +105,9 @@ function openExpenseDialog(): void {
   expenseDialogOpen.value = true
 }
 
-function handleSaveExpense(expenseData: Omit<Expense, 'id'>): void {
+function handleSaveExpense(expenseData: ExpenseFormData): void {
   if (selectedExpense.value) {
-    expenseStore.updateExpense({
-      ...selectedExpense.value,
-      ...expenseData,
-    })
+    expenseStore.updateExpense(selectedExpense.value.id, expenseData)
     selectedExpense.value = null
   } else {
     expenseStore.addExpense(expenseData)

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { incomeService } from '@/services/api/incomeService'
 import { monthDataService } from '@/services/api/monthDataService'
+import { IncomeTypeEnum } from '@/models/IncomeType'
 import type { Income, IncomeFormData } from '@/models/Income'
 
 export const useIncomeStore = defineStore('income', () => {
@@ -49,18 +50,18 @@ export const useIncomeStore = defineStore('income', () => {
     }
   }
 
-  async function updateIncome(updatedIncome: Income): Promise<void> {
+  async function updateIncome(id: number, income: IncomeFormData): Promise<void> {
     loading.value = true
     
     try {
       const updated = await incomeService.update(
         currentYear.value,
         currentMonth.value,
-        updatedIncome.id,
-        updatedIncome
+        id,
+        income
       )
       
-      const index = incomes.value.findIndex((i) => i.id === updatedIncome.id)
+      const index = incomes.value.findIndex((i) => i.id === id)
       
       if (index !== -1) {
         incomes.value[index] = updated
@@ -88,11 +89,11 @@ export const useIncomeStore = defineStore('income', () => {
   }
 
   function calculateIncomeValue(income: Income): number {
-    if (income.type === 'manual') {
+    if (income.incomeTypeType === IncomeTypeEnum.Manual) {
       return income.netValue || 0
     }
     
-    if (income.type === 'hourly') {
+    if (income.incomeTypeType === IncomeTypeEnum.Hourly) {
       const hours = income.hours || 0
       const minutes = income.minutes || 0
       const hourlyRate = income.hourlyRate || 0

@@ -1,20 +1,19 @@
 namespace MonthBalance.DTOs;
 
-public class ExpenseDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public decimal Value { get; set; }
-}
+public record ExpenseDto(
+    int Id,
+    string Name,
+    decimal Value,
+    int MonthDataId
+);
 
-public class CreateExpenseDto
-{
-    public string Name { get; set; } = string.Empty;
-    public decimal Value { get; set; }
-}
+public record CreateExpenseDto(
+    string Name,
+    decimal Value
+);
 
-public class UpdateExpenseDto
-{
-    public string Name { get; set; } = string.Empty;
-    public decimal Value { get; set; }
-}
+public record UpdateExpenseDto(
+    string Name,
+    decimal Value
+);
+

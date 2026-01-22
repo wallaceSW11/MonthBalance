@@ -19,10 +19,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IMonthDataRepository, MonthDataRepository>();
 builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IIncomeTypeRepository, IncomeTypeRepository>();
 
 builder.Services.AddScoped<IMonthDataService, MonthDataService>();
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IIncomeTypeService, IncomeTypeService>();
 
 builder.Services.AddCors(options =>
 {

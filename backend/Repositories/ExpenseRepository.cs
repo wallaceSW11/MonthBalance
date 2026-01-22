@@ -15,7 +15,8 @@ public class ExpenseRepository : IExpenseRepository
 
     public async Task<Expense?> GetByIdAsync(int id)
     {
-        return await _context.Expenses.FindAsync(id);
+        return await _context.Expenses
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 
     public async Task<IEnumerable<Expense>> GetByMonthDataIdAsync(int monthDataId)
@@ -30,7 +31,7 @@ public class ExpenseRepository : IExpenseRepository
         _context.Expenses.Add(expense);
         await _context.SaveChangesAsync();
 
-        return expense;
+        return await GetByIdAsync(expense.Id) ?? expense;
     }
 
     public async Task<Expense> UpdateAsync(Expense expense)
@@ -39,7 +40,7 @@ public class ExpenseRepository : IExpenseRepository
         _context.Expenses.Update(expense);
         await _context.SaveChangesAsync();
 
-        return expense;
+        return await GetByIdAsync(expense.Id) ?? expense;
     }
 
     public async Task DeleteAsync(int id)

@@ -16,7 +16,7 @@ public class MonthDataRepository : IMonthDataRepository
     public async Task<MonthData?> GetByIdAsync(int id)
     {
         return await _context.MonthData
-            .Include(m => m.Incomes)
+            .Include(m => m.Incomes).ThenInclude(i => i.IncomeType)
             .Include(m => m.Expenses)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
@@ -24,7 +24,7 @@ public class MonthDataRepository : IMonthDataRepository
     public async Task<MonthData?> GetByYearAndMonthAsync(int year, int month)
     {
         return await _context.MonthData
-            .Include(m => m.Incomes)
+            .Include(m => m.Incomes).ThenInclude(i => i.IncomeType)
             .Include(m => m.Expenses)
             .FirstOrDefaultAsync(m => m.Year == year && m.Month == month);
     }
@@ -32,7 +32,7 @@ public class MonthDataRepository : IMonthDataRepository
     public async Task<IEnumerable<MonthData>> GetAllAsync()
     {
         return await _context.MonthData
-            .Include(m => m.Incomes)
+            .Include(m => m.Incomes).ThenInclude(i => i.IncomeType)
             .Include(m => m.Expenses)
             .OrderByDescending(m => m.Year)
             .ThenByDescending(m => m.Month)

@@ -15,12 +15,15 @@ public class IncomeRepository : IIncomeRepository
 
     public async Task<Income?> GetByIdAsync(int id)
     {
-        return await _context.Incomes.FindAsync(id);
+        return await _context.Incomes
+            .Include(i => i.IncomeType)
+            .FirstOrDefaultAsync(i => i.Id == id);
     }
 
     public async Task<IEnumerable<Income>> GetByMonthDataIdAsync(int monthDataId)
     {
         return await _context.Incomes
+            .Include(i => i.IncomeType)
             .Where(i => i.MonthDataId == monthDataId)
             .ToListAsync();
     }
@@ -30,7 +33,7 @@ public class IncomeRepository : IIncomeRepository
         _context.Incomes.Add(income);
         await _context.SaveChangesAsync();
 
-        return income;
+        return await GetByIdAsync(income.Id) ?? income;
     }
 
     public async Task<Income> UpdateAsync(Income income)
@@ -39,7 +42,7 @@ public class IncomeRepository : IIncomeRepository
         _context.Incomes.Update(income);
         await _context.SaveChangesAsync();
 
-        return income;
+        return await GetByIdAsync(income.Id) ?? income;
     }
 
     public async Task DeleteAsync(int id)

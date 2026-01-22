@@ -45,18 +45,18 @@ export const useExpenseStore = defineStore('expense', () => {
     }
   }
 
-  async function updateExpense(updatedExpense: Expense): Promise<void> {
+  async function updateExpense(id: number, expense: ExpenseFormData): Promise<void> {
     loading.value = true
     
     try {
       const updated = await expenseService.update(
         currentYear.value,
         currentMonth.value,
-        updatedExpense.id,
-        updatedExpense
+        id,
+        expense
       )
       
-      const index = expenses.value.findIndex((e) => e.id === updatedExpense.id)
+      const index = expenses.value.findIndex((e) => e.id === id)
       
       if (index !== -1) {
         expenses.value[index] = updated

@@ -45,7 +45,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MoneyField } from '@wallacesw11/base-lib'
-import type { Expense } from '@/models/Expense'
+import type { Expense, ExpenseFormData } from '@/models/Expense'
 
 interface Props {
   expense?: Expense | null
@@ -53,7 +53,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  save: [expense: Omit<Expense, 'id'>]
+  save: [expense: ExpenseFormData]
   close: []
 }>()
 
@@ -63,7 +63,7 @@ const isOpen = defineModel<boolean>({ default: false })
 const formRef = ref()
 const nameFieldRef = ref()
 
-const formData = ref({
+const formData = ref<ExpenseFormData>({
   name: '',
   value: 0,
 })
@@ -108,7 +108,7 @@ async function handleSubmit(): Promise<void> {
   
   if (!valid) return
   
-  const expenseData: Omit<Expense, 'id'> = {
+  const expenseData: ExpenseFormData = {
     name: formData.value.name,
     value: Number(formData.value.value),
   }

@@ -10,12 +10,7 @@ public class Income
     public int Id { get; set; }
 
     [Required]
-    [MaxLength(200)]
-    public string Name { get; set; } = string.Empty;
-
-    [Required]
-    [MaxLength(20)]
-    public string Type { get; set; } = "manual";
+    public int IncomeTypeId { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal? GrossValue { get; set; }
@@ -31,6 +26,9 @@ public class Income
     public int? Minutes { get; set; }
 
     public int MonthDataId { get; set; }
+
+    [ForeignKey(nameof(IncomeTypeId))]
+    public IncomeType IncomeType { get; set; } = null!;
 
     [ForeignKey(nameof(MonthDataId))]
     public MonthData MonthData { get; set; } = null!;

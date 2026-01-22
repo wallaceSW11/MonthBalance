@@ -115,7 +115,10 @@ function saveExpense(expense: Expense): void {
   
   if (!pending) return
   
-  expenseStore.updateExpense(pending)
+  expenseStore.updateExpense(expense.id, {
+    name: pending.name,
+    value: pending.value
+  })
   pendingChanges.value.delete(expense.id)
 }
 

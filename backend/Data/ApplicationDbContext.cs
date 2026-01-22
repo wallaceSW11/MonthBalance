@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<MonthData> MonthData { get; set; }
     public DbSet<Income> Incomes { get; set; }
     public DbSet<Expense> Expenses { get; set; }
+    public DbSet<IncomeType> IncomeTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +34,10 @@ public class ApplicationDbContext : DbContext
                   .WithMany(m => m.Incomes)
                   .HasForeignKey(e => e.MonthDataId)
                   .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.IncomeType)
+                  .WithMany(it => it.Incomes)
+                  .HasForeignKey(e => e.IncomeTypeId)
+                  .OnDelete(DeleteBehavior.Restrict);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         });
@@ -44,6 +49,14 @@ public class ApplicationDbContext : DbContext
                   .WithMany(m => m.Expenses)
                   .HasForeignKey(e => e.MonthDataId)
                   .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
+        });
+
+        modelBuilder.Entity<IncomeType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Type).HasConversion<string>();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         });

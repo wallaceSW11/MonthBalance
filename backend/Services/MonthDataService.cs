@@ -68,9 +68,11 @@ public class MonthDataService : IMonthDataService
             throw new InvalidOperationException($"Source month {sourceYear}/{sourceMonth} not found");
         }
 
-        if (await _monthDataRepository.ExistsAsync(targetYear, targetMonth))
+        var existingTargetMonth = await _monthDataRepository.GetByYearAndMonthAsync(targetYear, targetMonth);
+
+        if (existingTargetMonth != null)
         {
-            throw new InvalidOperationException($"Target month {targetYear}/{targetMonth} already exists");
+            await _monthDataRepository.DeleteAsync(existingTargetMonth.Id);
         }
 
         var newMonthData = new MonthData
@@ -85,8 +87,7 @@ public class MonthDataService : IMonthDataService
         {
             newMonthData.Incomes.Add(new Income
             {
-                Name = income.Name,
-                Type = income.Type,
+                IncomeTypeId = income.IncomeTypeId,
                 GrossValue = income.GrossValue,
                 NetValue = income.NetValue,
                 HourlyRate = income.HourlyRate,
@@ -109,30 +110,30 @@ public class MonthDataService : IMonthDataService
         }
 
         var created = await _monthDataRepository.CreateAsync(newMonthData);
-
         return MapToDto(created);
     }
 
     private static MonthDataDto MapToDto(MonthData monthData)
     {
-        var incomes = monthData.Incomes.Select(i => new IncomeDto
-        {
-            Id = i.Id,
-            Name = i.Name,
-            Type = i.Type,
-            GrossValue = i.GrossValue,
-            NetValue = i.NetValue,
-            HourlyRate = i.HourlyRate,
-            Hours = i.Hours,
-            Minutes = i.Minutes
-        }).ToList();
+        var incomes = monthData.Incomes.Select(i => new IncomeDto(
+            i.Id,
+            i.IncomeTypeId,
+            i.IncomeType.Name,
+            i.IncomeType.Type,
+            i.GrossValue,
+            i.NetValue,
+            i.HourlyRate,
+            i.Hours,
+            i.Minutes,
+            i.MonthDataId
+        )).ToList();
 
-        var expenses = monthData.Expenses.Select(e => new ExpenseDto
-        {
-            Id = e.Id,
-            Name = e.Name,
-            Value = e.Value
-        }).ToList();
+        var expenses = monthData.Expenses.Select(e => new ExpenseDto(
+            e.Id,
+            e.Name,
+            e.Value,
+            e.MonthDataId
+        )).ToList();
 
         var totalIncome = incomes.Sum(i => i.NetValue ?? 0);
         var totalExpense = expenses.Sum(e => e.Value);

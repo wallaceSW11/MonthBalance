@@ -25,7 +25,7 @@
         class="income-item"
       >
         <div class="item-info">
-          <span class="item-name">{{ income.name }}</span>
+          <span class="item-name">{{ income.incomeTypeName }}</span>
         </div>
 
         <div class="item-value">

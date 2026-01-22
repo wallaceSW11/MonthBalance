@@ -91,9 +91,6 @@ public class MonthDataController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-            return BadRequest(new { message = ex.Message });
-        }
-    }
 }
 
 public class DuplicateMonthDto

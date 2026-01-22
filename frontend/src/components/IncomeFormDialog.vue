@@ -7,19 +7,11 @@
 
       <v-card-text>
         <v-form ref="formRef" validate-on="submit" @submit.prevent="handleSubmit">
-          <v-text-field
-            ref="nameFieldRef"
-            v-model="formData.name"
-            :label="t('incomes.form.name')"
-            :rules="[rules.required]"
-            density="comfortable"
-            class="mb-2"
-          />
-
           <v-select
-            v-model="formData.type"
+            ref="typeFieldRef"
+            v-model="formData.incomeTypeId"
             :label="t('incomes.form.type')"
-            :items="incomeTypes"
+            :items="incomeTypeOptions"
             item-title="label"
             item-value="value"
             :rules="[rules.required]"
@@ -27,11 +19,10 @@
             class="mb-2"
           />
 
-          <template v-if="formData.type === 'manual'">
+          <template v-if="selectedIncomeType?.type === IncomeTypeEnum.Manual">
             <MoneyField
               v-model="formData.grossValue"
               :label="t('incomes.form.grossValue')"
-              :rules="[rules.required]"
               :currency="locale === 'pt-BR' ? 'BRL' : 'USD'"
               :locale="locale"
               density="comfortable"
@@ -49,7 +40,7 @@
             />
           </template>
 
-          <template v-if="formData.type === 'hourly'">
+          <template v-if="selectedIncomeType?.type === IncomeTypeEnum.Hourly">
             <MoneyField
               v-model="formData.hourlyRate"
               :label="t('incomes.form.hourlyRate')"
@@ -101,10 +92,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MoneyField, NumberField } from '@wallacesw11/base-lib'
-import type { Income } from '@/models/Income'
+import { useIncomeTypeStore } from '@/stores/incomeType'
+import { IncomeTypeEnum } from '@/models/IncomeType'
+import type { Income, IncomeFormData } from '@/models/Income'
 
 interface Props {
   income?: Income | null
@@ -112,30 +105,36 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  save: [income: Omit<Income, 'id'>]
+  save: [income: IncomeFormData]
   close: []
 }>()
 
 const { t, locale } = useI18n()
+const incomeTypeStore = useIncomeTypeStore()
 
 const isOpen = defineModel<boolean>({ default: false })
 const formRef = ref()
-const nameFieldRef = ref()
+const typeFieldRef = ref()
 
-const formData = ref({
-  name: '',
-  type: 'manual' as 'manual' | 'hourly',
-  grossValue: 0,
-  netValue: 0,
-  hourlyRate: 0,
-  hours: 0,
-  minutes: 0,
+const formData = ref<IncomeFormData>({
+  incomeTypeId: 0,
+  grossValue: undefined,
+  netValue: undefined,
+  hourlyRate: undefined,
+  hours: undefined,
+  minutes: undefined,
 })
 
-const incomeTypes = computed(() => [
-  { label: t('incomes.types.manual'), value: 'manual' },
-  { label: t('incomes.types.hourly'), value: 'hourly' },
-])
+const incomeTypeOptions = computed(() => 
+  incomeTypeStore.incomeTypes.map(type => ({
+    label: type.name,
+    value: type.id
+  }))
+)
+
+const selectedIncomeType = computed(() => 
+  incomeTypeStore.getIncomeTypeById(formData.value.incomeTypeId)
+)
 
 const isEditMode = computed(() => !!props.income)
 
@@ -152,32 +151,30 @@ watch(() => props.income, (newIncome) => {
   }
   
   formData.value = {
-    name: newIncome.name,
-    type: newIncome.type,
-    grossValue: newIncome.grossValue || 0,
-    netValue: newIncome.netValue || 0,
-    hourlyRate: newIncome.hourlyRate || 0,
-    hours: newIncome.hours || 0,
-    minutes: newIncome.minutes || 0,
+    incomeTypeId: newIncome.incomeTypeId,
+    grossValue: newIncome.grossValue,
+    netValue: newIncome.netValue,
+    hourlyRate: newIncome.hourlyRate,
+    hours: newIncome.hours,
+    minutes: newIncome.minutes,
   }
 }, { immediate: true })
 
 watch(isOpen, async (opened) => {
   if (opened && !isEditMode.value) {
     await nextTick()
-    nameFieldRef.value?.focus()
+    typeFieldRef.value?.focus()
   }
 })
 
 function resetForm(): void {
   formData.value = {
-    name: '',
-    type: 'manual',
-    grossValue: 0,
-    netValue: 0,
-    hourlyRate: 0,
-    hours: 0,
-    minutes: 0,
+    incomeTypeId: 0,
+    grossValue: undefined,
+    netValue: undefined,
+    hourlyRate: undefined,
+    hours: undefined,
+    minutes: undefined,
   }
   
   formRef.value?.resetValidation()
@@ -188,18 +185,17 @@ async function handleSubmit(): Promise<void> {
   
   if (!valid) return
   
-  const incomeData: Omit<Income, 'id'> = {
-    name: formData.value.name,
-    type: formData.value.type,
+  const incomeData: IncomeFormData = {
+    incomeTypeId: formData.value.incomeTypeId,
   }
   
-  if (formData.value.type === 'manual') {
-    incomeData.grossValue = Number(formData.value.grossValue)
-    incomeData.netValue = Number(formData.value.netValue)
+  if (selectedIncomeType.value?.type === IncomeTypeEnum.Manual) {
+    incomeData.grossValue = formData.value.grossValue ? Number(formData.value.grossValue) : undefined
+    incomeData.netValue = formData.value.netValue ? Number(formData.value.netValue) : undefined
   } else {
-    incomeData.hourlyRate = Number(formData.value.hourlyRate)
-    incomeData.hours = Number(formData.value.hours)
-    incomeData.minutes = Number(formData.value.minutes)
+    incomeData.hourlyRate = formData.value.hourlyRate ? Number(formData.value.hourlyRate) : undefined
+    incomeData.hours = formData.value.hours ? Number(formData.value.hours) : undefined
+    incomeData.minutes = formData.value.minutes ? Number(formData.value.minutes) : undefined
   }
   
   emit('save', incomeData)
@@ -212,7 +208,7 @@ async function handleSubmit(): Promise<void> {
   resetForm()
   
   await nextTick()
-  nameFieldRef.value?.focus()
+  typeFieldRef.value?.focus()
 }
 
 function closeDialog(): void {
@@ -220,4 +216,8 @@ function closeDialog(): void {
   resetForm()
   emit('close')
 }
+
+onMounted(() => {
+  incomeTypeStore.loadIncomeTypes()
+})
 </script>

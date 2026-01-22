@@ -1,22 +1,23 @@
-export type IncomeType = 'manual' | 'hourly'
+import type { IncomeTypeEnum } from './IncomeType'
 
 export interface Income {
   id: number
-  name: string
-  type: IncomeType
+  incomeTypeId: number
+  incomeTypeName: string
+  incomeTypeType: IncomeTypeEnum
   grossValue?: number
   netValue?: number
   hourlyRate?: number
   hours?: number
   minutes?: number
+  monthDataId: number
 }
 
 export interface IncomeFormData {
-  name: string
-  type: IncomeType
-  grossValue: number
-  netValue: number
-  hourlyRate: number
-  hours: number
-  minutes: number
+  incomeTypeId: number
+  grossValue?: number
+  netValue?: number
+  hourlyRate?: number
+  hours?: number
+  minutes?: number
 }
