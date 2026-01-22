@@ -94,7 +94,7 @@ async function handleNext(): Promise<void> {
   const nextMonth = monthStore.currentMonth === 12 ? 1 : monthStore.currentMonth + 1
   const nextYear = monthStore.currentMonth === 12 ? monthStore.currentYear + 1 : monthStore.currentYear
   
-  const monthExists = monthStore.checkMonthExists(nextYear, nextMonth)
+  const monthExists = await monthStore.checkMonthExists(nextYear, nextMonth)
   
   if (!monthExists) {
     const confirmed = await confirm.show(
@@ -108,15 +108,15 @@ async function handleNext(): Promise<void> {
     )
     
     if (confirmed) {
-      monthStore.duplicateCurrentMonth()
+      await monthStore.duplicateCurrentMonth()
       return
     }
     
-    monthStore.goToNextMonth()
+    await monthStore.goToNextMonth()
     return
   }
   
-  monthStore.goToNextMonth()
+  await monthStore.goToNextMonth()
 }
 
 function openDuplicateDialog(): void {

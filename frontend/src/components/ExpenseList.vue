@@ -63,7 +63,7 @@ const { t, locale } = useI18n()
 const expenseStore = useExpenseStore()
 
 const collapsed = ref(false)
-const pendingChanges = ref<Map<string, Expense>>(new Map())
+const pendingChanges = ref<Map<number, Expense>>(new Map())
 
 const expenses = computed(() => expenseStore.expenses)
 

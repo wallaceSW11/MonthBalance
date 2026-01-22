@@ -148,7 +148,7 @@ it('Deve validar email em tempo real quando usuário digitar', async () => {
 - Computed properties com lógica
 - Interface e interações (visibilidade, clicks, inputs, valores exibidos)
 - Classes CSS dinâmicas, atributos HTML
-- Integrações críticas (API, Vuex)
+- Integrações críticas (API, Pinia)
 
 ### ❌ NUNCA Teste
 - Framework (Vue, Vuetify)
@@ -163,41 +163,38 @@ it('Deve validar email em tempo real quando usuário digitar', async () => {
 
 ### Organização
 ```
-src/components/base/
-  BaseDadosEmpresa.vue
-  __tests__/
-    BaseDadosEmpresa.spec.js
+src/components/
+  ExpenseList.vue
+  ExpenseList.spec.ts
 ```
 
 ### Anatomia
-```javascript
-describe('NomeDoComponente.vue', () => {
-  let wrapper;
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import ExpenseList from './ExpenseList.vue'
+
+describe('ExpenseList.vue', () => {
+  let wrapper
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    wrapper = montarComponente(NomeDoComponente, {
+    vi.clearAllMocks()
+    wrapper = mount(ExpenseList, {
       props: { /* props */ }
-    });
-  });
+    })
+  })
 
-  afterEach(() => {
-    wrapper?.destroy();
-  });
-
-  describe('salvarUsuario', () => {
-    it('Deve chamar API com dados do formulário quando dados forem válidos', async () => {
-      await wrapper.setData({ nome: 'João', email: 'joao@email.com' });
+  describe('deleteExpense', () => {
+    it('Deve chamar API com ID correto quando usuário confirmar exclusão', async () => {
+      const mockDelete = vi.fn()
+      wrapper.vm.expenseService = { delete: mockDelete }
       
-      await wrapper.vm.salvarUsuario();
+      await wrapper.vm.deleteExpense(123)
       
-      expect(mockApi.salvar).toHaveBeenCalledWith({
-        nome: 'João',
-        email: 'joao@email.com'
-      });
-    });
-  });
-});
+      expect(mockDelete).toHaveBeenCalledWith(123)
+    })
+  })
+})
 ```
 
 ---
@@ -260,43 +257,44 @@ it('Deve salvar dados quando usuário clicar no botão', async () => {
 ### 3. Renderização Condicional
 Teste visibilidade
 
-```javascript
+```typescript
 // ✅ CORRETO
-it('Deve desabilitar botão quando não houver identificador', async () => {
-  await wrapper.setProps({ identificadorPessoa: null });
+it('Deve desabilitar botão quando não houver ID da despesa', async () => {
+  await wrapper.setProps({ expenseId: null })
   
-  const botao = wrapper.findComponent(BaseBotaoIconeComTooltip);
-  expect(botao.props('desabilitar')).toBe(true);
-  expect(botao.isVisible()).toBe(true);
-});
+  const button = wrapper.find('[data-testid="btn-delete"]')
+  expect(button.attributes('disabled')).toBeDefined()
+  expect(button.isVisible()).toBe(true)
+})
 ```
 
 ### 4. Props
 Teste comportamento, não existência
 
-```javascript
+```typescript
 // ✅ CORRETO
-it('Deve usar id customizado nos elementos internos', async () => {
-  await wrapper.setProps({ id: 'empresa-123' });
+it('Deve usar ID customizado no elemento', async () => {
+  await wrapper.setProps({ id: 'expense-123' })
   
-  const botao = wrapper.find('[data-testid="btn-dados-empresa"]');
-  expect(botao.attributes('id')).toContain('empresa-123');
-});
+  const element = wrapper.find('[data-testid="expense-item"]')
+  expect(element.attributes('id')).toBe('expense-123')
+})
 ```
 
 ### 5. Componentes Filhos
 Teste integração, não existência
 
-```javascript
+```typescript
 // ✅ CORRETO
-it('Deve passar identificador e nome para o modal', () => {
-  const modal = wrapper.findComponent(DadosEmpresaModal);
+it('Deve passar dados corretos para o modal', () => {
+  const modal = wrapper.findComponent(ExpenseFormDialog)
   
   expect(modal.props()).toMatchObject({
-    identificadorPessoa: 'uuid-123',
-    nomeCurto: 'Empresa Teste'
-  });
-});
+    expenseId: 123,
+    year: 2026,
+    month: 1
+  })
+})
 ```
 
 ---

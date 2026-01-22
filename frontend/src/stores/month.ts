@@ -2,12 +2,12 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useIncomeStore } from './income'
 import { useExpenseStore } from './expense'
-import { incomeStorageService } from '@/services/storage/IncomeStorageService'
-import { expenseStorageService } from '@/services/storage/ExpenseStorageService'
+import { monthDataService } from '@/services/api/monthDataService'
 
 export const useMonthStore = defineStore('month', () => {
   const currentYear = ref<number>(new Date().getFullYear())
   const currentMonth = ref<number>(new Date().getMonth() + 1)
+  const loading = ref<boolean>(false)
 
   const incomeStore = useIncomeStore()
   const expenseStore = useExpenseStore()
@@ -22,15 +22,24 @@ export const useMonthStore = defineStore('month', () => {
     return date.toLocaleDateString('default', { month: 'long', year: 'numeric' })
   })
 
-  function loadMonth(year: number, month: number): void {
+  async function loadMonth(year: number, month: number): Promise<void> {
     currentYear.value = year
     currentMonth.value = month
+    loading.value = true
     
-    incomeStore.loadIncomes(year, month)
-    expenseStore.loadExpenses(year, month)
+    try {
+      await Promise.all([
+        incomeStore.loadIncomes(year, month),
+        expenseStore.loadExpenses(year, month)
+      ])
+    } catch (error) {
+      console.error('Error loading month:', error)
+    } finally {
+      loading.value = false
+    }
   }
 
-  function goToPreviousMonth(): void {
+  async function goToPreviousMonth(): Promise<void> {
     if (currentMonth.value === 1) {
       currentMonth.value = 12
       currentYear.value -= 1
@@ -38,10 +47,10 @@ export const useMonthStore = defineStore('month', () => {
       currentMonth.value -= 1
     }
     
-    loadMonth(currentYear.value, currentMonth.value)
+    await loadMonth(currentYear.value, currentMonth.value)
   }
 
-  function goToNextMonth(): boolean {
+  async function goToNextMonth(): Promise<boolean> {
     const nextMonth = currentMonth.value === 12 ? 1 : currentMonth.value + 1
     const nextYear = currentMonth.value === 12 ? currentYear.value + 1 : currentYear.value
     
@@ -49,22 +58,21 @@ export const useMonthStore = defineStore('month', () => {
     
     if (monthsAhead > 3) return false
     
-    const monthExists = checkMonthExists(nextYear, nextMonth)
-    
-    if (!monthExists) return false
-    
     currentMonth.value = nextMonth
     currentYear.value = nextYear
-    loadMonth(currentYear.value, currentMonth.value)
+    await loadMonth(currentYear.value, currentMonth.value)
     
     return true
   }
 
-  function checkMonthExists(year: number, month: number): boolean {
-    const incomesExist = incomeStorageService.monthExists(year, month)
-    const expensesExist = expenseStorageService.monthExists(year, month)
-    
-    return incomesExist || expensesExist
+  async function checkMonthExists(year: number, month: number): Promise<boolean> {
+    try {
+      const monthData = await monthDataService.getByYearAndMonth(year, month)
+      
+      return monthData !== null
+    } catch (error) {
+      return false
+    }
   }
 
   function canNavigateForward(): boolean {
@@ -76,31 +84,73 @@ export const useMonthStore = defineStore('month', () => {
     return monthsAhead <= 3
   }
 
-  function duplicateCurrentMonth(): void {
+  async function duplicateCurrentMonth(): Promise<void> {
     const nextMonth = currentMonth.value === 12 ? 1 : currentMonth.value + 1
     const nextYear = currentMonth.value === 12 ? currentYear.value + 1 : currentYear.value
     
-    incomeStore.duplicateToMonth(nextYear, nextMonth)
-    expenseStore.duplicateToMonth(nextYear, nextMonth)
+    loading.value = true
     
-    currentMonth.value = nextMonth
-    currentYear.value = nextYear
-    loadMonth(currentYear.value, currentMonth.value)
+    try {
+      await monthDataService.duplicate({
+        sourceYear: currentYear.value,
+        sourceMonth: currentMonth.value,
+        targetYear: nextYear,
+        targetMonth: nextMonth
+      })
+      
+      currentMonth.value = nextMonth
+      currentYear.value = nextYear
+      await loadMonth(currentYear.value, currentMonth.value)
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Erro ao duplicar mês'
+      console.error('Error duplicating month:', errorMessage)
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
   }
 
-  function duplicateToMonth(targetYear: number, targetMonth: number): void {
-    incomeStore.duplicateToMonth(targetYear, targetMonth)
-    expenseStore.duplicateToMonth(targetYear, targetMonth)
+  async function duplicateToMonth(targetYear: number, targetMonth: number): Promise<void> {
+    loading.value = true
     
-    currentMonth.value = targetMonth
-    currentYear.value = targetYear
-    loadMonth(currentYear.value, currentMonth.value)
+    try {
+      await monthDataService.duplicate({
+        sourceYear: currentYear.value,
+        sourceMonth: currentMonth.value,
+        targetYear,
+        targetMonth
+      })
+      
+      currentMonth.value = targetMonth
+      currentYear.value = targetYear
+      await loadMonth(currentYear.value, currentMonth.value)
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Erro ao duplicar mês'
+      console.error('Error duplicating to month:', errorMessage)
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
   }
 
-  function clearCurrentMonth(): void {
-    incomeStore.clearMonth(currentYear.value, currentMonth.value)
-    expenseStore.clearMonth(currentYear.value, currentMonth.value)
-    loadMonth(currentYear.value, currentMonth.value)
+  async function clearCurrentMonth(): Promise<void> {
+    loading.value = true
+    
+    try {
+      const monthData = await monthDataService.getByYearAndMonth(currentYear.value, currentMonth.value)
+      
+      if (monthData) {
+        await monthDataService.delete(monthData.id)
+        await monthDataService.create({ year: currentYear.value, month: currentMonth.value })
+      }
+      
+      await loadMonth(currentYear.value, currentMonth.value)
+    } catch (error) {
+      console.error('Error clearing month:', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
   }
 
   function calculateMonthsAhead(targetYear: number, targetMonth: number): number {
@@ -114,13 +164,14 @@ export const useMonthStore = defineStore('month', () => {
     return diffMonths
   }
 
-  function initializeCurrentMonth(): void {
-    loadMonth(currentYear.value, currentMonth.value)
+  async function initializeCurrentMonth(): Promise<void> {
+    await loadMonth(currentYear.value, currentMonth.value)
   }
 
   return {
     currentYear,
     currentMonth,
+    loading,
     totalIncome,
     totalExpense,
     balance,

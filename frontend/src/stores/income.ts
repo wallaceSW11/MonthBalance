@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { incomeStorageService } from '@/services/storage/IncomeStorageService'
-import type { Income } from '@/models/Income'
-import { v4 as uuidv4 } from '@/utils/uuid'
+import { incomeService } from '@/services/api/incomeService'
+import { monthDataService } from '@/services/api/monthDataService'
+import type { Income, IncomeFormData } from '@/models/Income'
 
 export const useIncomeStore = defineStore('income', () => {
   const incomes = ref<Income[]>([])
   const currentYear = ref<number>(new Date().getFullYear())
   const currentMonth = ref<number>(new Date().getMonth() + 1)
+  const loading = ref<boolean>(false)
 
   const totalIncome = computed(() => {
     return incomes.value.reduce((sum, income) => {
@@ -17,34 +18,73 @@ export const useIncomeStore = defineStore('income', () => {
     }, 0)
   })
 
-  function loadIncomes(year: number, month: number): void {
+  async function loadIncomes(year: number, month: number): Promise<void> {
     currentYear.value = year
     currentMonth.value = month
-    incomes.value = incomeStorageService.getIncomesByMonth(year, month)
-  }
-
-  function addIncome(income: Omit<Income, 'id'>): void {
-    const newIncome: Income = {
-      ...income,
-      id: uuidv4(),
+    loading.value = true
+    
+    try {
+      await ensureMonthExists(year, month)
+      incomes.value = await incomeService.getByMonth(year, month)
+    } catch (error) {
+      console.error('Error loading incomes:', error)
+      incomes.value = []
+    } finally {
+      loading.value = false
     }
-    
-    incomes.value.push(newIncome)
-    incomeStorageService.addIncome(currentYear.value, currentMonth.value, newIncome)
   }
 
-  function updateIncome(updatedIncome: Income): void {
-    const index = incomes.value.findIndex((i) => i.id === updatedIncome.id)
+  async function addIncome(income: IncomeFormData): Promise<void> {
+    loading.value = true
     
-    if (index === -1) return
-    
-    incomes.value[index] = updatedIncome
-    incomeStorageService.updateIncome(currentYear.value, currentMonth.value, updatedIncome)
+    try {
+      await ensureMonthExists(currentYear.value, currentMonth.value)
+      const newIncome = await incomeService.create(currentYear.value, currentMonth.value, income)
+      incomes.value.push(newIncome)
+    } catch (error) {
+      console.error('Error adding income:', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
   }
 
-  function deleteIncome(incomeId: string): void {
-    incomes.value = incomes.value.filter((i) => i.id !== incomeId)
-    incomeStorageService.deleteIncome(currentYear.value, currentMonth.value, incomeId)
+  async function updateIncome(updatedIncome: Income): Promise<void> {
+    loading.value = true
+    
+    try {
+      const updated = await incomeService.update(
+        currentYear.value,
+        currentMonth.value,
+        updatedIncome.id,
+        updatedIncome
+      )
+      
+      const index = incomes.value.findIndex((i) => i.id === updatedIncome.id)
+      
+      if (index !== -1) {
+        incomes.value[index] = updated
+      }
+    } catch (error) {
+      console.error('Error updating income:', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteIncome(incomeId: number): Promise<void> {
+    loading.value = true
+    
+    try {
+      await incomeService.delete(currentYear.value, currentMonth.value, incomeId)
+      incomes.value = incomes.value.filter((i) => i.id !== incomeId)
+    } catch (error) {
+      console.error('Error deleting income:', error)
+      throw error
+    } finally {
+      loading.value = false
+    }
   }
 
   function calculateIncomeValue(income: Income): number {
@@ -63,20 +103,11 @@ export const useIncomeStore = defineStore('income', () => {
     return 0
   }
 
-  function duplicateToMonth(targetYear: number, targetMonth: number): void {
-    const duplicatedIncomes = incomes.value.map((income) => ({
-      ...income,
-      id: uuidv4(),
-    }))
+  async function ensureMonthExists(year: number, month: number): Promise<void> {
+    const monthData = await monthDataService.getByYearAndMonth(year, month)
     
-    incomeStorageService.saveIncomesByMonth(targetYear, targetMonth, duplicatedIncomes)
-  }
-
-  function clearMonth(year: number, month: number): void {
-    incomeStorageService.saveIncomesByMonth(year, month, [])
-    
-    if (year === currentYear.value && month === currentMonth.value) {
-      incomes.value = []
+    if (!monthData) {
+      await monthDataService.create({ year, month })
     }
   }
 
@@ -84,13 +115,12 @@ export const useIncomeStore = defineStore('income', () => {
     incomes,
     currentYear,
     currentMonth,
+    loading,
     totalIncome,
     loadIncomes,
     addIncome,
     updateIncome,
     deleteIncome,
     calculateIncomeValue,
-    duplicateToMonth,
-    clearMonth,
   }
 })

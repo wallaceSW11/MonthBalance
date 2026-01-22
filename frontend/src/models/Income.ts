@@ -1,7 +1,7 @@
 export type IncomeType = 'manual' | 'hourly'
 
 export interface Income {
-  id: string
+  id: number
   name: string
   type: IncomeType
   grossValue?: number
