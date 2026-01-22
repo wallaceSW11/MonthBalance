@@ -828,6 +828,8 @@ public async Task<MonthDataDto> DuplicateMonthAsync(
 
 ## 📁 Estrutura do Projeto
 
+**IMPORTANTE:** Todos os arquivos ficam direto na pasta `backend/`, sem subpastas do projeto.
+
 ```
 backend/
 ├── Controllers/
@@ -885,7 +887,8 @@ backend/
 ├── appsettings.json
 ├── appsettings.Development.json
 ├── Program.cs
-└── MonthBalance.API.csproj
+├── backend.csproj  ← Nome do projeto
+└── INICIAR_BACKEND.md
 ```
 
 ---
@@ -967,9 +970,11 @@ backend/
 
 ### Criar Projeto
 ```bash
-dotnet new webapi -n MonthBalance.API -f net10.0
-cd MonthBalance.API
+# Na pasta backend/ (não criar subpasta)
+dotnet new webapi -f net10.0 -o .
 ```
+
+**IMPORTANTE:** O comando acima cria os arquivos direto na pasta `backend/`, sem criar subpasta `MonthBalance.API/`
 
 ### Adicionar Pacotes
 ```bash
