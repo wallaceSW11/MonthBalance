@@ -6,9 +6,12 @@
 2. ✅ Entity Framework + PostgreSQL configurado
 3. ✅ 17 endpoints REST funcionais
 4. ✅ Models com INT Identity (performance otimizada)
-5. ✅ Migrations criadas
-6. ✅ Docker Desktop instalado
-7. ✅ WSL 2 instalado (precisa reiniciar)
+5. ✅ Migrations automáticas configuradas
+6. ✅ **Estrutura reorganizada** (arquivos direto na pasta backend/)
+7. ✅ **Namespaces simplificados** (MonthBalance.API → MonthBalance)
+8. ✅ **Migrations recriadas** com nova estrutura
+9. ✅ Docker Desktop instalado
+10. ✅ WSL 2 instalado (precisa reiniciar)
 
 ---
 
@@ -46,8 +49,10 @@ Deve aparecer: `mb-postgres-dev`
 ### 3. Rodar API
 ```powershell
 cd C:\git\MB1_Month_Balance\MonthBalance\backend
-dotnet run --project MonthBalance.API
+dotnet run
 ```
+
+✨ **Migrations rodam automaticamente!** Não precisa rodar scripts.
 
 Aguardar mensagem: `Now listening on: http://localhost:5150`
 
@@ -77,6 +82,8 @@ curl http://localhost:5150/api/monthdata/2026/1
 
 | Arquivo | Descrição |
 |---------|-----------|
+| `ESTRUTURA_ATUALIZADA.md` | ⭐ **NOVO!** Mudanças na estrutura |
+| `DATABASE_MIGRATIONS.md` | ⭐ **NOVO!** Guia completo de migrations |
 | `ROADMAP.md` | Plano completo do projeto |
 | `API_ENDPOINTS.md` | Todos os endpoints da API |
 | `DATABASE_SETUP.md` | Como configurar banco |
@@ -109,7 +116,45 @@ curl http://localhost:5150/api/monthdata/2026/1
 
 ## ⚠️ Mudanças Importantes
 
-### IDs: GUID → INT
+### 1. Estrutura Simplificada
+
+**Antes:**
+```
+backend/MonthBalance.API/
+  ├── Controllers/
+  ├── Models/
+  └── Program.cs
+```
+
+**Agora:**
+```
+backend/
+  ├── Controllers/
+  ├── Models/
+  └── Program.cs
+```
+
+### 2. Namespaces Simplificados
+
+**Antes:**
+```csharp
+using MonthBalance.API.Controllers;
+namespace MonthBalance.API.Controllers;
+```
+
+**Agora:**
+```csharp
+using MonthBalance.Controllers;
+namespace MonthBalance.Controllers;
+```
+
+### 3. Migrations Automáticas
+
+✨ **Não precisa mais rodar scripts!**
+
+As migrations são aplicadas automaticamente quando você roda `dotnet run`.
+
+### 4. IDs: GUID → INT
 
 **Antes (Frontend):**
 ```typescript
@@ -153,9 +198,9 @@ docker-compose -f docker-compose.dev.yml logs postgres
 ### API não conecta no banco
 1. Verificar se PostgreSQL está rodando: `docker ps`
 2. Verificar connection string em `appsettings.Development.json`
-3. Tentar aplicar migrations manualmente:
+3. As migrations rodam automaticamente, mas se precisar forçar:
 ```powershell
-dotnet ef database update --project MonthBalance.API
+dotnet ef database update
 ```
 
 ---
@@ -177,13 +222,19 @@ docker ps
 
 # Entrar no PostgreSQL
 docker exec -it mb-postgres-dev psql -U mbuser -d monthbalance
+
+# Criar nova migration
+dotnet ef migrations add NomeDaMigration
+
+# Listar migrations
+dotnet ef migrations list
 ```
 
 ---
 
 ## 🎉 Resumo
 
-**Backend está 100% pronto!** Só falta testar com Docker rodando.
+**Backend está 100% pronto e reorganizado!**
 
 **Estrutura criada:**
 - ✅ 3 Models (MonthData, Income, Expense)
@@ -191,15 +242,17 @@ docker exec -it mb-postgres-dev psql -U mbuser -d monthbalance
 - ✅ 3 Services
 - ✅ 3 Controllers
 - ✅ 17 Endpoints REST
-- ✅ Migrations
+- ✅ Migrations automáticas
 - ✅ Seed data
 - ✅ Scripts PowerShell
 - ✅ Documentação completa
+- ✅ **Estrutura simplificada**
+- ✅ **Namespaces limpos**
 
 **Próximo passo:** Reiniciar PC e testar! 🚀
 
 ---
 
 **Data:** 22/01/2026  
-**Hora:** ~01:30  
+**Hora:** ~02:00  
 **Status:** Pronto para testes após reinício

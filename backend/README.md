@@ -13,7 +13,7 @@ Backend API REST desenvolvido com .NET 10, Entity Framework Core e PostgreSQL.
 ### 1. Instalar Dependências
 
 ```bash
-cd backend/MonthBalance.API
+cd backend
 dotnet restore
 ```
 
@@ -34,8 +34,8 @@ Edite `appsettings.Development.json` com suas credenciais PostgreSQL:
 **Opção 1: Docker (Recomendado)**
 
 ```bash
-cd backend/scripts
-.\start-postgres.ps1
+cd backend
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
 **Opção 2: PostgreSQL Local**
@@ -44,25 +44,20 @@ cd backend/scripts
 createdb -U postgres monthbalance
 ```
 
-### 4. Aplicar Migrations
+### 4. Migrations
 
-As migrations são aplicadas automaticamente ao rodar a API em Development.
+✨ **As migrations são aplicadas AUTOMATICAMENTE** ao rodar a API em Development!
 
-Ou manualmente:
+Não precisa rodar scripts manuais. Basta iniciar a aplicação e o banco será criado/atualizado automaticamente.
 
-```bash
-cd backend/scripts
-.\apply-migrations.ps1
-```
-
-Veja mais detalhes em [DATABASE_SETUP.md](DATABASE_SETUP.md)
+Para mais detalhes sobre migrations, veja [DATABASE_MIGRATIONS.md](DATABASE_MIGRATIONS.md)
 
 ## 🚀 Executar
 
 ### Desenvolvimento
 
 ```bash
-cd backend/MonthBalance.API
+cd backend
 dotnet run
 ```
 
@@ -77,6 +72,8 @@ docker-compose up -d
 
 ## 📚 Endpoints
 
+Documentação completa em [API_ENDPOINTS.md](API_ENDPOINTS.md)
+
 ### Health Check
 
 ```
@@ -87,7 +84,7 @@ Resposta:
 ```json
 {
   "status": "healthy",
-  "timestamp": "2026-01-21T23:00:00Z",
+  "timestamp": "2026-01-22T00:00:00Z",
   "version": "1.0.0"
 }
 ```
@@ -95,7 +92,7 @@ Resposta:
 ## 🧪 Testes
 
 ```bash
-cd backend/MonthBalance.Tests
+cd backend
 dotnet test
 ```
 
@@ -111,30 +108,37 @@ dotnet publish -c Release -o ./publish
 ### Build da Imagem
 
 ```bash
-docker build -t monthbalance-api -f docker/Dockerfile .
+docker build -t monthbalance-api .
 ```
 
 ### Executar com Docker Compose
 
 ```bash
-docker-compose up -d
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
 ## 📝 Estrutura do Projeto
 
 ```
-MonthBalance.API/
-├── Controllers/       # Controllers da API
-├── Data/             # DbContext e configurações EF
-├── Models/           # Entidades do banco
-├── DTOs/             # Data Transfer Objects
-├── Services/         # Lógica de negócio
-├── Repositories/     # Acesso a dados
-├── Middleware/       # Middlewares customizados
-├── Extensions/       # Extension methods
-├── Validators/       # Validações
-├── Mappings/         # AutoMapper profiles
-└── wwwroot/          # Static files (frontend)
+backend/
+├── Controllers/          # Controllers da API
+├── Data/                # DbContext e configurações EF
+│   ├── ApplicationDbContext.cs
+│   └── DbInitializer.cs
+├── Models/              # Entidades do banco
+├── DTOs/                # Data Transfer Objects
+├── Services/            # Lógica de negócio
+├── Repositories/        # Acesso a dados
+├── Migrations/          # EF Core Migrations (gerado automaticamente)
+├── Middleware/          # Middlewares customizados
+├── Extensions/          # Extension methods
+├── Validators/          # Validações
+├── Mappings/            # AutoMapper profiles
+├── Properties/          # Launch settings
+├── scripts/             # Scripts auxiliares
+├── Program.cs           # Entry point
+├── appsettings.json     # Configurações
+└── MonthBalance.API.csproj
 ```
 
 ## 🔑 Variáveis de Ambiente
@@ -145,9 +149,22 @@ MonthBalance.API/
 | `ConnectionStrings__DefaultConnection` | String de conexão PostgreSQL | - |
 | `ASPNETCORE_URLS` | URLs de escuta | http://+:80 |
 
-## 📖 Documentação API
+## 📖 Documentação
 
-Swagger disponível em: `http://localhost:5000/swagger`
+- [API Endpoints](API_ENDPOINTS.md) - Documentação completa dos endpoints
+- [Database Migrations](DATABASE_MIGRATIONS.md) - Guia de migrations do EF Core
+- [Database Setup](DATABASE_SETUP.md) - Setup inicial do banco
+- [Docker Setup](DOCKER_SETUP.md) - Configuração Docker
+- [Roadmap](ROADMAP.md) - Planejamento e próximos passos
+- [Changelog](CHANGELOG.md) - Histórico de mudanças
+
+## 🛠️ Tecnologias
+
+- **.NET 10** - Framework principal
+- **Entity Framework Core 10** - ORM
+- **PostgreSQL 17** - Banco de dados
+- **Npgsql** - Provider PostgreSQL para EF Core
+- **ASP.NET Core** - Web API
 
 ## 🤝 Contribuindo
 
