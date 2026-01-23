@@ -9,7 +9,7 @@
           mdi-chevron-down
         </v-icon>
         <h3 class="section-title">
-          {{ t('dashboard.incomes') }}
+          Receitas
         </h3>
       </div>
       <div class="divider" />
@@ -20,69 +20,59 @@
       class="items-container"
     >
       <div
-        v-for="income in incomes"
-        :key="income.id"
+        v-for="monthIncome in monthIncomes"
+        :key="monthIncome.id"
         class="income-item"
       >
         <div class="item-info">
-          <span class="item-name">{{ income.name }}</span>
+          <span class="item-name">{{ monthIncome.incomeDescription }}</span>
         </div>
 
         <div class="item-value">
           <button
             class="value-button"
-            @click="$emit('edit', income)"
+            @click="$emit('edit', monthIncome)"
           >
-            {{ formatValue(income) }}
+            {{ formatValue(monthIncome) }}
           </button>
         </div>
       </div>
 
       <div
-        v-if="incomes.length === 0"
+        v-if="monthIncomes.length === 0"
         class="empty-state"
       >
-        {{ t('dashboard.noIncomes') }}
+        Nenhuma receita cadastrada
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, computed } from 'vue'
 import { useIncomeStore } from '@/stores/income'
 import { formatCurrency } from '@/utils/currency'
-import { uiStorageService } from '@/services/storage/UIStorageService'
-import type { Income } from '@/models/Income'
+import type { MonthIncome } from '@/models/MonthIncome'
 
 defineEmits<{
-  edit: [income: Income]
+  edit: [monthIncome: MonthIncome]
 }>()
 
-const { t, locale } = useI18n()
 const incomeStore = useIncomeStore()
 
 const collapsed = ref(false)
 
-const incomes = computed(() => incomeStore.incomes)
+const monthIncomes = computed(() => incomeStore.monthIncomes)
 
 function toggleCollapse(): void {
   collapsed.value = !collapsed.value
-  uiStorageService.updateIncomesCollapsed(collapsed.value)
 }
 
-function formatValue(income: Income): string {
-  const value = incomeStore.calculateIncomeValue(income)
+function formatValue(monthIncome: MonthIncome): string {
+  const value = monthIncome.netValue ?? 0
   
-  return formatCurrency(value, locale.value)
+  return formatCurrency(value, 'pt-BR')
 }
-
-onMounted(() => {
-  const uiState = uiStorageService.getUIState()
-  
-  collapsed.value = uiState.incomesCollapsed
-})
 </script>
 
 <style scoped>

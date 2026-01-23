@@ -1,75 +1,80 @@
-import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { expenseStorageService } from '@/services/storage/ExpenseStorageService'
-import type { Expense } from '@/models/Expense'
-import { v4 as uuidv4 } from '@/utils/uuid'
+import { defineStore } from 'pinia'
+import { monthExpenseService } from '@/services/api/monthExpenseService'
+import type { MonthExpense } from '@/models/MonthExpense'
 
 export const useExpenseStore = defineStore('expense', () => {
-  const expenses = ref<Expense[]>([])
-  const currentYear = ref<number>(new Date().getFullYear())
-  const currentMonth = ref<number>(new Date().getMonth() + 1)
+  const monthExpenses = ref<MonthExpense[]>([])
+  const loading = ref(false)
 
-  const totalExpense = computed(() => {
-    return expenses.value.reduce((sum, expense) => sum + expense.value, 0)
-  })
+  const totalExpense = computed(() => 
+    monthExpenses.value.reduce((sum, expense) => sum + expense.value, 0)
+  )
 
-  function loadExpenses(year: number, month: number): void {
-    currentYear.value = year
-    currentMonth.value = month
-    expenses.value = expenseStorageService.getExpensesByMonth(year, month)
-  }
+  async function loadMonthExpenses(year: number, month: number): Promise<void> {
+    loading.value = true
 
-  function addExpense(expense: Omit<Expense, 'id'>): void {
-    const newExpense: Expense = {
-      ...expense,
-      id: uuidv4(),
+    try {
+      monthExpenses.value = await monthExpenseService.getByMonth(year, month)
+    } finally {
+      loading.value = false
     }
-    
-    expenses.value.push(newExpense)
-    expenseStorageService.addExpense(currentYear.value, currentMonth.value, newExpense)
   }
 
-  function updateExpense(updatedExpense: Expense): void {
-    const index = expenses.value.findIndex((e) => e.id === updatedExpense.id)
-    
-    if (index === -1) return
-    
-    expenses.value[index] = updatedExpense
-    expenseStorageService.updateExpense(currentYear.value, currentMonth.value, updatedExpense)
+  async function createMonthExpense(year: number, month: number, data: {
+    expenseId: number
+    value: number
+  }): Promise<MonthExpense> {
+    loading.value = true
+
+    try {
+      const monthExpense = await monthExpenseService.create(year, month, data)
+      
+      monthExpenses.value.push(monthExpense)
+      
+      return monthExpense
+    } finally {
+      loading.value = false
+    }
   }
 
-  function deleteExpense(expenseId: string): void {
-    expenses.value = expenses.value.filter((e) => e.id !== expenseId)
-    expenseStorageService.deleteExpense(currentYear.value, currentMonth.value, expenseId)
+  async function updateMonthExpense(year: number, month: number, id: number, data: {
+    value: number
+  }): Promise<void> {
+    loading.value = true
+
+    try {
+      const updated = await monthExpenseService.update(year, month, id, data)
+      
+      const index = monthExpenses.value.findIndex(e => e.id === id)
+      
+      if (index !== -1) {
+        monthExpenses.value[index] = updated
+      }
+    } finally {
+      loading.value = false
+    }
   }
 
-  function duplicateToMonth(targetYear: number, targetMonth: number): void {
-    const duplicatedExpenses = expenses.value.map((expense) => ({
-      ...expense,
-      id: uuidv4(),
-    }))
-    
-    expenseStorageService.saveExpensesByMonth(targetYear, targetMonth, duplicatedExpenses)
-  }
+  async function deleteMonthExpense(year: number, month: number, id: number): Promise<void> {
+    loading.value = true
 
-  function clearMonth(year: number, month: number): void {
-    expenseStorageService.saveExpensesByMonth(year, month, [])
-    
-    if (year === currentYear.value && month === currentMonth.value) {
-      expenses.value = []
+    try {
+      await monthExpenseService.delete(year, month, id)
+      
+      monthExpenses.value = monthExpenses.value.filter(e => e.id !== id)
+    } finally {
+      loading.value = false
     }
   }
 
   return {
-    expenses,
-    currentYear,
-    currentMonth,
+    monthExpenses,
+    loading,
     totalExpense,
-    loadExpenses,
-    addExpense,
-    updateExpense,
-    deleteExpense,
-    duplicateToMonth,
-    clearMonth,
+    loadMonthExpenses,
+    createMonthExpense,
+    updateMonthExpense,
+    deleteMonthExpense
   }
 })

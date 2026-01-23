@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   FloatingNotify,
   LoadingOverlay,
@@ -25,9 +24,6 @@ import { useThemeStore } from '@wallacesw11/base-lib/stores'
 import { useThemeSync } from '@wallacesw11/base-lib/composables'
 import { useLocaleStore } from '@/stores/locale'
 import { settingsStorageService } from '@/services/storage/SettingsStorageService'
-import { authService } from '@/services/AuthService'
-
-const router = useRouter()
 
 const floatingNotifyRef = ref()
 const loadingOverlayRef = ref()
@@ -43,14 +39,6 @@ const { syncTheme } = useThemeSync()
 
 localeStore.initializeLocale()
 
-function handleLockRequired(): void {
-  const currentRoute = router.currentRoute.value.path
-
-  if (currentRoute !== '/auth') {
-    router.push('/auth')
-  }
-}
-
 async function initializeApp(): Promise<void> {
   if (floatingNotifyRef.value) {
     notifyStore.setNotifyRef(floatingNotifyRef.value)
@@ -65,12 +53,14 @@ async function initializeApp(): Promise<void> {
   }
 
   const settings = settingsStorageService.getSettings()
-  themeStore.setTheme(settings.theme)
+  
+  if (settings.theme !== 'system') {
+    themeStore.setTheme(settings.theme)
+  }
 
   await themeStore.loadTheme()
+  
   syncTheme()
-
-  authService.setupVisibilityGuard(handleLockRequired)
 }
 
 onMounted(initializeApp)

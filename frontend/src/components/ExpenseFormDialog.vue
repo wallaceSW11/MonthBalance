@@ -2,26 +2,33 @@
   <v-dialog v-model="isOpen" max-width="500" persistent>
     <v-card>
       <v-card-title>
-        <span>{{ isEditMode ? t('expenses.editExpense') : t('expenses.addExpense') }}</span>
+        <span>{{ isEditMode ? 'Editar Despesa' : 'Nova Despesa' }}</span>
       </v-card-title>
 
       <v-card-text>
         <v-form ref="formRef" validate-on="submit" @submit.prevent="handleSubmit">
-          <v-text-field
-            ref="nameFieldRef"
-            v-model="formData.name"
-            :label="t('expenses.form.name')"
+          <v-select
+            v-if="!isEditMode"
+            v-model="formData.expenseId"
+            label="Despesa"
+            :items="expenseOptions"
+            item-title="description"
+            item-value="id"
             :rules="[rules.required]"
             density="comfortable"
             class="mb-2"
           />
 
+          <div v-if="isEditMode || formData.expenseId" class="mb-4">
+            <strong>{{ selectedExpenseDescription }}</strong>
+          </div>
+
           <MoneyField
             v-model="formData.value"
-            :label="t('expenses.form.value')"
+            label="Valor"
             :rules="[rules.required]"
-            :currency="locale === 'pt-BR' ? 'BRL' : 'USD'"
-            :locale="locale"
+            currency="BRL"
+            locale="pt-BR"
             density="comfortable"
             class="mb-2"
           />
@@ -31,10 +38,10 @@
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="closeDialog">
-          {{ t('common.cancel') }}
+          Cancelar
         </v-btn>
         <v-btn color="primary" variant="flat" @click="handleSubmit">
-          {{ t('common.save') }}
+          Salvar
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -42,64 +49,79 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, computed, watch } from 'vue'
 import { MoneyField } from '@wallacesw11/base-lib'
+import { useExpenseGlobalStore } from '@/stores/expenseGlobal'
 import type { Expense } from '@/models/Expense'
+import type { MonthExpense } from '@/models/MonthExpense'
 
-interface Props {
-  expense?: Expense | null
-}
+const props = defineProps<{
+  monthExpense?: MonthExpense | null
+  selectedExpense?: Expense | null
+}>()
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  save: [expense: Omit<Expense, 'id'>]
+  save: [data: { expenseId: number; value: number }]
   close: []
 }>()
 
-const { t, locale } = useI18n()
+const expenseGlobalStore = useExpenseGlobalStore()
 
 const isOpen = defineModel<boolean>({ default: false })
 const formRef = ref()
-const nameFieldRef = ref()
 
 const formData = ref({
-  name: '',
-  value: 0,
+  expenseId: null as number | null,
+  value: 0
 })
 
-const isEditMode = computed(() => !!props.expense)
+const isEditMode = computed(() => !!props.monthExpense)
+
+const expenseOptions = computed(() => expenseGlobalStore.expenses)
+
+const selectedExpenseDescription = computed(() => {
+  if (isEditMode.value && props.monthExpense) {
+    return props.monthExpense.expenseDescription
+  }
+
+  if (props.selectedExpense) {
+    return props.selectedExpense.description
+  }
+
+  const expense = expenseGlobalStore.expenses.find(e => e.id === formData.value.expenseId)
+  
+  return expense?.description ?? ''
+})
 
 const rules = {
-  required: (value: string | number) => !!value || value === 0 || t('common.required'),
+  required: (value: string | number | null) => (!!value || value === 0) || 'Campo obrigatório'
 }
 
-watch(() => props.expense, (newExpense) => {
-  if (!newExpense) {
+watch(() => props.monthExpense, (newMonthExpense) => {
+  if (!newMonthExpense) {
     resetForm()
     
     return
   }
-  
+
   formData.value = {
-    name: newExpense.name,
-    value: newExpense.value,
+    expenseId: newMonthExpense.expenseId,
+    value: newMonthExpense.value
   }
 }, { immediate: true })
 
-watch(isOpen, async (opened) => {
-  if (opened && !isEditMode.value) {
-    await nextTick()
-    nameFieldRef.value?.focus()
-  }
+watch(() => props.selectedExpense, (newExpense) => {
+  if (!newExpense) return
+
+  formData.value.expenseId = newExpense.id
 })
 
 function resetForm(): void {
   formData.value = {
-    name: '',
-    value: 0,
+    expenseId: null,
+    value: 0
   }
-  
+
   formRef.value?.resetValidation()
 }
 
@@ -107,23 +129,13 @@ async function handleSubmit(): Promise<void> {
   const { valid } = await formRef.value.validate()
   
   if (!valid) return
+
+  emit('save', {
+    expenseId: formData.value.expenseId!,
+    value: Number(formData.value.value)
+  })
   
-  const expenseData: Omit<Expense, 'id'> = {
-    name: formData.value.name,
-    value: Number(formData.value.value),
-  }
-  
-  emit('save', expenseData)
-  
-  if (isEditMode.value) {
-    closeDialog()
-    return
-  }
-  
-  resetForm()
-  
-  await nextTick()
-  nameFieldRef.value?.focus()
+  closeDialog()
 }
 
 function closeDialog(): void {

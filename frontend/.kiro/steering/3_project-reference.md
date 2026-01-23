@@ -1,47 +1,39 @@
-# 📚 Referência do Projeto - TechCambio Frontend
+# 📚 Referência do Projeto - Month Balance Frontend
 
 ## 🎯 Sobre o Projeto
 
-Plataforma completa para gestão de operações de câmbio, desenvolvida para bancos de câmbio, correspondentes cambiais e lojas de câmbio. Controle total sobre operações cambiais, desde cotação até liquidação, com foco em compliance, rastreabilidade e eficiência.
+Aplicação web para controle financeiro pessoal mensal. Permite gerenciar receitas e despesas por mês, com cálculo automático de saldo, duplicação de meses e navegação temporal.
 
 ---
 
 ## 🛠️ Stack Técnico
 
 ### Core
-- **Vue.js**: 2.7.14 (Options API)
-- **Vuex**: 3.6.2 (State Management)
-- **Vue Router**: 3.2.0
-- **Vuetify**: 2.7.1 (UI Framework)
+- **Vue.js**: 3.5.13 (Composition API)
+- **Pinia**: 2.3.0 (State Management)
+- **Vue Router**: 4.5.0
+- **Vuetify**: 3.7.5 (UI Framework - Material Design)
 
 ### Build & Dev
 - **Vite**: 6.3.5 (Build Tool)
 - **Vitest**: 3.2.4 (Test Runner)
-- **ESLint**: 7.5.0
+- **TypeScript**: 5.7.3
 
 ### Testing
 - **Vitest**: 3.2.4
-- **@vue/test-utils**: 1.3.6
+- **@vue/test-utils**: 2.4.6
 - **jsdom**: 26.1.0
+- **happy-dom**: 16.10.1
 
 ### HTTP & API
-- **Axios**: 0.21.1
-- **Socket.io-client**: 4.8.1
+- **Axios**: 1.7.9
 
 ### Utilities
-- **Moment.js**: 2.29.1
-- **Lodash**: 4.17.21
-- **v-mask**: 2.2.3
-- **v-money**: 0.8.1
+- **uuid**: 11.0.5
 
 ### UI & Icons
-- **Material Design Icons**: 5.0.1
-- **Phosphor Vue**: 1.4.2
-- **ApexCharts**: 5.3.1
-
-### Monitoring
-- **Sentry**: 7.18.0
-- **Mixpanel**: 2.45.0
+- **Material Design Icons**: Incluído no Vuetify
+- **@mdi/font**: 7.4.47
 
 ---
 
@@ -49,30 +41,25 @@ Plataforma completa para gestão de operações de câmbio, desenvolvida para ba
 
 ### Desenvolvimento
 ```bash
-npm run dev          # Servidor desenvolvimento
-npm run serve        # Alias
+npm run dev          # Servidor desenvolvimento (http://localhost:5173)
 ```
 
 ### Build
 ```bash
-npm run build        # Build produção (Linux/Mac)
-npm run build:windows # Build produção (Windows)
+npm run build        # Build produção
 npm run preview      # Preview do build
 ```
 
 ### Testes
 ```bash
-npm run test                    # Todos os testes
-npm run test:unit              # Testes unitários
-npm run test:unit:watch        # Modo watch
-npm run test:ui                # UI de testes
-npm run test:unit:coverage     # Com coverage
-npm run test:unit:threshold    # Com validação threshold
+npm run test         # Todos os testes
+npm run test:ui      # UI de testes (Vitest UI)
 ```
 
 ### Qualidade
 ```bash
-npm run lint         # ESLint com auto-fix
+npm run lint         # ESLint
+npm run type-check   # TypeScript check
 ```
 
 ---
@@ -80,26 +67,52 @@ npm run lint         # ESLint com auto-fix
 ## 📂 Estrutura do Projeto
 
 ```
-techcambio-frontend/
+frontend/
 ├── src/
-│   ├── api/              # Chamadas HTTP por módulo
-│   ├── assets/           # Recursos estáticos
 │   ├── components/       # Componentes Vue reutilizáveis
-│   ├── constants/        # Constantes e enums
-│   ├── directives/       # Diretivas Vue customizadas
-│   ├── mixin/            # Mixins Vue
-│   ├── model/            # Classes de modelo de dados
+│   │   ├── DuplicateMonthDialog.vue
+│   │   ├── ExpenseFormDialog.vue
+│   │   ├── ExpenseList.vue
+│   │   ├── IncomeFormDialog.vue
+│   │   ├── IncomeList.vue
+│   │   └── MonthNavigation.vue
+│   ├── composables/      # Composables Vue (lógica reutilizável)
+│   ├── locales/          # Arquivos de tradução (i18n)
+│   ├── models/           # Interfaces TypeScript
+│   │   ├── Expense.ts
+│   │   ├── Income.ts
+│   │   └── MonthData.ts
 │   ├── plugins/          # Plugins Vue
+│   │   ├── i18n.ts
+│   │   ├── index.ts
+│   │   └── vuetify.ts
 │   ├── router/           # Configuração de rotas
-│   ├── services/         # Serviços (WebSocket, etc)
+│   │   └── index.ts
+│   ├── services/         # Serviços (API, Storage)
+│   │   ├── api/          # Serviços HTTP
+│   │   │   ├── expenseService.ts
+│   │   │   ├── httpClient.ts
+│   │   │   ├── incomeService.ts
+│   │   │   └── monthDataService.ts
+│   │   └── storage/      # LocalStorage (legado)
+│   ├── stores/           # Pinia stores
+│   │   ├── expense.ts
+│   │   ├── income.ts
+│   │   └── month.ts
+│   ├── styles/           # Estilos globais
 │   ├── utils/            # Funções utilitárias
-│   ├── views/            # Páginas/Views da aplicação
-│   └── vuex/             # State management
-├── tests/                # Testes E2E
+│   │   ├── currency.ts
+│   │   └── uuid.ts
+│   ├── views/            # Páginas/Views
+│   │   ├── DashboardView.vue
+│   │   ├── ExpensesView.vue
+│   │   └── IncomesView.vue
+│   ├── App.vue           # Componente raiz
+│   └── main.ts           # Entry point
 ├── public/               # Arquivos públicos estáticos
 ├── .env                  # Variáveis de ambiente
-├── vite.config.js        # Configuração Vite
-└── vitest.config.js      # Configuração Vitest
+├── vite.config.ts        # Configuração Vite
+└── vitest.config.ts      # Configuração Vitest
 ```
 
 ---
@@ -109,24 +122,24 @@ techcambio-frontend/
 ### Arquivos
 | Tipo | Padrão | Exemplo |
 |------|--------|---------|
-| Componentes Vue | PascalCase.vue | `CustomerForm.vue` |
-| Views | PascalCase.vue | `Dashboard.vue` |
-| APIs | kebab-case-api.js | `customer-api.js` |
-| Models | kebab-case-model.js | `customer-model.js` |
-| Constants | kebab-case-constants.js | `general-constants.js` |
-| Mixins | mixin-kebab-case.js | `mixin-authorization.js` |
-| Utils | kebab-case.js | `validate-cpf-or-cnpj.js` |
-| Directives | kebab-case-directive.js | `access-directive.js` |
-| Testes | ComponentName.spec.js | `CustomerForm.spec.js` |
+| Componentes Vue | PascalCase.vue | `ExpenseList.vue` |
+| Views | PascalCase.vue | `DashboardView.vue` |
+| Services | camelCase.ts | `expenseService.ts` |
+| Models | PascalCase.ts | `Income.ts` |
+| Stores | camelCase.ts | `expense.ts` |
+| Utils | camelCase.ts | `currency.ts` |
+| Composables | camelCase.ts | `useMonthData.ts` |
+| Testes | ComponentName.spec.ts | `ExpenseList.spec.ts` |
 
 ### Código
 | Tipo | Padrão | Exemplo |
 |------|--------|---------|
-| Variáveis | camelCase | `userName`, `isActive` |
-| Funções | camelCase | `fetchUserData()` |
-| Classes | PascalCase | `CustomerModel` |
+| Variáveis | camelCase | `totalIncome`, `isLoading` |
+| Funções | camelCase | `calculateTotal()` |
+| Interfaces | PascalCase | `Income`, `MonthData` |
+| Types | PascalCase | `IncomeType` |
 | Constantes | UPPER_SNAKE_CASE | `API_BASE_URL` |
-| Componentes (template) | PascalCase | `<CustomerForm />` |
+| Componentes (template) | PascalCase | `<ExpenseList />` |
 
 ---
 
@@ -134,96 +147,123 @@ techcambio-frontend/
 
 ### 1. Máximo 2 Níveis de Aninhamento
 ```
-✅ CORRETO: src/components/customers/CustomerForm.vue
-❌ ERRADO: src/components/customers/forms/edit/CustomerEditForm.vue
+✅ CORRETO: src/components/ExpenseList.vue
+✅ CORRETO: src/services/api/expenseService.ts
+❌ ERRADO: src/components/expenses/list/ExpenseList.vue
 ```
 
-### 2. Testes na Pasta `__tests__`
+### 2. Testes Co-localizados
 ```
 ✅ CORRETO:
-src/components/customers/
-├── CustomerForm.vue
-└── __tests__/
-    └── CustomerForm.spec.js
+src/components/
+├── ExpenseList.vue
+└── ExpenseList.spec.ts
 ```
 
 ### 3. Imports com Alias `@/`
-```javascript
+```typescript
 // ✅ CORRETO
-import CustomerApi from '@/api/customer/customer-api';
+import { expenseService } from '@/services/api/expenseService'
 
 // ❌ ERRADO
-import CustomerApi from '../../../api/customer/customer-api';
+import { expenseService } from '../../../services/api/expenseService'
 ```
-
-### 4. Organização por Módulo de Negócio
-Agrupar arquivos relacionados por funcionalidade
 
 ---
 
 ## 🏗️ Módulos Principais
 
-### Gestão de Clientes (Customers)
-Cadastro completo: PF/PJ, documentação KYC, endereços, contas bancárias, sócios, limites, spreads, histórico.
+### Dashboard
+Visão geral do mês atual com receitas, despesas e saldo.
 
-**Componentes:** `src/components/customers/`, `src/views/customers/`  
-**APIs:** `src/api/customer/`
+**Componentes:** `DashboardView.vue`, `IncomeList.vue`, `ExpenseList.vue`, `MonthNavigation.vue`  
+**Stores:** `month.ts`, `income.ts`, `expense.ts`
 
-### Operações de Câmbio (Operations)
-Ciclo completo: criação, cotação em tempo real, simulador, controle de status, documentos, liquidação, rastreabilidade.
+### Receitas (Incomes)
+Gerenciamento de receitas mensais (manual ou por hora).
 
-**Componentes:** `src/components/form-operation/`, `src/views/operations/`  
-**APIs:** `src/api/operation/`
+**Componentes:** `IncomesView.vue`, `IncomeFormDialog.vue`  
+**Services:** `incomeService.ts`  
+**Models:** `Income.ts`
 
-### Bancos de Câmbio (Exchange Banks)
-Gestão de bancos parceiros: cadastro, tipos, contatos, configurações, integração APIs.
+### Despesas (Expenses)
+Gerenciamento de despesas mensais.
 
-**Componentes:** `src/components/exchange-bank/`  
-**APIs:** `src/api/exchangeBank/`
+**Componentes:** `ExpensesView.vue`, `ExpenseFormDialog.vue`  
+**Services:** `expenseService.ts`  
+**Models:** `Expense.ts`
 
-### Correspondentes (Correspondents)
-Gestão de corbans: cadastro, agentes, comissões, spreads, relatórios, controle de acesso.
+### Navegação de Meses
+Navegação entre meses, duplicação e limpeza.
 
-**Componentes:** `src/components/form-correspondent/`  
-**APIs:** `src/api/correspondent/`
-
-### Controle de Acesso (Access)
-Usuários, perfis, permissões granulares, auditoria, sessões.
-
-**Componentes:** `src/views/access/`  
-**APIs:** `src/api/access/`, `src/api/user/`
+**Componentes:** `MonthNavigation.vue`, `DuplicateMonthDialog.vue`  
+**Services:** `monthDataService.ts`  
+**Models:** `MonthData.ts`
 
 ---
 
-## 🎓 Glossário Essencial
+## 🎓 Glossário
 
-- **Câmbio**: Troca de moedas
-- **Spread**: Margem de lucro sobre cotação
-- **IOF**: Imposto sobre Operações Financeiras
-- **KYC**: Know Your Customer (Conheça seu Cliente)
-- **Compliance**: Conformidade com regulamentações
-- **Corban**: Correspondente Cambial
-- **Liquidação**: Efetivação financeira da operação
-- **BACEN**: Banco Central do Brasil
-- **VET**: Valor Efetivo Total da operação
+- **Income**: Receita mensal (salário, freelance, etc)
+- **Expense**: Despesa mensal (aluguel, contas, etc)
+- **MonthData**: Dados de um mês específico (ano + mês + receitas + despesas)
+- **Balance**: Saldo (receitas - despesas)
+- **Duplicate**: Copiar dados de um mês para outro
+
+---
+
+## 🔄 Fluxo de Dados
+
+### Composition API + Pinia
+```typescript
+// Store (Pinia)
+export const useIncomeStore = defineStore('income', () => {
+  const incomes = ref<Income[]>([])
+  
+  async function loadIncomes(year: number, month: number) {
+    incomes.value = await incomeService.getByMonth(year, month)
+  }
+  
+  return { incomes, loadIncomes }
+})
+
+// Component
+const incomeStore = useIncomeStore()
+await incomeStore.loadIncomes(2026, 1)
+```
+
+### HTTP Client (Axios)
+```typescript
+// Service
+export const incomeService = {
+  async getByMonth(year: number, month: number): Promise<Income[]> {
+    const response = await httpClient.get(`/months/${year}/${month}/incomes`)
+    return response.data
+  }
+}
+```
 
 ---
 
 ## ⚠️ Notas Importantes
 
-### Versões Fixas
-- Vue 2.7.14 (não atualizar para Vue 3 sem planejamento)
-- Vuetify 2.7.1 (compatível com Vue 2)
-- Vuex 3.6.2 (compatível com Vue 2)
+### Versões
+- Vue 3.5+ (Composition API)
+- Vuetify 3.7+ (Material Design 3)
+- TypeScript 5.7+
+- Vite 6.3+
 
-### Dependências Críticas
-- **Axios 0.21.1**: Versão antiga, considerar atualização por segurança
-- **Moment.js**: Considerar migração para Day.js (mais leve)
+### Backend Integration
+- API Base URL: `http://localhost:5150/api`
+- Configurado via `.env`: `VITE_API_BASE_URL`
+- Axios interceptor para tratamento de erros
 
-### Build
-- Vite usado ao invés de Webpack (mais rápido)
-- Scripts de cópia pós-build para skins, langs e themes
+### Estado
+- Pinia para state management
+- Stores separadas por domínio (income, expense, month)
+- Composition API com `ref` e `computed`
 
 ---
 
-**Versão:** 3.0 (Unificado)
+**Versão:** 1.0  
+**Data:** 22/01/2026

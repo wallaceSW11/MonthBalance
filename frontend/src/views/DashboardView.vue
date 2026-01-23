@@ -27,7 +27,7 @@
 
     <div class="content-scroll">
       <IncomeList @edit="handleEditIncome" />
-      <ExpenseList />
+      <ExpenseList @edit="handleEditExpense" />
     </div>
 
     <v-btn
@@ -36,22 +36,34 @@
       color="primary"
       class="fab"
       elevation="8"
-      @click="openExpenseDialog"
+      @click="openExpenseSelectionDialog"
     >
       <v-icon size="28">
         mdi-plus
       </v-icon>
     </v-btn>
 
+    <IncomeSelectionDialog
+      v-model="incomeSelectionDialogOpen"
+      @select="handleSelectIncome"
+    />
+
     <IncomeFormDialog
-      v-model="incomeDialogOpen"
-      :income="selectedIncome"
+      v-model="incomeFormDialogOpen"
+      :month-income="selectedMonthIncome"
+      :selected-income="selectedIncome"
       @save="handleSaveIncome"
     />
 
+    <ExpenseSelectionDialog
+      v-model="expenseSelectionDialogOpen"
+      @select="handleSelectExpense"
+    />
+
     <ExpenseFormDialog
-      v-model="expenseDialogOpen"
-      :expense="selectedExpense"
+      v-model="expenseFormDialogOpen"
+      :month-expense="selectedMonthExpense"
+      :selected-expense="selectedExpense"
       @save="handleSaveExpense"
     />
   </v-container>
@@ -62,66 +74,126 @@ import { ref, onMounted } from 'vue'
 import { useMonthStore } from '@/stores/month'
 import { useIncomeStore } from '@/stores/income'
 import { useExpenseStore } from '@/stores/expense'
+import { useIncomeGlobalStore } from '@/stores/incomeGlobal'
+import { useExpenseGlobalStore } from '@/stores/expenseGlobal'
 import NavigationDrawer from '@/components/NavigationDrawer.vue'
 import MonthNavigation from '@/components/MonthNavigation.vue'
 import MonthSummary from '@/components/MonthSummary.vue'
 import IncomeList from '@/components/IncomeList.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
+import IncomeSelectionDialog from '@/components/IncomeSelectionDialog.vue'
 import IncomeFormDialog from '@/components/IncomeFormDialog.vue'
+import ExpenseSelectionDialog from '@/components/ExpenseSelectionDialog.vue'
 import ExpenseFormDialog from '@/components/ExpenseFormDialog.vue'
 import type { Income } from '@/models/Income'
 import type { Expense } from '@/models/Expense'
+import type { MonthIncome } from '@/models/MonthIncome'
+import type { MonthExpense } from '@/models/MonthExpense'
 
 const monthStore = useMonthStore()
 const incomeStore = useIncomeStore()
 const expenseStore = useExpenseStore()
+const incomeGlobalStore = useIncomeGlobalStore()
+const expenseGlobalStore = useExpenseGlobalStore()
 
 const drawerOpen = ref(false)
-const incomeDialogOpen = ref(false)
-const expenseDialogOpen = ref(false)
+const incomeSelectionDialogOpen = ref(false)
+const incomeFormDialogOpen = ref(false)
+const expenseSelectionDialogOpen = ref(false)
+const expenseFormDialogOpen = ref(false)
 const selectedIncome = ref<Income | null>(null)
 const selectedExpense = ref<Expense | null>(null)
+const selectedMonthIncome = ref<MonthIncome | null>(null)
+const selectedMonthExpense = ref<MonthExpense | null>(null)
 
 function toggleDrawer(): void {
   drawerOpen.value = !drawerOpen.value
 }
 
-function handleEditIncome(income: Income): void {
+function handleSelectIncome(income: Income): void {
   selectedIncome.value = income
-  incomeDialogOpen.value = true
+  selectedMonthIncome.value = null
+  incomeFormDialogOpen.value = true
 }
 
-function handleSaveIncome(incomeData: Omit<Income, 'id'>): void {
-  if (selectedIncome.value) {
-    incomeStore.updateIncome({
-      ...selectedIncome.value,
-      ...incomeData,
-    })
-    selectedIncome.value = null
+function handleEditIncome(monthIncome: MonthIncome): void {
+  selectedMonthIncome.value = monthIncome
+  selectedIncome.value = null
+  incomeFormDialogOpen.value = true
+}
+
+async function handleSaveIncome(data: {
+  incomeId: number
+  grossValue?: number | null
+  netValue?: number | null
+  hourlyRate?: number | null
+  hours?: number | null
+  minutes?: number | null
+}): Promise<void> {
+  if (selectedMonthIncome.value) {
+    await incomeStore.updateMonthIncome(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      selectedMonthIncome.value.id,
+      data
+    )
   } else {
-    incomeStore.addIncome(incomeData)
+    await incomeStore.createMonthIncome(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      data
+    )
   }
+
+  selectedIncome.value = null
+  selectedMonthIncome.value = null
 }
 
-function openExpenseDialog(): void {
+function openExpenseSelectionDialog(): void {
+  expenseSelectionDialogOpen.value = true
+}
+
+function handleSelectExpense(expense: Expense): void {
+  selectedExpense.value = expense
+  selectedMonthExpense.value = null
+  expenseFormDialogOpen.value = true
+}
+
+function handleEditExpense(monthExpense: MonthExpense): void {
+  selectedMonthExpense.value = monthExpense
   selectedExpense.value = null
-  expenseDialogOpen.value = true
+  expenseFormDialogOpen.value = true
 }
 
-function handleSaveExpense(expenseData: Omit<Expense, 'id'>): void {
-  if (selectedExpense.value) {
-    expenseStore.updateExpense({
-      ...selectedExpense.value,
-      ...expenseData,
-    })
-    selectedExpense.value = null
+async function handleSaveExpense(data: {
+  expenseId: number
+  value: number
+}): Promise<void> {
+  if (selectedMonthExpense.value) {
+    await expenseStore.updateMonthExpense(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      selectedMonthExpense.value.id,
+      { value: data.value }
+    )
   } else {
-    expenseStore.addExpense(expenseData)
+    await expenseStore.createMonthExpense(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      data
+    )
   }
+
+  selectedExpense.value = null
+  selectedMonthExpense.value = null
 }
 
-onMounted(() => {
-  monthStore.initializeCurrentMonth()
+onMounted(async () => {
+  await Promise.all([
+    incomeGlobalStore.loadIncomes(),
+    expenseGlobalStore.loadExpenses(),
+    monthStore.loadMonthData(monthStore.currentYear, monthStore.currentMonth)
+  ])
 })
 </script>
 

@@ -9,7 +9,7 @@
           mdi-chevron-down
         </v-icon>
         <h3 class="section-title">
-          {{ t('dashboard.expenses') }}
+          Despesas
         </h3>
       </div>
       <div class="divider" />
@@ -20,110 +20,57 @@
       class="items-container"
     >
       <div
-        v-for="expense in expenses"
-        :key="expense.id"
+        v-for="monthExpense in monthExpenses"
+        :key="monthExpense.id"
         class="expense-item"
       >
         <div class="item-info">
-          <span class="item-name">{{ expense.name }}</span>
+          <span class="item-name">{{ monthExpense.expenseDescription }}</span>
         </div>
 
         <div class="item-value">
-          <input
-            :value="formatValue(expense.value)"
-            type="text"
-            inputmode="decimal"
-            class="value-input"
-            @input="handleValueChange(expense, $event)"
-            @focus="handleFocus"
-            @blur="saveExpense(expense)"
+          <button
+            class="value-button"
+            @click="$emit('edit', monthExpense)"
           >
+            {{ formatValue(monthExpense.value) }}
+          </button>
         </div>
       </div>
 
       <div
-        v-if="expenses.length === 0"
+        v-if="monthExpenses.length === 0"
         class="empty-state"
       >
-        {{ t('dashboard.noExpenses') }}
+        Nenhuma despesa cadastrada
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, computed } from 'vue'
 import { useExpenseStore } from '@/stores/expense'
 import { formatCurrency } from '@/utils/currency'
-import { uiStorageService } from '@/services/storage/UIStorageService'
-import type { Expense } from '@/models/Expense'
+import type { MonthExpense } from '@/models/MonthExpense'
 
-const { t, locale } = useI18n()
+defineEmits<{
+  edit: [monthExpense: MonthExpense]
+}>()
+
 const expenseStore = useExpenseStore()
 
 const collapsed = ref(false)
-const pendingChanges = ref<Map<string, Expense>>(new Map())
 
-const expenses = computed(() => expenseStore.expenses)
+const monthExpenses = computed(() => expenseStore.monthExpenses)
 
 function toggleCollapse(): void {
   collapsed.value = !collapsed.value
-  uiStorageService.updateExpensesCollapsed(collapsed.value)
 }
 
 function formatValue(value: number): string {
-  return formatCurrency(value, locale.value)
+  return formatCurrency(value, 'pt-BR')
 }
-
-function handleFocus(event: Event): void {
-  const target = event.target as HTMLInputElement
-  
-  setTimeout(() => {
-    target.setSelectionRange(target.value.length, target.value.length)
-  }, 0)
-}
-
-function handleValueChange(expense: Expense, event: Event): void {
-  const target = event.target as HTMLInputElement
-  const cursorPosition = target.selectionStart || 0
-  const oldValue = target.value
-  
-  let numericValue = target.value.replace(/\D/g, '')
-  
-  if (!numericValue) numericValue = '0'
-  
-  const numberValue = parseInt(numericValue, 10) / 100
-  const formattedValue = formatCurrency(numberValue, locale.value)
-  
-  target.value = formattedValue
-  
-  const newPosition = cursorPosition + (formattedValue.length - oldValue.length)
-  
-  target.setSelectionRange(newPosition, newPosition)
-  
-  const updatedExpense: Expense = {
-    ...expense,
-    value: numberValue,
-  }
-  
-  pendingChanges.value.set(expense.id, updatedExpense)
-}
-
-function saveExpense(expense: Expense): void {
-  const pending = pendingChanges.value.get(expense.id)
-  
-  if (!pending) return
-  
-  expenseStore.updateExpense(pending)
-  pendingChanges.value.delete(expense.id)
-}
-
-onMounted(() => {
-  const uiState = uiStorageService.getUIState()
-  
-  collapsed.value = uiState.expensesCollapsed
-})
 </script>
 
 <style scoped>

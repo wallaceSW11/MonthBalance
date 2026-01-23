@@ -33,14 +33,14 @@
           <template #prepend>
             <v-icon>mdi-content-copy</v-icon>
           </template>
-          <v-list-item-title>{{ t('dashboard.monthMenu.duplicate') }}</v-list-item-title>
+          <v-list-item-title>Duplicar Mês</v-list-item-title>
         </v-list-item>
 
         <v-list-item @click="handleClearMonth">
           <template #prepend>
             <v-icon>mdi-delete-outline</v-icon>
           </template>
-          <v-list-item-title>{{ t('dashboard.monthMenu.clear') }}</v-list-item-title>
+          <v-list-item-title>Limpar Mês</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -49,7 +49,6 @@
       icon
       size="small"
       variant="text"
-      :disabled="!canGoForward"
       @click="handleNext"
     >
       <v-icon>mdi-chevron-right</v-icon>
@@ -66,12 +65,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useMonthStore } from '@/stores/month'
-import { confirm } from '@wallacesw11/base-lib'
 import DuplicateMonthDialog from './DuplicateMonthDialog.vue'
 
-const { t, locale } = useI18n()
 const monthStore = useMonthStore()
 
 const duplicateDialogOpen = ref(false)
@@ -79,44 +75,23 @@ const duplicateDialogOpen = ref(false)
 const formattedMonth = computed(() => {
   const date = new Date(monthStore.currentYear, monthStore.currentMonth - 1)
   const currentYear = new Date().getFullYear()
-  const monthName = date.toLocaleDateString(locale.value, { month: 'long' })
+  const monthName = date.toLocaleDateString('pt-BR', { month: 'long' })
   
   return monthStore.currentYear === currentYear ? monthName : `${monthName}/${monthStore.currentYear}`
 })
 
-const canGoForward = computed(() => monthStore.canNavigateForward())
-
-function handlePrevious(): void {
-  monthStore.goToPreviousMonth()
+async function handlePrevious(): Promise<void> {
+  const prevMonth = monthStore.currentMonth === 1 ? 12 : monthStore.currentMonth - 1
+  const prevYear = monthStore.currentMonth === 1 ? monthStore.currentYear - 1 : monthStore.currentYear
+  
+  await monthStore.loadMonthData(prevYear, prevMonth)
 }
 
 async function handleNext(): Promise<void> {
   const nextMonth = monthStore.currentMonth === 12 ? 1 : monthStore.currentMonth + 1
   const nextYear = monthStore.currentMonth === 12 ? monthStore.currentYear + 1 : monthStore.currentYear
   
-  const monthExists = monthStore.checkMonthExists(nextYear, nextMonth)
-  
-  if (!monthExists) {
-    const confirmed = await confirm.show(
-      t('dashboard.duplicateMonth.title'),
-      t('dashboard.duplicateMonth.message'),
-      {
-        confirmText: t('common.yes'),
-        cancelText: t('common.no'),
-        confirmColor: 'primary'
-      }
-    )
-    
-    if (confirmed) {
-      monthStore.duplicateCurrentMonth()
-      return
-    }
-    
-    monthStore.goToNextMonth()
-    return
-  }
-  
-  monthStore.goToNextMonth()
+  await monthStore.loadMonthData(nextYear, nextMonth)
 }
 
 function openDuplicateDialog(): void {
@@ -124,24 +99,18 @@ function openDuplicateDialog(): void {
 }
 
 async function handleClearMonth(): Promise<void> {
-  const confirmed = await confirm.show(
-    t('dashboard.clearMonth.title'),
-    t('dashboard.clearMonth.message'),
-    {
-      confirmText: t('common.yes'),
-      cancelText: t('common.no'),
-      confirmColor: 'error',
-      persistent: true
-    }
-  )
+  if (!confirm('Tem certeza que deseja limpar este mês?')) return
   
-  if (!confirmed) return
-  
-  monthStore.clearCurrentMonth()
+  await monthStore.deleteMonth(monthStore.currentYear, monthStore.currentMonth)
 }
 
-function handleDuplicate(targetYear: number, targetMonth: number): void {
-  monthStore.duplicateToMonth(targetYear, targetMonth)
+async function handleDuplicate(targetYear: number, targetMonth: number): Promise<void> {
+  await monthStore.duplicateMonth(
+    monthStore.currentYear,
+    monthStore.currentMonth,
+    targetYear,
+    targetMonth
+  )
 }
 </script>
 

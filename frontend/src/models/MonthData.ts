@@ -1,19 +1,12 @@
-import type { Income } from './Income'
-import type { Expense } from './Expense'
+import type { MonthIncome } from './MonthIncome'
+import type { MonthExpense } from './MonthExpense'
 
 export interface MonthData {
+  id: number
   year: number
   month: number
-  incomes: Income[]
-  expenses: Expense[]
-}
-
-export interface MonthKey {
-  year: number
-  month: number
-}
-
-export interface MonthTotals {
+  incomes: MonthIncome[]
+  expenses: MonthExpense[]
   totalIncome: number
   totalExpense: number
   balance: number

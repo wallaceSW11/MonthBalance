@@ -1,22 +1,10 @@
-export type IncomeType = 'manual' | 'hourly'
-
-export interface Income {
-  id: string
-  name: string
-  type: IncomeType
-  grossValue?: number
-  netValue?: number
-  hourlyRate?: number
-  hours?: number
-  minutes?: number
+export enum IncomeTypeEnum {
+  Manual = 0,
+  Hourly = 1
 }
 
-export interface IncomeFormData {
-  name: string
-  type: IncomeType
-  grossValue: number
-  netValue: number
-  hourlyRate: number
-  hours: number
-  minutes: number
+export interface Income {
+  id: number
+  description: string
+  type: IncomeTypeEnum
 }

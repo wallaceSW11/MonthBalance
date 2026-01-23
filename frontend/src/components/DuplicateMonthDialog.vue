@@ -36,16 +36,6 @@
             density="comfortable"
             class="mb-2"
           />
-
-          <v-alert
-            v-if="targetMonthExists"
-            type="warning"
-            variant="tonal"
-            density="compact"
-            class="text-caption"
-          >
-            {{ t('dashboard.duplicateMonthDialog.warning') }}
-          </v-alert>
         </v-form>
       </v-card-text>
 
@@ -66,7 +56,6 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBreakpoint } from '@wallacesw11/base-lib'
-import { useMonthStore } from '@/stores/month'
 
 interface Props {
   currentYear: number
@@ -79,7 +68,6 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
-const monthStore = useMonthStore()
 const { isMobileOrTablet } = useBreakpoint()
 
 const isOpen = defineModel<boolean>({ default: false })
@@ -109,10 +97,6 @@ const yearOptions = computed(() => {
   }
   
   return years
-})
-
-const targetMonthExists = computed(() => {
-  return monthStore.checkMonthExists(selectedYear.value, selectedMonth.value)
 })
 
 const rules = {

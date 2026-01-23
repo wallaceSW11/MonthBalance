@@ -22,7 +22,10 @@ setupLib(app);
 
 async function initializeAndMountApp() {
   const settings = settingsStorageService.getSettings()
-  i18n.global.locale.value = settings.locale
+  
+  if (settings.locale === 'pt-BR' || settings.locale === 'en-US') {
+    i18n.global.locale.value = settings.locale
+  }
 
   const themeStore = useThemeStore();
   await themeStore.loadTheme();

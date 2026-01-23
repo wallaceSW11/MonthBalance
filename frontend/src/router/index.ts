@@ -1,60 +1,75 @@
-import { createRouter, createWebHistory } from "vue-router";
-import type { RouteRecordRaw } from "vue-router";
-import { authService } from "@/services/AuthService";
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/",
-    redirect: "/auth",
+    path: '/',
+    redirect: '/dashboard'
   },
   {
-    path: "/auth",
-    name: "Auth",
-    component: () => import("@/views/AuthView.vue"),
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/LoginView.vue'),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: () => import("@/views/DashboardView.vue"),
-    meta: { requiresAuth: true },
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/RegisterView.vue'),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/incomes",
-    name: "Incomes",
-    component: () => import("@/views/IncomesView.vue"),
-    meta: { requiresAuth: true },
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/views/DashboardView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/expenses",
-    name: "Expenses",
-    component: () => import("@/views/ExpensesView.vue"),
-    meta: { requiresAuth: true },
+    path: '/incomes',
+    name: 'incomes',
+    component: () => import('@/views/IncomesGlobalView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/demo",
-    name: "Demo",
-    component: () => import("@/views/DemoView.vue"),
-    meta: { requiresAuth: true },
+    path: '/expenses',
+    name: 'expenses',
+    component: () => import('@/views/ExpensesGlobalView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/debug",
-    name: "Debug",
-    component: () => import("@/views/DebugView.vue"),
-    meta: { requiresAuth: true },
+    path: '/demo',
+    name: 'demo',
+    component: () => import('@/views/DemoView.vue'),
+    meta: { requiresAuth: true }
   },
-];
+  {
+    path: '/debug',
+    name: 'debug',
+    component: () => import('@/views/DebugView.vue'),
+    meta: { requiresAuth: true }
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
-});
+  routes
+})
 
 router.beforeEach((to, _from, next) => {
-  if (to.meta.requiresAuth && authService.isAuthRequired()) {
-    next('/auth')
+  const authStore = useAuthStore()
+  const requiresAuth = to.meta.requiresAuth !== false
+
+  if (requiresAuth && !authStore.authenticated) {
+    next({ name: 'login' })
     return
   }
-  
+
+  if (!requiresAuth && authStore.authenticated) {
+    next({ name: 'dashboard' })
+    return
+  }
+
   next()
 })
 

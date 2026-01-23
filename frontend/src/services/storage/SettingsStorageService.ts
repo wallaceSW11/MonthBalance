@@ -1,64 +1,40 @@
-import { StorageService } from './StorageService'
-import type { Settings } from '@/models/Settings'
-
-export class SettingsStorageService extends StorageService<Settings> {
-  constructor() {
-    super('monthbalance:settings')
-  }
-
-  getSettings(): Settings {
-    const settings = this.getFromStorage()
-    
-    if (!settings) {
-      return this.getDefaultSettings()
-    }
-    
-    return settings
-  }
-
-  saveSettings(settings: Settings): void {
-    this.saveToStorage(settings)
-  }
-
-  updateTheme(theme: 'light' | 'dark'): void {
-    const settings = this.getSettings()
-    
-    settings.theme = theme
-    this.saveSettings(settings)
-  }
-
-  updateLocale(locale: 'pt-BR' | 'en-US'): void {
-    const settings = this.getSettings()
-    
-    settings.locale = locale
-    this.saveSettings(settings)
-  }
-
-  updateIncomesCollapsed(collapsed: boolean): void {
-    const settings = this.getSettings()
-    
-    settings.incomesCollapsed = collapsed
-    this.saveSettings(settings)
-  }
-
-  updateExpensesCollapsed(collapsed: boolean): void {
-    const settings = this.getSettings()
-    
-    settings.expensesCollapsed = collapsed
-    this.saveSettings(settings)
-  }
-
-  private getDefaultSettings(): Settings {
-    const browserLang = navigator.language.toLowerCase()
-    const defaultLocale = browserLang.startsWith('pt') ? 'pt-BR' : 'en-US'
-    
-    return {
-      theme: 'dark',
-      locale: defaultLocale as 'pt-BR' | 'en-US',
-      incomesCollapsed: false,
-      expensesCollapsed: false,
-    }
-  }
+interface Settings {
+  theme: 'light' | 'dark' | 'system'
+  locale: string
 }
 
-export const settingsStorageService = new SettingsStorageService()
+const SETTINGS_KEY = 'settings'
+
+const defaultSettings: Settings = {
+  theme: 'system',
+  locale: 'pt-BR'
+}
+
+export const settingsStorageService = {
+  getSettings(): Settings {
+    const stored = localStorage.getItem(SETTINGS_KEY)
+    
+    if (!stored) return defaultSettings
+    
+    try {
+      return { ...defaultSettings, ...JSON.parse(stored) }
+    } catch {
+      return defaultSettings
+    }
+  },
+
+  saveSettings(settings: Partial<Settings>): void {
+    const current = this.getSettings()
+    const updated = { ...current, ...settings }
+    
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated))
+  },
+
+  setTheme(theme: 'light' | 'dark' | 'system'): void {
+    this.saveSettings({ theme })
+  },
+
+  setLocale(locale: string): void {
+    this.saveSettings({ locale })
+  }
+}
