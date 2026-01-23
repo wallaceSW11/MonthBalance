@@ -1,0 +1,315 @@
+### Month Balance API - Testes
+### Base URL
+@baseUrl = http://localhost:5150
+@token = seu-token-jwt-aqui
+
+### ============================================
+### 1. AUTENTICAÇÃO
+### ============================================
+
+### 1.1 Registrar novo usuário
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "teste@teste.com",
+  "password": "Senha123!",
+  "confirmPassword": "Senha123!"
+}
+
+### 1.2 Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@teste.com",
+  "password": "Senha123!"
+}
+
+### 1.3 Verificar se email existe
+GET {{baseUrl}}/api/auth/check-email/teste@teste.com
+
+### ============================================
+### 2. RECEITAS GLOBAIS (Incomes)
+### ============================================
+
+### 2.1 Listar todas as receitas
+GET {{baseUrl}}/api/incomes
+Authorization: Bearer {{token}}
+
+### 2.2 Criar receita manual
+POST {{baseUrl}}/api/incomes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Salário",
+  "type": 0
+}
+
+### 2.3 Criar receita por hora
+POST {{baseUrl}}/api/incomes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Freelance",
+  "type": 1
+}
+
+### 2.4 Buscar receita por ID
+GET {{baseUrl}}/api/incomes/1
+Authorization: Bearer {{token}}
+
+### 2.5 Atualizar receita
+PUT {{baseUrl}}/api/incomes/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Salário CLT",
+  "type": 0
+}
+
+### 2.6 Deletar receita
+DELETE {{baseUrl}}/api/incomes/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### 3. DESPESAS GLOBAIS (Expenses)
+### ============================================
+
+### 3.1 Listar todas as despesas
+GET {{baseUrl}}/api/expenses
+Authorization: Bearer {{token}}
+
+### 3.2 Criar despesa
+POST {{baseUrl}}/api/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Aluguel"
+}
+
+### 3.3 Criar outra despesa
+POST {{baseUrl}}/api/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Conta de Luz"
+}
+
+### 3.4 Buscar despesa por ID
+GET {{baseUrl}}/api/expenses/1
+Authorization: Bearer {{token}}
+
+### 3.5 Atualizar despesa
+PUT {{baseUrl}}/api/expenses/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Aluguel + Condomínio"
+}
+
+### 3.6 Deletar despesa
+DELETE {{baseUrl}}/api/expenses/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### 4. DADOS DO MÊS (MonthData)
+### ============================================
+
+### 4.1 Buscar ou criar mês (Janeiro 2026)
+GET {{baseUrl}}/api/months/2026/1
+Authorization: Bearer {{token}}
+
+### 4.2 Listar todos os meses
+GET {{baseUrl}}/api/months
+Authorization: Bearer {{token}}
+
+### 4.3 Duplicar mês (Janeiro → Fevereiro)
+POST {{baseUrl}}/api/months/duplicate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "sourceYear": 2026,
+  "sourceMonth": 1,
+  "targetYear": 2026,
+  "targetMonth": 2
+}
+
+### 4.4 Deletar mês
+DELETE {{baseUrl}}/api/months/2026/2
+Authorization: Bearer {{token}}
+
+### ============================================
+### 5. RECEITAS DO MÊS (MonthIncomes)
+### ============================================
+
+### 5.1 Listar receitas do mês
+GET {{baseUrl}}/api/months/2026/1/incomes
+Authorization: Bearer {{token}}
+
+### 5.2 Adicionar receita manual ao mês
+POST {{baseUrl}}/api/months/2026/1/incomes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "incomeId": 1,
+  "grossValue": 5000.00,
+  "netValue": 4000.00,
+  "hourlyRate": null,
+  "hours": null,
+  "minutes": null
+}
+
+### 5.3 Adicionar receita por hora ao mês
+POST {{baseUrl}}/api/months/2026/1/incomes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "incomeId": 2,
+  "grossValue": null,
+  "netValue": null,
+  "hourlyRate": 50.00,
+  "hours": 40,
+  "minutes": 30
+}
+
+### 5.4 Atualizar valores da receita no mês
+PUT {{baseUrl}}/api/months/2026/1/incomes/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "grossValue": 5500.00,
+  "netValue": 4400.00,
+  "hourlyRate": null,
+  "hours": null,
+  "minutes": null
+}
+
+### 5.5 Remover receita do mês
+DELETE {{baseUrl}}/api/months/2026/1/incomes/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### 6. DESPESAS DO MÊS (MonthExpenses)
+### ============================================
+
+### 6.1 Listar despesas do mês
+GET {{baseUrl}}/api/months/2026/1/expenses
+Authorization: Bearer {{token}}
+
+### 6.2 Adicionar despesa ao mês
+POST {{baseUrl}}/api/months/2026/1/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "expenseId": 1,
+  "value": 1500.00
+}
+
+### 6.3 Adicionar outra despesa ao mês
+POST {{baseUrl}}/api/months/2026/1/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "expenseId": 2,
+  "value": 200.00
+}
+
+### 6.4 Atualizar valor da despesa no mês
+PUT {{baseUrl}}/api/months/2026/1/expenses/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "value": 1600.00
+}
+
+### 6.5 Remover despesa do mês
+DELETE {{baseUrl}}/api/months/2026/1/expenses/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### FLUXO COMPLETO DE TESTE
+### ============================================
+
+### PASSO 1: Registrar
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "usuario@teste.com",
+  "password": "Senha123!",
+  "confirmPassword": "Senha123!"
+}
+
+### PASSO 2: Login (copiar o token da resposta)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@teste.com",
+  "password": "Senha123!"
+}
+
+### PASSO 3: Criar receita global
+POST {{baseUrl}}/api/incomes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Salário",
+  "type": 0
+}
+
+### PASSO 4: Criar despesa global
+POST {{baseUrl}}/api/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Aluguel"
+}
+
+### PASSO 5: Buscar mês (cria automaticamente)
+GET {{baseUrl}}/api/months/2026/1
+Authorization: Bearer {{token}}
+
+### PASSO 6: Adicionar receita ao mês
+POST {{baseUrl}}/api/months/2026/1/incomes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "incomeId": 1,
+  "grossValue": 5000.00,
+  "netValue": 4000.00,
+  "hourlyRate": null,
+  "hours": null,
+  "minutes": null
+}
+
+### PASSO 7: Adicionar despesa ao mês
+POST {{baseUrl}}/api/months/2026/1/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "expenseId": 1,
+  "value": 1500.00
+}
+
+### PASSO 8: Ver dados completos do mês (com saldo)
+GET {{baseUrl}}/api/months/2026/1
+Authorization: Bearer {{token}}

@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: monthbalance-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: monthbalance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-senhas}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - monthbalance-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: monthbalance-backend
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=monthbalance;Username=postgres;Password=${POSTGRES_PASSWORD:-senhas}"
+      Jwt__Key: ${JWT_KEY:-sua-chave-super-secreta-com-no-minimo-32-caracteres-aqui-para-jwt}
+      Jwt__Issuer: MonthBalanceAPI
+      Jwt__Audience: MonthBalanceApp
+      Jwt__ExpiresInHours: 24
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - monthbalance-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  monthbalance-network:
+    driver: bridge
