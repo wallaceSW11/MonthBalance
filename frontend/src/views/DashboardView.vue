@@ -26,8 +26,14 @@
     </div>
 
     <div class="content-scroll">
-      <IncomeList @edit="handleEditIncome" />
-      <ExpenseList @edit="handleEditExpense" />
+      <IncomeList
+        @edit="handleEditIncome"
+        @add="openIncomeSelectionDialog"
+      />
+      <ExpenseList
+        @edit="handleEditExpense"
+        @add="openExpenseSelectionDialog"
+      />
     </div>
 
     <v-btn
@@ -110,6 +116,14 @@ function toggleDrawer(): void {
   drawerOpen.value = !drawerOpen.value
 }
 
+function openIncomeSelectionDialog(): void {
+  incomeSelectionDialogOpen.value = true
+}
+
+function openExpenseSelectionDialog(): void {
+  expenseSelectionDialogOpen.value = true
+}
+
 function handleSelectIncome(income: Income): void {
   selectedIncome.value = income
   selectedMonthIncome.value = null
@@ -147,10 +161,6 @@ async function handleSaveIncome(data: {
 
   selectedIncome.value = null
   selectedMonthIncome.value = null
-}
-
-function openExpenseSelectionDialog(): void {
-  expenseSelectionDialogOpen.value = true
 }
 
 function handleSelectExpense(expense: Expense): void {

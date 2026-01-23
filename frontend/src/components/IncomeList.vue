@@ -1,19 +1,28 @@
 <template>
   <div class="income-list">
-    <button
-      class="section-header"
-      @click="toggleCollapse"
-    >
-      <div class="header-content">
-        <v-icon :class="{ 'rotated': collapsed }">
-          mdi-chevron-down
-        </v-icon>
-        <h3 class="section-title">
-          Receitas
-        </h3>
-      </div>
-      <div class="divider" />
-    </button>
+    <div class="section-header-wrapper">
+      <button
+        class="section-header"
+        @click="toggleCollapse"
+      >
+        <div class="header-content">
+          <v-icon :class="{ 'rotated': collapsed }">
+            mdi-chevron-down
+          </v-icon>
+          <h3 class="section-title">
+            Receitas
+          </h3>
+        </div>
+        <div class="divider" />
+      </button>
+      <IconToolTip
+        icon="mdi-plus"
+        tooltip="Adicionar receita"
+        color="primary"
+        size="small"
+        @click="$emit('add')"
+      />
+    </div>
 
     <div
       v-if="!collapsed"
@@ -24,6 +33,16 @@
         :key="monthIncome.id"
         class="income-item"
       >
+        <div class="item-actions">
+          <IconToolTip
+            icon="mdi-delete"
+            tooltip="Remover"
+            color="error"
+            size="small"
+            @click="handleDelete(monthIncome.id)"
+          />
+        </div>
+
         <div class="item-info">
           <span class="item-name">{{ monthIncome.incomeDescription }}</span>
         </div>
@@ -51,14 +70,18 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useIncomeStore } from '@/stores/income'
+import { useMonthStore } from '@/stores/month'
 import { formatCurrency } from '@/utils/currency'
 import type { MonthIncome } from '@/models/MonthIncome'
+import { IconToolTip, confirm } from '@wallacesw11/base-lib'
 
 defineEmits<{
   edit: [monthIncome: MonthIncome]
+  add: []
 }>()
 
 const incomeStore = useIncomeStore()
+const monthStore = useMonthStore()
 
 const collapsed = ref(false)
 
@@ -73,6 +96,29 @@ function formatValue(monthIncome: MonthIncome): string {
   
   return formatCurrency(value, 'pt-BR')
 }
+
+async function handleDelete(id: number): Promise<void> {
+  const confirmed = await confirm.show(
+    'Confirmar exclusão',
+    'Tem certeza que deseja remover esta receita do mês?',
+    {
+      confirmText: 'Remover',
+      cancelText: 'Cancelar'
+    }
+  )
+
+  if (!confirmed) return
+
+  try {
+    await incomeStore.deleteMonthIncome(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      id
+    )
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Erro ao remover receita')
+  }
+}
 </script>
 
 <style scoped>
@@ -81,17 +127,24 @@ function formatValue(monthIncome: MonthIncome): string {
   padding-bottom: 8px;
 }
 
+.section-header-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
 .section-header {
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  margin-bottom: 8px;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: opacity 0.2s;
+  padding: 0;
 }
 
 .section-header:hover {
@@ -143,9 +196,10 @@ function formatValue(monthIncome: MonthIncome): string {
 }
 
 .income-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   padding: 8px 16px;
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   transition: background-color 0.2s;
@@ -153,6 +207,11 @@ function formatValue(monthIncome: MonthIncome): string {
 
 .income-item:hover {
   background-color: rgba(var(--v-theme-on-surface), 0.02);
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
 }
 
 .item-info {

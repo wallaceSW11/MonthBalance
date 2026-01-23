@@ -1,19 +1,28 @@
 <template>
   <div class="expense-list">
-    <button
-      class="section-header"
-      @click="toggleCollapse"
-    >
-      <div class="header-content">
-        <v-icon :class="{ 'rotated': collapsed }">
-          mdi-chevron-down
-        </v-icon>
-        <h3 class="section-title">
-          Despesas
-        </h3>
-      </div>
-      <div class="divider" />
-    </button>
+    <div class="section-header-wrapper">
+      <button
+        class="section-header"
+        @click="toggleCollapse"
+      >
+        <div class="header-content">
+          <v-icon :class="{ 'rotated': collapsed }">
+            mdi-chevron-down
+          </v-icon>
+          <h3 class="section-title">
+            Despesas
+          </h3>
+        </div>
+        <div class="divider" />
+      </button>
+      <IconToolTip
+        icon="mdi-plus"
+        tooltip="Adicionar despesa"
+        color="primary"
+        size="small"
+        @click="$emit('add')"
+      />
+    </div>
 
     <div
       v-if="!collapsed"
@@ -24,17 +33,25 @@
         :key="monthExpense.id"
         class="expense-item"
       >
+        <div class="item-actions">
+          <IconToolTip
+            icon="mdi-delete"
+            tooltip="Remover"
+            color="error"
+            size="small"
+            @click="handleDelete(monthExpense.id)"
+          />
+        </div>
+
         <div class="item-info">
           <span class="item-name">{{ monthExpense.expenseDescription }}</span>
         </div>
 
         <div class="item-value">
-          <button
-            class="value-button"
-            @click="$emit('edit', monthExpense)"
-          >
-            {{ formatValue(monthExpense.value) }}
-          </button>
+          <MoneyField
+            :model-value="monthExpense.value"
+            @update:model-value="handleUpdateValue(monthExpense.id, $event)"
+          />
         </div>
       </div>
 
@@ -51,14 +68,18 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useExpenseStore } from '@/stores/expense'
-import { formatCurrency } from '@/utils/currency'
+import { useMonthStore } from '@/stores/month'
 import type { MonthExpense } from '@/models/MonthExpense'
+import { IconToolTip, confirm } from '@wallacesw11/base-lib'
+import MoneyField from '@/components/MoneyField.vue'
 
 defineEmits<{
   edit: [monthExpense: MonthExpense]
+  add: []
 }>()
 
 const expenseStore = useExpenseStore()
+const monthStore = useMonthStore()
 
 const collapsed = ref(false)
 
@@ -68,8 +89,40 @@ function toggleCollapse(): void {
   collapsed.value = !collapsed.value
 }
 
-function formatValue(value: number): string {
-  return formatCurrency(value, 'pt-BR')
+async function handleUpdateValue(id: number, value: number): Promise<void> {
+  try {
+    await expenseStore.updateMonthExpense(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      id,
+      { value }
+    )
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Erro ao atualizar despesa')
+  }
+}
+
+async function handleDelete(id: number): Promise<void> {
+  const confirmed = await confirm.show(
+    'Confirmar exclusão',
+    'Tem certeza que deseja remover esta despesa do mês?',
+    {
+      confirmText: 'Remover',
+      cancelText: 'Cancelar'
+    }
+  )
+
+  if (!confirmed) return
+
+  try {
+    await expenseStore.deleteMonthExpense(
+      monthStore.currentYear,
+      monthStore.currentMonth,
+      id
+    )
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Erro ao remover despesa')
+  }
 }
 </script>
 
@@ -79,17 +132,24 @@ function formatValue(value: number): string {
   padding-bottom: 96px;
 }
 
+.section-header-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
 .section-header {
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  margin-bottom: 8px;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: opacity 0.2s;
+  padding: 0;
 }
 
 .section-header:hover {
@@ -141,9 +201,10 @@ function formatValue(value: number): string {
 }
 
 .expense-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   padding: 8px 16px;
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   transition: background-color 0.2s;
@@ -151,6 +212,11 @@ function formatValue(value: number): string {
 
 .expense-item:hover {
   background-color: rgba(var(--v-theme-on-surface), 0.02);
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
 }
 
 .item-info {
@@ -169,30 +235,6 @@ function formatValue(value: number): string {
 
 .item-value {
   width: 128px;
-}
-
-.value-input {
-  width: 100%;
-  background: transparent;
-  text-align: right;
-  font-size: 16px;
-  font-weight: 500;
-  color: rgba(var(--v-theme-on-surface), 1);
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
-  font-variant-numeric: tabular-nums;
-}
-
-.value-input:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.04);
-}
-
-.value-input:focus {
-  outline: none;
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
-  color: rgb(var(--v-theme-primary));
 }
 
 .empty-state {

@@ -30,6 +30,7 @@ Aplicação web para controle financeiro pessoal mensal. Permite gerenciar recei
 
 ### Utilities
 - **uuid**: 11.0.5
+- **@wallacesw11/base-lib**: Biblioteca de componentes base (ModalBase, IconToolTip, Confirm, etc)
 
 ### UI & Icons
 - **Material Design Icons**: Incluído no Vuetify

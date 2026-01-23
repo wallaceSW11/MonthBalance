@@ -1,58 +1,52 @@
 <template>
-  <v-dialog
+  <ModalBase
     :model-value="modelValue"
+    :title="editMode ? 'Editar Receita' : 'Nova Receita'"
     max-width="500"
     persistent
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card>
-      <v-card-title>
-        {{ editMode ? 'Editar Receita' : 'Nova Receita' }}
-      </v-card-title>
+    <v-form ref="formRef">
+      <v-text-field
+        ref="descriptionFieldRef"
+        v-model="formData.description"
+        label="Descrição"
+        :rules="descriptionRules"
+        required
+      />
 
-      <v-card-text>
-        <v-form ref="formRef">
-          <v-text-field
-            v-model="formData.description"
-            label="Descrição"
-            :rules="descriptionRules"
-            required
-          />
+      <v-select
+        v-model="formData.type"
+        label="Tipo"
+        :items="typeOptions"
+        :rules="typeRules"
+        required
+      />
+    </v-form>
 
-          <v-select
-            v-model="formData.type"
-            label="Tipo"
-            :items="typeOptions"
-            :rules="typeRules"
-            required
-          />
-        </v-form>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          text
-          @click="handleCancel"
-        >
-          Cancelar
-        </v-btn>
-        <v-btn
-          color="primary"
-          :loading="loading"
-          @click="handleSave"
-        >
-          Salvar
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <template #actions>
+      <v-btn
+        text
+        @click="handleCancel"
+      >
+        Cancelar
+      </v-btn>
+      <v-btn
+        color="primary"
+        :loading="loading"
+        @click="handleSave"
+      >
+        Salvar
+      </v-btn>
+    </template>
+  </ModalBase>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { useIncomeGlobalStore } from '@/stores/incomeGlobal'
 import { IncomeTypeEnum, type Income } from '@/models/Income'
+import { ModalBase } from '@wallacesw11/base-lib'
 
 const props = defineProps<{
   modelValue: boolean
@@ -67,6 +61,7 @@ const emit = defineEmits<{
 const incomeGlobalStore = useIncomeGlobalStore()
 
 const formRef = ref()
+const descriptionFieldRef = ref()
 const loading = ref(false)
 const formData = ref({
   description: '',
@@ -88,7 +83,7 @@ const typeRules = [
   (v: number) => v !== undefined || 'Tipo é obrigatório'
 ]
 
-watch(() => props.modelValue, (value) => {
+watch(() => props.modelValue, async (value) => {
   if (!value) return
 
   if (props.income) {
@@ -104,6 +99,10 @@ watch(() => props.modelValue, (value) => {
     description: '',
     type: IncomeTypeEnum.Manual
   }
+
+  await nextTick()
+  
+  descriptionFieldRef.value?.focus()
 })
 
 async function handleSave(): Promise<void> {
@@ -126,6 +125,15 @@ async function handleSave(): Promise<void> {
         formData.value.type
       )
     }
+
+    formData.value = {
+      description: '',
+      type: IncomeTypeEnum.Manual
+    }
+
+    await nextTick()
+    
+    descriptionFieldRef.value?.focus()
 
     emit('save')
   } catch (error: any) {

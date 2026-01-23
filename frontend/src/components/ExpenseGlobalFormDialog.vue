@@ -1,50 +1,44 @@
 <template>
-  <v-dialog
+  <ModalBase
     :model-value="modelValue"
+    :title="editMode ? 'Editar Despesa' : 'Nova Despesa'"
     max-width="500"
     persistent
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card>
-      <v-card-title>
-        {{ editMode ? 'Editar Despesa' : 'Nova Despesa' }}
-      </v-card-title>
+    <v-form ref="formRef">
+      <v-text-field
+        ref="descriptionFieldRef"
+        v-model="formData.description"
+        label="Descrição"
+        :rules="descriptionRules"
+        required
+      />
+    </v-form>
 
-      <v-card-text>
-        <v-form ref="formRef">
-          <v-text-field
-            v-model="formData.description"
-            label="Descrição"
-            :rules="descriptionRules"
-            required
-          />
-        </v-form>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          text
-          @click="handleCancel"
-        >
-          Cancelar
-        </v-btn>
-        <v-btn
-          color="primary"
-          :loading="loading"
-          @click="handleSave"
-        >
-          Salvar
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <template #actions>
+      <v-btn
+        text
+        @click="handleCancel"
+      >
+        Cancelar
+      </v-btn>
+      <v-btn
+        color="primary"
+        :loading="loading"
+        @click="handleSave"
+      >
+        Salvar
+      </v-btn>
+    </template>
+  </ModalBase>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { useExpenseGlobalStore } from '@/stores/expenseGlobal'
 import type { Expense } from '@/models/Expense'
+import { ModalBase } from '@wallacesw11/base-lib'
 
 const props = defineProps<{
   modelValue: boolean
@@ -59,6 +53,7 @@ const emit = defineEmits<{
 const expenseGlobalStore = useExpenseGlobalStore()
 
 const formRef = ref()
+const descriptionFieldRef = ref()
 const loading = ref(false)
 const formData = ref({
   description: ''
@@ -70,7 +65,7 @@ const descriptionRules = [
   (v: string) => !!v || 'Descrição é obrigatória'
 ]
 
-watch(() => props.modelValue, (value) => {
+watch(() => props.modelValue, async (value) => {
   if (!value) return
 
   if (props.expense) {
@@ -84,6 +79,10 @@ watch(() => props.modelValue, (value) => {
   formData.value = {
     description: ''
   }
+
+  await nextTick()
+  
+  descriptionFieldRef.value?.focus()
 })
 
 async function handleSave(): Promise<void> {
@@ -102,6 +101,14 @@ async function handleSave(): Promise<void> {
     } else {
       await expenseGlobalStore.createExpense(formData.value.description)
     }
+
+    formData.value = {
+      description: ''
+    }
+
+    await nextTick()
+    
+    descriptionFieldRef.value?.focus()
 
     emit('save')
   } catch (error: any) {

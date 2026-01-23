@@ -12,7 +12,12 @@
 
     <div class="summary-card divider-left">
       <span class="summary-label">{{ t('dashboard.balance') }}</span>
-      <span class="summary-value balance">{{ formattedBalance }}</span>
+      <span
+        class="summary-value balance"
+        :class="{ negative: monthStore.balance < 0 }"
+      >
+        {{ formattedBalance }}
+      </span>
     </div>
   </div>
 </template>
@@ -76,5 +81,10 @@ const formattedBalance = computed(() => formatCurrency(monthStore.balance, local
 
 .summary-value.balance {
   color: rgb(var(--v-theme-primary));
+}
+
+.summary-value.balance.negative {
+  color: rgb(var(--v-theme-error));
+  font-weight: 900;
 }
 </style>
