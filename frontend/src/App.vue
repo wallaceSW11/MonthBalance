@@ -1,5 +1,23 @@
 <template>
   <v-app>
+    <v-app-bar app color="primary" dark>
+      <v-app-bar-title>{{ appName }}</v-app-bar-title>
+
+      <v-spacer />
+
+      <v-btn icon to="/">
+        <v-icon>mdi-home</v-icon>
+      </v-btn>
+
+      <v-btn icon to="/demo">
+        <v-icon>mdi-test-tube</v-icon>
+      </v-btn>
+
+      <LanguageSelector :available-locales="availableLocales" />
+
+      <ThemeToggle />
+    </v-app-bar>
+
     <v-main>
       <router-view />
     </v-main>
@@ -11,47 +29,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
 import {
   FloatingNotify,
   LoadingOverlay,
   ConfirmDialog,
+  LanguageSelector,
+  ThemeToggle,
+  useThemeSync,
+  useThemeStore,
   useNotifyStore,
   useLoadingStore,
   useConfirmStore
 } from '@wallacesw11/base-lib'
-import { useThemeStore } from '@wallacesw11/base-lib/stores'
-import { useThemeSync } from '@wallacesw11/base-lib/composables'
 import { useLocaleStore } from '@/stores/locale'
-import { settingsStorageService } from '@/services/storage/SettingsStorageService'
-import { authService } from '@/services/AuthService'
-
-const router = useRouter()
+import { availableLocales } from '@/locales'
 
 const floatingNotifyRef = ref()
 const loadingOverlayRef = ref()
 const confirmDialogRef = ref()
 
+const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 const notifyStore = useNotifyStore()
 const loadingStore = useLoadingStore()
 const confirmStore = useConfirmStore()
-const themeStore = useThemeStore()
 
-const { syncTheme } = useThemeSync()
+const appName = computed(() => themeStore.appName)
 
+useThemeSync()
 localeStore.initializeLocale()
 
-function handleLockRequired(): void {
-  const currentRoute = router.currentRoute.value.path
-
-  if (currentRoute !== '/auth') {
-    router.push('/auth')
-  }
-}
-
-async function initializeApp(): Promise<void> {
+function registerGlobalComponentRefs() {
+  // Registrar as refs dos componentes globais nas stores
   if (floatingNotifyRef.value) {
     notifyStore.setNotifyRef(floatingNotifyRef.value)
   }
@@ -63,15 +73,7 @@ async function initializeApp(): Promise<void> {
   if (confirmDialogRef.value) {
     confirmStore.setConfirmRef(confirmDialogRef.value)
   }
-
-  const settings = settingsStorageService.getSettings()
-  themeStore.setTheme(settings.theme)
-
-  await themeStore.loadTheme()
-  syncTheme()
-
-  authService.setupVisibilityGuard(handleLockRequired)
 }
 
-onMounted(initializeApp)
+onMounted(registerGlobalComponentRefs)
 </script>

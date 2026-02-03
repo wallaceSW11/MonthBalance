@@ -1,73 +1,50 @@
-import "@mdi/font/css/materialdesignicons.css";
-import "vuetify/lib/styles/main.css";
+import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import "@mdi/font/css/materialdesignicons.css";
 
-const lightColors = {
-  primary: "#00aab2",
+const defaultLightColors = {
+  primary: "#1867C0",
   secondary: "#5CBBF6",
   accent: "#005CAF",
-  error: "#DC465D",
+  error: "#FF5252",
   info: "#2196F3",
-  success: "#5EC77E",
+  success: "#4CAF50",
   warning: "#FB8C00",
-  background: "#fafafa",
+  background: "#FFFFFF",
   surface: "#FFFFFF",
 };
 
-const darkColors = {
-  primary: "#00aab2",
+const defaultDarkColors = {
+  primary: "#2196F3",
   secondary: "#424242",
   accent: "#82B1FF",
-  error: "#DC465D",
+  error: "#FF5252",
   info: "#2196F3",
-  success: "#5EC77E",
+  success: "#4CAF50",
   warning: "#FFA726",
-  background: "#1c1c22",
-  surface: "#2E2E33",
+  background: "#121212",
+  surface: "#212121",
 };
 
 export default createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: "dark",
+    defaultTheme: "light",
     themes: {
       light: {
         dark: false,
-        colors: lightColors,
+        colors: defaultLightColors,
       },
       dark: {
         dark: true,
-        colors: darkColors,
+        colors: defaultDarkColors,
       },
     },
   },
   icons: {
     defaultSet: "mdi",
-  },
-  defaults: {
-    VTextField: {
-      variant: 'underlined',
-    },
-    VTextarea: {
-      variant: 'underlined',
-    },
-    VSelect: {
-      variant: 'underlined',
-    },
-    VAutocomplete: {
-      variant: 'underlined',
-    },
-    VCombobox: {
-      variant: 'underlined',
-    },
-    VFileInput: {
-      variant: 'underlined',
-    },
-    VBtn: {
-      class: 'text-none',
-    },
   },
 });
