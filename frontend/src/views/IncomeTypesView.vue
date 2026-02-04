@@ -1,68 +1,63 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12">
-        <h1 class="text-h5 mb-4">{{ t('incomeTypes.title') }}</h1>
-      </v-col>
-    </v-row>
+  <div class="income-types-view">
+    <v-container>
+      <h1 class="text-h5 mb-4">{{ t('incomeTypes.title') }}</h1>
+    </v-container>
 
-    <v-row>
-      <v-col cols="12">
-        <v-list v-if="incomeTypes.length > 0">
-          <v-list-item
-            v-for="incomeType in incomeTypes"
-            :key="incomeType.id"
-            class="mb-2"
-          >
-            <template #prepend>
-              <v-icon>mdi-cash</v-icon>
-            </template>
+    <div class="cards-container">
+      <v-container>
+        <v-card
+          v-for="incomeType in incomeTypes"
+          :key="incomeType.id"
+          class="mb-2"
+        >
+          <v-card-text class="d-flex align-center">
+            <v-icon class="mr-4">mdi-cash</v-icon>
 
-            <v-list-item-title>{{ incomeType.name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ getTypeLabel(incomeType.type) }}</v-list-item-subtitle>
+            <div class="flex-grow-1">
+              <div class="text-subtitle-1">{{ incomeType.name }}</div>
+              <div class="text-caption text-medium-emphasis">{{ getTypeLabel(incomeType.type) }}</div>
+            </div>
 
-            <template #append>
-              <div class="d-flex ga-2">
-                <IconToolTip
-                  icon="mdi-pencil"
-                  :tooltip="t('common.edit')"
-                  @click="openEditModal(incomeType)"
-                />
-                <IconToolTip
-                  icon="mdi-delete"
-                  :tooltip="t('common.delete')"
-                  color="error"
-                  @click="handleDelete(incomeType.id)"
-                />
-              </div>
-            </template>
-          </v-list-item>
-        </v-list>
+            <div class="d-flex ga-2">
+              <IconToolTip
+                icon="mdi-pencil"
+                :tooltip="t('common.edit')"
+                @click="openEditModal(incomeType)"
+              />
+              <IconToolTip
+                icon="mdi-delete"
+                :tooltip="t('common.delete')"
+                color="error"
+                @click="handleDelete(incomeType.id)"
+              />
+            </div>
+          </v-card-text>
+        </v-card>
 
-        <v-alert v-else type="info" variant="tonal">
+        <v-alert v-if="incomeTypes.length === 0" type="info" variant="tonal">
           {{ t('incomeTypes.noData') }}
         </v-alert>
-      </v-col>
-    </v-row>
+      </v-container>
+    </div>
 
     <v-btn
       color="primary"
       icon="mdi-plus"
       size="large"
       position="fixed"
-      location="bottom right"
-      class="mb-4 mr-4"
+      location="bottom center"
+      class="add-button"
       @click="openAddModal"
     />
 
     <IncomeTypeFormModal
-      :model-value="modalOpen"
+      v-model="modalOpen"
       :income-type="selectedIncomeType"
       :mode="modalMode"
-      @update:model-value="handleModalClose"
       @saved="handleSaved"
     />
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -115,10 +110,6 @@ const openEditModal = (incomeType: IncomeTypeModel): void => {
   modalOpen.value = true
 }
 
-const handleModalClose = (value: boolean): void => {
-  modalOpen.value = value
-}
-
 const handleDelete = async (id: string): Promise<void> => {
   const confirmed = await confirm.show(
     t('common.delete'),
@@ -132,7 +123,7 @@ const handleDelete = async (id: string): Promise<void> => {
   try {
     await localStorageService.delete('incomeTypes', id)
     await loadIncomeTypes()
-    notify.success(t('messages.success'), t('incomeTypes.deleteSuccess'))
+    notify.success(t('incomeTypes.deleted'), '')
   } catch (error) {
     notify.error(t('messages.error'), t('incomeTypes.deleteError'))
   } finally {
@@ -148,3 +139,19 @@ onMounted(() => {
   loadIncomeTypes()
 })
 </script>
+
+<style scoped>
+.income-types-view {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.cards-container {
+  height: calc(100dvh - 200px);
+  overflow-y: auto;
+}
+
+.add-button {
+  margin-bottom: 16px;
+}
+</style>

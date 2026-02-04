@@ -8,11 +8,13 @@
   >
     <v-form ref="formRef" @submit.prevent="handleSave">
       <v-text-field
+        ref="nameFieldRef"
         v-model="form.name"
         :label="t('incomeTypes.name')"
         :rules="[validateRequired]"
         variant="outlined"
         density="comfortable"
+        class="mb-4"
       />
 
       <v-select
@@ -25,14 +27,13 @@
         :disabled="mode === FormMode.EDIT"
         variant="outlined"
         density="comfortable"
-        :menu-props="{ zIndex: 9999 }"
       />
     </v-form>
   </ModalBase>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ModalBase, notify, loading } from '@wallacesw11/base-lib'
 import { localStorageService } from '@/services/localStorageService'
@@ -58,6 +59,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const formRef = ref()
+const nameFieldRef = ref()
 const form = ref({
   name: '',
   type: IncomeType.PAYCHECK
@@ -84,7 +86,11 @@ const resetForm = (): void => {
     name: '',
     type: IncomeType.PAYCHECK
   }
-  formRef.value?.resetValidation()
+  
+  nextTick(() => {
+    formRef.value?.resetValidation()
+    nameFieldRef.value?.focus()
+  })
 }
 
 const loadFormData = (): void => {
@@ -100,6 +106,10 @@ const loadFormData = (): void => {
 
   if (props.mode === FormMode.ADD) {
     resetForm()
+    
+    nextTick(() => {
+      nameFieldRef.value?.focus()
+    })
   }
 }
 
@@ -119,7 +129,7 @@ const handleSave = async (): Promise<void> => {
         userId: ''
       })
 
-      notify.success(t('messages.success'), t('incomeTypes.saveSuccess'))
+      notify.success(t('incomeTypes.saved'), '')
       emit('saved')
       resetForm()
       return
@@ -133,11 +143,15 @@ const handleSave = async (): Promise<void> => {
       { name: form.value.name }
     )
 
-    notify.success(t('messages.success'), t('incomeTypes.saveSuccess'))
+    notify.success(t('incomeTypes.updated'), '')
     emit('saved')
     emit('update:modelValue', false)
   } catch (error) {
-    notify.error(t('messages.error'), t('incomeTypes.saveError'))
+    const errorMessage = props.mode === FormMode.ADD 
+      ? t('incomeTypes.saveError') 
+      : t('incomeTypes.updateError')
+
+    notify.error(t('messages.error'), errorMessage)
   } finally {
     loading.hide()
   }
