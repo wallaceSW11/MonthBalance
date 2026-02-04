@@ -1,0 +1,185 @@
+<template>
+  <ModalBase
+    :model-value="modelValue"
+    :title="title"
+    :actions="actions"
+    :max-width="500"
+    @update:model-value="handleModalUpdate"
+  >
+    <v-form ref="formRef" @submit.prevent="handleSave">
+      <v-text-field
+        v-model="form.name"
+        :label="t('incomeTypes.name')"
+        :rules="[validateRequired]"
+        variant="outlined"
+        density="comfortable"
+      />
+
+      <v-select
+        v-model="form.type"
+        :label="t('incomeTypes.type')"
+        :items="typeOptions"
+        item-title="label"
+        item-value="value"
+        :rules="[validateRequired]"
+        :disabled="mode === FormMode.EDIT"
+        variant="outlined"
+        density="comfortable"
+        :menu-props="{ zIndex: 9999 }"
+      />
+    </v-form>
+  </ModalBase>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { ModalBase, notify, loading } from '@wallacesw11/base-lib'
+import { localStorageService } from '@/services/localStorageService'
+import type { IncomeTypeModel } from '@/models'
+import { IncomeType, FormMode } from '@/models'
+
+interface ModalAction {
+  text: string
+  color?: string
+  handler: () => void
+}
+
+const props = defineProps<{
+  modelValue: boolean
+  incomeType: IncomeTypeModel | null
+  mode: FormMode
+}>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+  saved: []
+}>()
+
+const { t } = useI18n()
+const formRef = ref()
+const form = ref({
+  name: '',
+  type: IncomeType.PAYCHECK
+})
+
+const typeOptions = computed(() => [
+  { label: t('incomeTypes.typePaycheck'), value: IncomeType.PAYCHECK },
+  { label: t('incomeTypes.typeHourly'), value: IncomeType.HOURLY },
+  { label: t('incomeTypes.typeExtra'), value: IncomeType.EXTRA }
+])
+
+const title = computed(() => {
+  return props.mode === FormMode.ADD 
+    ? t('incomeTypes.addTitle') 
+    : t('incomeTypes.editTitle')
+})
+
+const validateRequired = (value: string): boolean | string => {
+  return !!value || t('incomeTypes.requiredField')
+}
+
+const resetForm = (): void => {
+  form.value = {
+    name: '',
+    type: IncomeType.PAYCHECK
+  }
+  formRef.value?.resetValidation()
+}
+
+const loadFormData = (): void => {
+  if (!props.modelValue) return
+
+  if (props.mode === FormMode.EDIT && props.incomeType) {
+    form.value = {
+      name: props.incomeType.name,
+      type: props.incomeType.type
+    }
+    return
+  }
+
+  if (props.mode === FormMode.ADD) {
+    resetForm()
+  }
+}
+
+const handleSave = async (): Promise<void> => {
+  const { valid } = await formRef.value.validate()
+
+  if (!valid) return
+
+  loading.show(t('incomeTypes.saving'))
+
+  try {
+    if (props.mode === FormMode.ADD) {
+      await localStorageService.post<IncomeTypeModel>('incomeTypes', {
+        name: form.value.name,
+        type: form.value.type,
+        id: '',
+        userId: ''
+      })
+
+      notify.success(t('messages.success'), t('incomeTypes.saveSuccess'))
+      emit('saved')
+      resetForm()
+      return
+    }
+
+    if (!props.incomeType) return
+
+    await localStorageService.put<IncomeTypeModel>(
+      'incomeTypes',
+      props.incomeType.id,
+      { name: form.value.name }
+    )
+
+    notify.success(t('messages.success'), t('incomeTypes.saveSuccess'))
+    emit('saved')
+    emit('update:modelValue', false)
+  } catch (error) {
+    notify.error(t('messages.error'), t('incomeTypes.saveError'))
+  } finally {
+    loading.hide()
+  }
+}
+
+const handleModalUpdate = (value: boolean): void => {
+  if (value) return
+
+  if (props.mode === FormMode.EDIT) {
+    emit('update:modelValue', false)
+    return
+  }
+
+  emit('update:modelValue', false)
+  resetForm()
+}
+
+const handleCancel = (): void => {
+  emit('update:modelValue', false)
+  
+  if (props.mode === FormMode.ADD) {
+    resetForm()
+  }
+}
+
+const actions = computed<ModalAction[]>(() => [
+  {
+    text: t('common.cancel'),
+    handler: handleCancel
+  },
+  {
+    text: t('common.save'),
+    color: 'primary',
+    handler: handleSave
+  }
+])
+
+watch(() => props.modelValue, () => {
+  loadFormData()
+})
+
+defineExpose({
+  loadFormData
+})
+</script>
