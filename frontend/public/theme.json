@@ -1,6 +1,7 @@
 {
   "name": "BaseProject Theme",
   "version": "1.0.0",
+  "defaultTheme": "dark",
   "logo": {
     "light": "/logo-light.png",
     "dark": "/logo-dark.png",

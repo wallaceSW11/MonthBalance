@@ -20,6 +20,7 @@
         v-for="income in incomes"
         :key="income.id"
         :name="income.name"
+        :type="income.type"
         :value="income.value"
         @edit="emit('edit', income.id)"
         @delete="emit('delete', income.id)"
@@ -36,6 +37,7 @@ import IncomeItem from './IncomeItem.vue';
 interface IncomeListItem {
   id: string;
   name: string;
+  type: string;
   value: number;
 }
 
@@ -64,7 +66,8 @@ function toggleExpanded(): void {
 
 <style scoped>
 .income-list {
-  padding: 24px 16px 16px;
+  padding: 16px;
+  padding-top: 0;
 }
 
 .list-header {
@@ -91,10 +94,6 @@ function toggleExpanded(): void {
   flex: 1;
   height: 1px;
   background-color: rgba(var(--v-theme-on-surface), 0.12);
-}
-
-.list-content {
-  margin-top: 16px;
 }
 
 .empty-state {

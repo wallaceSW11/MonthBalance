@@ -340,6 +340,8 @@ src/
 - [ ] Usar utils da lib: notify, confirm, loading, api
 - [ ] Sem comentários no código
 - [ ] Sem stores desnecessárias (usar ref/computed)
+- [ ] **ModalBase: SEMPRE definir `color` nos botões** (primary/secondary/error) - Ver 10_modal-buttons.md
+- [ ] **Fórmula receita por hora**: `(hours + (minutes / 60)) * hourlyRate`
 
 ---
 

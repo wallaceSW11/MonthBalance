@@ -1,5 +1,21 @@
 <template>
   <div class="home-view">
+    <v-navigation-drawer v-model="drawerOpen" temporary>
+      <v-list>
+        <v-list-item prepend-icon="mdi-cash-multiple" title="Receitas" to="/income-types" />
+        <v-list-item prepend-icon="mdi-credit-card-outline" title="Despesas" to="/expense-types" />
+
+        <v-divider class="my-2" />
+
+        <v-list-item>
+          <div class="theme-toggle-container">
+            <span class="theme-label">{{ t('theme.title') }}</span>
+            <ThemeToggle />
+          </div>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
     <MonthNavigator
       :year="currentYear"
       :month="currentMonth"
@@ -40,18 +56,37 @@
         @click="handleAddExpense"
       />
     </div>
+
+    <IncomeTypeSelectModal
+      v-model:open="incomeTypeSelectOpen"
+      :income-types="incomeTypes"
+      @select="handleIncomeTypeSelected"
+    />
+
+    <IncomeFormModal
+      v-model:open="incomeFormOpen"
+      :mode="incomeFormMode"
+      :income-type="selectedIncomeType"
+      :income-type-id="selectedIncomeTypeId"
+      :month-data-id="currentMonthDataId"
+      :initial-data="selectedIncome"
+      @saved="handleIncomeSaved"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { confirm, notify, loading } from '@wallacesw11/base-lib';
+import { confirm, notify, loading, ThemeToggle } from '@wallacesw11/base-lib';
 import { localStorageService } from '@/services/localStorageService';
-import type { MonthData, Income, Expense } from '@/models';
+import { IncomeType, FormMode } from '@/models';
+import type { MonthData, Income, Expense, IncomeTypeModel } from '@/models';
 import MonthNavigator from '@/components/MonthNavigator.vue';
 import IncomeList from '@/components/IncomeList.vue';
 import ExpenseList from '@/components/ExpenseList.vue';
+import IncomeTypeSelectModal from '@/components/IncomeTypeSelectModal.vue';
+import IncomeFormModal from '@/components/IncomeFormModal.vue';
 
 const { t } = useI18n();
 
@@ -64,6 +99,14 @@ const currentMonth = ref<number>(new Date().getMonth() + 1);
 const incomes = ref<Income[]>([]);
 const expenses = ref<Expense[]>([]);
 const currentMonthData = ref<MonthData | null>(null);
+const incomeTypes = ref<IncomeTypeModel[]>([]);
+const incomeTypeSelectOpen = ref<boolean>(false);
+const incomeFormOpen = ref<boolean>(false);
+const incomeFormMode = ref<FormMode>(FormMode.ADD);
+const selectedIncomeType = ref<IncomeType | null>(null);
+const selectedIncomeTypeId = ref<string>('');
+const selectedIncome = ref<Income | undefined>(undefined);
+const drawerOpen = ref<boolean>(false);
 
 const totalIncome = computed(() => {
   return incomes.value.reduce((sum, income) => sum + income.calculatedValue, 0);
@@ -87,13 +130,33 @@ const canNavigateNext = computed(() => {
   return true;
 });
 
-const incomesWithNames = computed(() => {
-  return incomes.value.map(income => ({
-    id: income.id,
-    name: 'Receita',
-    value: income.calculatedValue
-  }));
+const currentMonthDataId = computed(() => {
+  return currentMonthData.value?.id ?? '';
 });
+
+const incomesWithNames = computed(() => {
+  return incomes.value.map(income => {
+    const incomeType = incomeTypes.value.find(it => it.id === income.incomeTypeId);
+    const typeLabel = incomeType ? getTypeLabel(incomeType.type) : '';
+
+    return {
+      id: income.id,
+      name: incomeType?.name ?? 'Receita',
+      type: typeLabel,
+      value: income.calculatedValue
+    };
+  });
+});
+
+function getTypeLabel(type: string): string {
+  const labels: Record<string, string> = {
+    [IncomeType.PAYCHECK]: t('incomeTypes.typePaycheck'),
+    [IncomeType.HOURLY]: t('incomeTypes.typeHourly'),
+    [IncomeType.EXTRA]: t('incomeTypes.typeExtra')
+  };
+
+  return labels[type] ?? type;
+}
 
 const expensesWithNames = computed(() => {
   return expenses.value.map(expense => ({
@@ -103,22 +166,32 @@ const expensesWithNames = computed(() => {
   }));
 });
 
+async function loadIncomeTypes(): Promise<void> {
+  try {
+    const types = (await localStorageService.get('incomeTypes')) as IncomeTypeModel[];
+    incomeTypes.value = types;
+  } catch (error) {
+    notify.error(t('incomeTypes.loadError'), String(error));
+  }
+}
+
 async function loadMonth(): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
     const monthDataList = (await localStorageService.get('month_data')) as MonthData[];
-    const foundMonthData = monthDataList.find(
+    let foundMonthData = monthDataList.find(
       md => md.year === currentYear.value && md.month === currentMonth.value
     );
 
     if (!foundMonthData) {
-      currentMonthData.value = null;
-      incomes.value = [];
-      expenses.value = [];
-      loading.hide();
+      const newMonthData = await localStorageService.post<MonthData>('month_data', {
+        year: currentYear.value,
+        month: currentMonth.value,
+        lastAccessed: new Date()
+      });
 
-      return;
+      foundMonthData = newMonthData as MonthData;
     }
 
     currentMonthData.value = foundMonthData;
@@ -221,19 +294,69 @@ async function handleClearMonth(): Promise<void> {
 }
 
 function handleMenuClick(): void {
-  notify.info('Menu', 'Navigation drawer em desenvolvimento');
+  drawerOpen.value = true;
 }
 
 function handleAddIncome(): void {
-  notify.info('Adicionar Receita', 'Funcionalidade em desenvolvimento');
+  if (!currentMonthData.value) {
+    notify.error('Erro', 'Nenhum mês selecionado');
+
+    return;
+  }
+
+  incomeTypeSelectOpen.value = true;
+}
+
+function handleIncomeTypeSelected(incomeType: IncomeTypeModel): void {
+  selectedIncomeType.value = incomeType.type as IncomeType;
+  selectedIncomeTypeId.value = incomeType.id;
+  incomeFormMode.value = FormMode.ADD;
+  selectedIncome.value = undefined;
+  incomeFormOpen.value = true;
 }
 
 function handleEditIncome(id: string): void {
-  notify.info('Editar Receita', `ID: ${id} - Funcionalidade em desenvolvimento`);
+  const income = incomes.value.find(i => i.id === id);
+  if (!income) return;
+
+  const incomeType = incomeTypes.value.find(it => it.id === income.incomeTypeId);
+  if (!incomeType) return;
+
+  selectedIncomeType.value = incomeType.type as IncomeType;
+  selectedIncomeTypeId.value = incomeType.id;
+  selectedIncome.value = income;
+  incomeFormMode.value = FormMode.EDIT;
+  incomeFormOpen.value = true;
 }
 
-function handleDeleteIncome(id: string): void {
-  notify.info('Excluir Receita', `ID: ${id} - Funcionalidade em desenvolvimento`);
+async function handleDeleteIncome(id: string): Promise<void> {
+  const confirmed = await confirm.show(
+    t('common.delete'),
+    t('monthBalance.deleteIncomeConfirm'),
+    {
+      confirmText: t('common.yes'),
+      cancelText: t('common.no'),
+      confirmColor: 'error'
+    }
+  );
+
+  if (!confirmed) return;
+
+  loading.show(t('common.loading'));
+
+  try {
+    await localStorageService.delete('incomes', id);
+    notify.success(t('monthBalance.incomeDeleted'), '');
+    await loadMonth();
+  } catch (error) {
+    notify.error(t('monthBalance.deleteError'), String(error));
+  } finally {
+    loading.hide();
+  }
+}
+
+async function handleIncomeSaved(): Promise<void> {
+  await loadMonth();
 }
 
 function handleAddExpense(): void {
@@ -248,9 +371,10 @@ function handleDeleteExpense(id: string): void {
   notify.info('Excluir Despesa', `ID: ${id} - Funcionalidade em desenvolvimento`);
 }
 
-onMounted(() => {
+onMounted(async () => {
   loadLastAccessedMonth();
-  loadMonth();
+  await loadIncomeTypes();
+  await loadMonth();
 });
 </script>
 
@@ -277,5 +401,18 @@ onMounted(() => {
 
 .floating-button {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.theme-label {
+  font-size: 0.875rem;
+  opacity: 0.8;
 }
 </style>

@@ -1,7 +1,10 @@
 <template>
   <div class="income-types-view">
     <v-container>
-      <h1 class="text-h5 mb-4">{{ t('incomeTypes.title') }}</h1>
+      <div class="d-flex align-center mb-4">
+        <v-btn icon="mdi-arrow-left" variant="text" @click="goBack" />
+        <h1 class="text-h5 ml-2">{{ t('incomeTypes.title') }}</h1>
+      </div>
     </v-container>
 
     <div class="cards-container">
@@ -62,19 +65,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib'
-import { localStorageService } from '@/services/localStorageService'
-import type { IncomeTypeModel } from '@/models'
-import { IncomeType, FormMode } from '@/models'
-import IncomeTypeFormModal from '@/components/IncomeTypeFormModal.vue'
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
+import { localStorageService } from '@/services/localStorageService';
+import type { IncomeTypeModel } from '@/models';
+import { IncomeType, FormMode } from '@/models';
+import IncomeTypeFormModal from '@/components/IncomeTypeFormModal.vue';
 
-const { t } = useI18n()
-const incomeTypes = ref<IncomeTypeModel[]>([])
-const modalOpen = ref(false)
-const modalMode = ref<FormMode>(FormMode.ADD)
-const selectedIncomeType = ref<IncomeTypeModel | null>(null)
+const { t } = useI18n();
+const router = useRouter();
+
+const incomeTypes = ref<IncomeTypeModel[]>([]);
+const modalOpen = ref(false);
+const modalMode = ref<FormMode>(FormMode.ADD);
+const selectedIncomeType = ref<IncomeTypeModel | null>(null);
+
+function goBack(): void {
+  router.push('/');
+}
 
 const getTypeLabel = (type: IncomeType): string => {
   const labels = {

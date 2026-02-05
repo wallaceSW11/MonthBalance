@@ -1,7 +1,10 @@
 <template>
   <div class="expense-types-view">
     <v-container>
-      <h1 class="text-h5 mb-4">{{ t('expenseTypes.title') }}</h1>
+      <div class="d-flex align-center mb-4">
+        <v-btn icon="mdi-arrow-left" variant="text" @click="goBack" />
+        <h1 class="text-h5 ml-2">{{ t('expenseTypes.title') }}</h1>
+      </div>
     </v-container>
 
     <div class="cards-container">
@@ -61,6 +64,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
 import { localStorageService } from '@/services/localStorageService';
 import type { ExpenseTypeModel } from '@/models';
@@ -68,10 +72,16 @@ import { FormMode } from '@/models';
 import ExpenseTypeFormModal from '@/components/ExpenseTypeFormModal.vue';
 
 const { t } = useI18n();
+const router = useRouter();
+
 const expenseTypes = ref<ExpenseTypeModel[]>([]);
 const modalOpen = ref(false);
 const modalMode = ref<FormMode>(FormMode.ADD);
 const selectedExpenseType = ref<ExpenseTypeModel | null>(null);
+
+function goBack(): void {
+  router.push('/');
+}
 
 const loadExpenseTypes = async (): Promise<void> => {
   loading.show(t('common.loading'));

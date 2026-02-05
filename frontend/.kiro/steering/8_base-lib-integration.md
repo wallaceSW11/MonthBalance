@@ -69,7 +69,7 @@ import type { ModalAction } from '@wallacesw11/base-lib/components'
 const open = ref(false)
 const actions: ModalAction[] = [
   { text: 'Save', color: 'primary', handler: () => { save(); open.value = false } },
-  { text: 'Cancel', handler: () => open.value = false }
+  { text: 'Cancel', color: 'secondary', handler: () => open.value = false }
 ]
 </script>
 
@@ -79,7 +79,14 @@ const actions: ModalAction[] = [
   </ModalBase>
 </template>
 ```
-**CRITICAL**: Modal does NOT auto-close. Set `open.value = false` in handlers.
+**CRITICAL**: 
+- Modal does NOT auto-close. Set `open.value = false` in handlers.
+- **ALWAYS define `color` for buttons** (primary/secondary/error). Without it, buttons look incorrect in dark theme.
+
+**Button Color Pattern:**
+- Primary action (Save, Confirm, OK): `color: 'primary'`
+- Cancel action (Cancel, Close, Back): `color: 'secondary'`
+- Destructive action (Delete, Remove): `color: 'error'`
 
 Props: `modelValue`, `title`, `actions`, `maxWidth`, `persistent`, `fullscreen`
 

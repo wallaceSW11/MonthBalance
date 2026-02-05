@@ -124,9 +124,7 @@ const handleSave = async (): Promise<void> => {
     if (props.mode === FormMode.ADD) {
       await localStorageService.post<IncomeTypeModel>('incomeTypes', {
         name: form.value.name,
-        type: form.value.type,
-        id: '',
-        userId: ''
+        type: form.value.type
       })
 
       notify.success(t('incomeTypes.saved'), '')

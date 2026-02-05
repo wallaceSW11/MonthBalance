@@ -62,6 +62,7 @@ function toggleExpanded(): void {
 <style scoped>
 .expense-list {
   padding: 16px;
+  padding-top: 0;
 }
 
 .list-header {
@@ -88,10 +89,6 @@ function toggleExpanded(): void {
   flex: 1;
   height: 1px;
   background-color: rgba(var(--v-theme-on-surface), 0.12);
-}
-
-.list-content {
-  margin-top: 16px;
 }
 
 .empty-state {
