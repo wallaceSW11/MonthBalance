@@ -17,9 +17,10 @@
       <ExpenseItem
         v-for="expense in expenses"
         :key="expense.id"
+        :id="expense.id"
         :name="expense.name"
         :value="expense.value"
-        @edit="emit('edit', expense.id)"
+        @edit="handleEdit"
         @delete="emit('delete', expense.id)"
       />
     </div>
@@ -42,7 +43,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  edit: [id: string];
+  edit: [id: string, value: number];
   delete: [id: string];
 }>();
 
@@ -56,6 +57,10 @@ const expandIconClass = computed(() => {
 
 function toggleExpanded(): void {
   expanded.value = !expanded.value;
+}
+
+function handleEdit(id: string, value: number): void {
+  emit('edit', id, value);
 }
 </script>
 

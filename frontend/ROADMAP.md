@@ -174,31 +174,31 @@ src/
 
 ---
 
-## 🎯 FASE 6: Funcionalidades de Despesa
+## 🎯 FASE 6: Funcionalidades de Despesa ✅ CONCLUÍDO
 
-### 6.1 Adicionar Despesa
-- [ ] Criar `src/components/ExpenseTypeSelectModal.vue`
+### 6.1 Adicionar Despesa ✅
+- [x] Criar `src/components/ExpenseTypeSelectModal.vue`
   - Modal para selecionar tipo de despesa
-- [ ] Criar `src/components/ExpenseFormModal.vue`
+- [x] Criar `src/components/ExpenseFormModal.vue`
   - MoneyField (valor)
   - Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
-  - **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
+  - **MODO ADICIONAR**: Após salvar, limpar campos e fechar modal
   - **MODO EDITAR**: Após salvar, fechar modal
-- [ ] Botão flutuante (+) abre modal de seleção
-- [ ] Salvar no LocalStorage
-- [ ] Atualizar lista
+- [x] Botão flutuante (+) abre modal de seleção
+- [x] Salvar no LocalStorage
+- [x] Atualizar lista
 
-### 6.2 Editar Despesa
-- [ ] Clicar no valor abre ExpenseFormModal em modo edição
-- [ ] Campo preenchido com valor atual
-- [ ] NÃO permitir alterar o tipo
-- [ ] Salvar alterações e fechar modal
+### 6.2 Editar Despesa ✅
+- [x] Clicar no valor abre ExpenseFormModal em modo edição
+- [x] Campo preenchido com valor atual
+- [x] NÃO permitir alterar o tipo
+- [x] Salvar alterações e fechar modal
 
-### 6.3 Excluir Despesa
-- [ ] IconToolTip com ícone delete
-- [ ] confirm.show() da lib
-- [ ] Excluir do LocalStorage
-- [ ] Atualizar lista
+### 6.3 Excluir Despesa ✅
+- [x] IconToolTip com ícone delete
+- [x] confirm.show() da lib
+- [x] Excluir do LocalStorage
+- [x] Atualizar lista
 
 ---
 

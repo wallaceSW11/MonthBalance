@@ -41,7 +41,7 @@
 
       <ExpenseList
         :expenses="expensesWithNames"
-        @edit="handleEditExpense"
+        @edit="handleEditExpenseInline"
         @delete="handleDeleteExpense"
       />
     </div>
@@ -72,6 +72,20 @@
       :initial-data="selectedIncome"
       @saved="handleIncomeSaved"
     />
+
+    <ExpenseTypeSelectModal
+      v-model:open="expenseTypeSelectOpen"
+      :expense-types="expenseTypes"
+      @select="handleExpenseTypeSelected"
+    />
+
+    <ExpenseFormModal
+      v-model:open="expenseFormOpen"
+      :mode="expenseFormMode"
+      :expense-type-id="selectedExpenseTypeId"
+      :month-data-id="currentMonthDataId"
+      @saved="handleExpenseSaved"
+    />
   </div>
 </template>
 
@@ -81,12 +95,14 @@ import { useI18n } from 'vue-i18n';
 import { confirm, notify, loading, ThemeToggle } from '@wallacesw11/base-lib';
 import { localStorageService } from '@/services/localStorageService';
 import { IncomeType, FormMode } from '@/models';
-import type { MonthData, Income, Expense, IncomeTypeModel } from '@/models';
+import type { MonthData, Income, Expense, IncomeTypeModel, ExpenseTypeModel } from '@/models';
 import MonthNavigator from '@/components/MonthNavigator.vue';
 import IncomeList from '@/components/IncomeList.vue';
 import ExpenseList from '@/components/ExpenseList.vue';
 import IncomeTypeSelectModal from '@/components/IncomeTypeSelectModal.vue';
 import IncomeFormModal from '@/components/IncomeFormModal.vue';
+import ExpenseTypeSelectModal from '@/components/ExpenseTypeSelectModal.vue';
+import ExpenseFormModal from '@/components/ExpenseFormModal.vue';
 
 const { t } = useI18n();
 
@@ -100,12 +116,17 @@ const incomes = ref<Income[]>([]);
 const expenses = ref<Expense[]>([]);
 const currentMonthData = ref<MonthData | null>(null);
 const incomeTypes = ref<IncomeTypeModel[]>([]);
+const expenseTypes = ref<ExpenseTypeModel[]>([]);
 const incomeTypeSelectOpen = ref<boolean>(false);
 const incomeFormOpen = ref<boolean>(false);
 const incomeFormMode = ref<FormMode>(FormMode.ADD);
 const selectedIncomeType = ref<IncomeType | null>(null);
 const selectedIncomeTypeId = ref<string>('');
 const selectedIncome = ref<Income | undefined>(undefined);
+const expenseTypeSelectOpen = ref<boolean>(false);
+const expenseFormOpen = ref<boolean>(false);
+const expenseFormMode = ref<FormMode>(FormMode.ADD);
+const selectedExpenseTypeId = ref<string>('');
 const drawerOpen = ref<boolean>(false);
 
 const totalIncome = computed(() => {
@@ -159,11 +180,15 @@ function getTypeLabel(type: string): string {
 }
 
 const expensesWithNames = computed(() => {
-  return expenses.value.map(expense => ({
-    id: expense.id,
-    name: 'Despesa',
-    value: expense.value
-  }));
+  return expenses.value.map(expense => {
+    const expenseType = expenseTypes.value.find(et => et.id === expense.expenseTypeId);
+
+    return {
+      id: expense.id,
+      name: expenseType?.name ?? 'Despesa',
+      value: expense.value
+    };
+  });
 });
 
 async function loadIncomeTypes(): Promise<void> {
@@ -172,6 +197,15 @@ async function loadIncomeTypes(): Promise<void> {
     incomeTypes.value = types;
   } catch (error) {
     notify.error(t('incomeTypes.loadError'), String(error));
+  }
+}
+
+async function loadExpenseTypes(): Promise<void> {
+  try {
+    const types = (await localStorageService.get('expenseTypes')) as ExpenseTypeModel[];
+    expenseTypes.value = types;
+  } catch (error) {
+    notify.error(t('expenseTypes.loadError'), String(error));
   }
 }
 
@@ -360,20 +394,75 @@ async function handleIncomeSaved(): Promise<void> {
 }
 
 function handleAddExpense(): void {
-  notify.info('Adicionar Despesa', 'Funcionalidade em desenvolvimento');
+  if (!currentMonthData.value) {
+    notify.error('Erro', 'Nenhum mês selecionado');
+
+    return;
+  }
+
+  expenseTypeSelectOpen.value = true;
 }
 
-function handleEditExpense(id: string): void {
-  notify.info('Editar Despesa', `ID: ${id} - Funcionalidade em desenvolvimento`);
+function handleExpenseTypeSelected(expenseType: ExpenseTypeModel): void {
+  console.log('🔍 Tipo de despesa selecionado:', expenseType);
+  console.log('🔍 ID do tipo:', expenseType.id);
+  console.log('🔍 Nome do tipo:', expenseType.name);
+  
+  selectedExpenseTypeId.value = expenseType.id;
+  expenseFormMode.value = FormMode.ADD;
+  expenseFormOpen.value = true;
+  
+  console.log('🔍 selectedExpenseTypeId após set:', selectedExpenseTypeId.value);
 }
 
-function handleDeleteExpense(id: string): void {
-  notify.info('Excluir Despesa', `ID: ${id} - Funcionalidade em desenvolvimento`);
+async function handleEditExpenseInline(id: string, value: number): Promise<void> {
+  loading.show(t('common.loading'));
+
+  try {
+    await localStorageService.put<Expense>('expenses', id, { value });
+    notify.success(t('monthBalance.expenseUpdated'), '');
+    await loadMonth();
+  } catch (error) {
+    notify.error(t('monthBalance.saveError'), String(error));
+  } finally {
+    loading.hide();
+  }
+}
+
+async function handleDeleteExpense(id: string): Promise<void> {
+  const confirmed = await confirm.show(
+    t('common.delete'),
+    t('monthBalance.deleteExpenseConfirm'),
+    {
+      confirmText: t('common.yes'),
+      cancelText: t('common.no'),
+      confirmColor: 'error'
+    }
+  );
+
+  if (!confirmed) return;
+
+  loading.show(t('common.loading'));
+
+  try {
+    await localStorageService.delete('expenses', id);
+    notify.success(t('monthBalance.expenseDeleted'), '');
+    await loadMonth();
+  } catch (error) {
+    notify.error(t('monthBalance.deleteError'), String(error));
+  } finally {
+    loading.hide();
+  }
+}
+
+async function handleExpenseSaved(): Promise<void> {
+  await loadMonth();
 }
 
 onMounted(async () => {
   loadLastAccessedMonth();
   await loadIncomeTypes();
+  await loadExpenseTypes();
   await loadMonth();
 });
 </script>
