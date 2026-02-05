@@ -22,13 +22,14 @@
             <div class="d-flex ga-2">
               <IconToolTip
                 icon="mdi-pencil"
-                :tooltip="t('common.edit')"
+                :text="t('common.edit')"
+                as-button
                 @click="openEditModal(incomeType)"
               />
               <IconToolTip
                 icon="mdi-delete"
-                :tooltip="t('common.delete')"
-                color="error"
+                :text="t('common.delete')"
+                as-button
                 @click="handleDelete(incomeType.id)"
               />
             </div>
