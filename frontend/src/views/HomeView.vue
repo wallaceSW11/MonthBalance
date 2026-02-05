@@ -185,11 +185,11 @@ async function loadMonth(): Promise<void> {
     );
 
     if (!foundMonthData) {
-      const newMonthData = await localStorageService.post<MonthData>('month_data', {
+      const newMonthData = await localStorageService.post('month_data', {
         year: currentYear.value,
         month: currentMonth.value,
         lastAccessed: new Date()
-      });
+      } as Partial<MonthData>);
 
       foundMonthData = newMonthData as MonthData;
     }

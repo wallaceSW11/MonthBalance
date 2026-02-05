@@ -165,7 +165,7 @@ export default {
     duplicateError: "Falha ao duplicar mês",
     noIncomes: "Nenhuma receita cadastrada",
     noExpenses: "Nenhuma despesa cadastrada",
-    selectIncomeType: "Selecionar Tipo de Receita",
+    selectIncomeType: "Receitas",
     addIncome: "Adicionar Receita",
     editIncome: "Editar Receita",
     grossValue: "Valor Bruto",
