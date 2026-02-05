@@ -109,6 +109,7 @@ const { t } = useI18n();
 const LAST_MONTH_KEY = 'monthbalance_last_month';
 const MIN_YEAR = 2026;
 const MIN_MONTH = 1;
+const MAX_MONTHS_AHEAD = 5;
 
 const currentYear = ref<number>(new Date().getFullYear());
 const currentMonth = ref<number>(new Date().getMonth() + 1);
@@ -128,6 +129,7 @@ const expenseFormOpen = ref<boolean>(false);
 const expenseFormMode = ref<FormMode>(FormMode.ADD);
 const selectedExpenseTypeId = ref<string>('');
 const drawerOpen = ref<boolean>(false);
+const allMonthData = ref<MonthData[]>([]);
 
 const totalIncome = computed(() => {
   return incomes.value.reduce((sum, income) => sum + income.calculatedValue, 0);
@@ -148,7 +150,18 @@ const canNavigatePrevious = computed(() => {
 });
 
 const canNavigateNext = computed(() => {
-  return true;
+  const lastMonth = getLastRegisteredMonth();
+
+  if (!lastMonth) return true;
+
+  const monthsAhead = calculateMonthsDifference(
+    lastMonth.year,
+    lastMonth.month,
+    currentYear.value,
+    currentMonth.value
+  );
+
+  return monthsAhead < MAX_MONTHS_AHEAD;
 });
 
 const currentMonthDataId = computed(() => {
@@ -209,16 +222,32 @@ async function loadExpenseTypes(): Promise<void> {
   }
 }
 
-async function loadMonth(): Promise<void> {
+async function loadMonth(skipDuplicatePrompt: boolean = false): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
     const monthDataList = (await localStorageService.get('month_data')) as MonthData[];
+    allMonthData.value = monthDataList;
+
     let foundMonthData = monthDataList.find(
       md => md.year === currentYear.value && md.month === currentMonth.value
     );
 
     if (!foundMonthData) {
+      if (!skipDuplicatePrompt) {
+        loading.hide();
+
+        const shouldDuplicate = await promptDuplicatePreviousMonth();
+
+        if (shouldDuplicate) {
+          await duplicatePreviousMonth();
+
+          return;
+        }
+
+        loading.show(t('common.loading'));
+      }
+
       const newMonthData = await localStorageService.post('month_data', {
         year: currentYear.value,
         month: currentMonth.value,
@@ -226,6 +255,7 @@ async function loadMonth(): Promise<void> {
       } as Partial<MonthData>);
 
       foundMonthData = newMonthData as MonthData;
+      allMonthData.value.push(foundMonthData);
     }
 
     currentMonthData.value = foundMonthData;
@@ -295,23 +325,201 @@ function navigateNext(): void {
   loadMonth();
 }
 
-async function handleDuplicateMonth(): Promise<void> {
-  const previousMonth = currentMonth.value === 1 ? 12 : currentMonth.value - 1;
-  const previousYear = currentMonth.value === 1 ? currentYear.value - 1 : currentYear.value;
-  const monthName = t(`monthBalance.months.${previousMonth}`);
+function getLastRegisteredMonth(): { year: number; month: number } | null {
+  if (allMonthData.value.length === 0) return null;
+
+  const sorted = [...allMonthData.value].sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+
+    return b.month - a.month;
+  });
+
+  return { year: sorted[0].year, month: sorted[0].month };
+}
+
+function calculateMonthsDifference(
+  fromYear: number,
+  fromMonth: number,
+  toYear: number,
+  toMonth: number
+): number {
+  return (toYear - fromYear) * 12 + (toMonth - fromMonth);
+}
+
+function getPreviousMonth(): { year: number; month: number } {
+  if (currentMonth.value === 1) {
+    return { year: currentYear.value - 1, month: 12 };
+  }
+
+  return { year: currentYear.value, month: currentMonth.value - 1 };
+}
+
+async function promptDuplicatePreviousMonth(): Promise<boolean> {
+  const previous = getPreviousMonth();
+  const previousMonthData = allMonthData.value.find(
+    md => md.year === previous.year && md.month === previous.month
+  );
+
+  if (!previousMonthData) return false;
+
+  const monthName = t(`monthBalance.months.${previous.month}`);
 
   const confirmed = await confirm.show(
     t('monthBalance.duplicateMonth'),
-    t('monthBalance.duplicateMonthConfirm', { month: `${monthName} ${previousYear}` }),
+    t('monthBalance.duplicateMonthConfirm', { month: `${monthName} ${previous.year}` }),
+    { confirmText: t('common.yes'), cancelText: t('common.no') }
+  );
+
+  return confirmed;
+}
+
+async function duplicatePreviousMonth(): Promise<void> {
+  loading.show(t('common.loading'));
+
+  try {
+    const previous = getPreviousMonth();
+    const previousMonthData = allMonthData.value.find(
+      md => md.year === previous.year && md.month === previous.month
+    );
+
+    if (!previousMonthData) {
+      notify.error(t('monthBalance.duplicateError'), 'Mês anterior não encontrado');
+
+      return;
+    }
+
+    const newMonthData = await localStorageService.post('month_data', {
+      year: currentYear.value,
+      month: currentMonth.value,
+      lastAccessed: new Date()
+    } as Partial<MonthData>);
+
+    const previousIncomes = (await localStorageService.get('incomes')) as Income[];
+    const incomesToCopy = previousIncomes.filter(i => i.monthDataId === previousMonthData.id);
+
+    for (const income of incomesToCopy) {
+      await localStorageService.post('incomes', {
+        monthDataId: newMonthData.id,
+        incomeTypeId: income.incomeTypeId,
+        grossValue: income.grossValue,
+        netValue: income.netValue,
+        hourlyRate: income.hourlyRate,
+        hours: income.hours,
+        minutes: income.minutes,
+        calculatedValue: income.calculatedValue
+      } as Partial<Income>);
+    }
+
+    const previousExpenses = (await localStorageService.get('expenses')) as Expense[];
+    const expensesToCopy = previousExpenses.filter(e => e.monthDataId === previousMonthData.id);
+
+    for (const expense of expensesToCopy) {
+      await localStorageService.post('expenses', {
+        monthDataId: newMonthData.id,
+        expenseTypeId: expense.expenseTypeId,
+        value: expense.value
+      } as Partial<Expense>);
+    }
+
+    await loadMonth(true);
+  } catch (error) {
+    notify.error(t('monthBalance.duplicateError'), String(error));
+  } finally {
+    loading.hide();
+    notify.success(t('monthBalance.duplicateSuccess'), '');
+  }
+}
+
+async function handleDuplicateMonth(): Promise<void> {
+  if (!currentMonthData.value) {
+    notify.error('Erro', 'Nenhum mês selecionado');
+
+    return;
+  }
+
+  const nextMonth = currentMonth.value === 12 ? 1 : currentMonth.value + 1;
+  const nextYear = currentMonth.value === 12 ? currentYear.value + 1 : currentYear.value;
+
+  const nextMonthExists = allMonthData.value.find(
+    md => md.year === nextYear && md.month === nextMonth
+  );
+
+  if (nextMonthExists) {
+    notify.error(t('monthBalance.duplicateError'), 'Próximo mês já existe');
+
+    return;
+  }
+
+  const lastMonth = getLastRegisteredMonth();
+
+  if (lastMonth) {
+    const monthsAhead = calculateMonthsDifference(lastMonth.year, lastMonth.month, nextYear, nextMonth);
+
+    if (monthsAhead > MAX_MONTHS_AHEAD) {
+      notify.error(t('monthBalance.duplicateError'), `Não é possível criar mês mais de ${MAX_MONTHS_AHEAD} meses à frente`);
+
+      return;
+    }
+  }
+
+  const monthName = t(`monthBalance.months.${nextMonth}`);
+
+  const confirmed = await confirm.show(
+    t('monthBalance.duplicateMonth'),
+    `Copiar dados do mês atual para ${monthName} ${nextYear}?`,
     { confirmText: t('common.yes'), cancelText: t('common.no') }
   );
 
   if (!confirmed) return;
 
-  notify.info(t('monthBalance.duplicateMonth'), 'Funcionalidade em desenvolvimento');
+  loading.show(t('common.loading'));
+
+  try {
+    const newMonthData = await localStorageService.post('month_data', {
+      year: nextYear,
+      month: nextMonth,
+      lastAccessed: new Date()
+    } as Partial<MonthData>);
+
+    for (const income of incomes.value) {
+      await localStorageService.post('incomes', {
+        monthDataId: newMonthData.id,
+        incomeTypeId: income.incomeTypeId,
+        grossValue: income.grossValue,
+        netValue: income.netValue,
+        hourlyRate: income.hourlyRate,
+        hours: income.hours,
+        minutes: income.minutes,
+        calculatedValue: income.calculatedValue
+      } as Partial<Income>);
+    }
+
+    for (const expense of expenses.value) {
+      await localStorageService.post('expenses', {
+        monthDataId: newMonthData.id,
+        expenseTypeId: expense.expenseTypeId,
+        value: expense.value
+      } as Partial<Expense>);
+    }
+
+    currentYear.value = nextYear;
+    currentMonth.value = nextMonth;
+    await loadMonth(true);
+  } catch (error) {
+    notify.error(t('monthBalance.duplicateError'), String(error));
+  } finally {
+    loading.hide();
+    notify.success(t('monthBalance.duplicateSuccess'), '');
+  }
 }
 
 async function handleClearMonth(): Promise<void> {
+  if (!currentMonthData.value) {
+    notify.error('Erro', 'Nenhum mês selecionado');
+
+    return;
+  }
+
   const confirmed = await confirm.show(
     t('monthBalance.clearMonth'),
     t('monthBalance.clearMonthConfirm'),
@@ -324,7 +532,24 @@ async function handleClearMonth(): Promise<void> {
 
   if (!confirmed) return;
 
-  notify.info(t('monthBalance.clearMonth'), 'Funcionalidade em desenvolvimento');
+  loading.show(t('common.loading'));
+
+  try {
+    for (const income of incomes.value) {
+      await localStorageService.delete('incomes', income.id);
+    }
+
+    for (const expense of expenses.value) {
+      await localStorageService.delete('expenses', expense.id);
+    }
+
+    await loadMonth(true);
+  } catch (error) {
+    notify.error(t('monthBalance.clearError'), String(error));
+  } finally {
+    loading.hide();
+    notify.success(t('monthBalance.clearSuccess'), '');
+  }
 }
 
 function handleMenuClick(): void {
@@ -380,12 +605,12 @@ async function handleDeleteIncome(id: string): Promise<void> {
 
   try {
     await localStorageService.delete('incomes', id);
-    notify.success(t('monthBalance.incomeDeleted'), '');
     await loadMonth();
   } catch (error) {
     notify.error(t('monthBalance.deleteError'), String(error));
   } finally {
     loading.hide();
+    notify.success(t('monthBalance.incomeDeleted'), '');
   }
 }
 
@@ -420,12 +645,12 @@ async function handleEditExpenseInline(id: string, value: number): Promise<void>
 
   try {
     await localStorageService.put<Expense>('expenses', id, { value });
-    notify.success(t('monthBalance.expenseUpdated'), '');
     await loadMonth();
   } catch (error) {
     notify.error(t('monthBalance.saveError'), String(error));
   } finally {
     loading.hide();
+    notify.success(t('monthBalance.expenseUpdated'), '');
   }
 }
 
@@ -446,12 +671,12 @@ async function handleDeleteExpense(id: string): Promise<void> {
 
   try {
     await localStorageService.delete('expenses', id);
-    notify.success(t('monthBalance.expenseDeleted'), '');
     await loadMonth();
   } catch (error) {
     notify.error(t('monthBalance.deleteError'), String(error));
   } finally {
     loading.hide();
+    notify.success(t('monthBalance.expenseDeleted'), '');
   }
 }
 

@@ -47,4 +47,21 @@ export default createVuetify({
   icons: {
     defaultSet: "mdi",
   },
+  defaults: {
+    VTextField: {
+      variant: 'outlined'
+    },
+    VSelect: {
+      variant: 'outlined'
+    },
+    VTextarea: {
+      variant: 'outlined'
+    },
+    VAutocomplete: {
+      variant: 'outlined'
+    },
+    VCombobox: {
+      variant: 'outlined'
+    }
+  }
 });
