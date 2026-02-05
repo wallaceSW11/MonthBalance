@@ -9,7 +9,7 @@
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev": "vite",
-    "start": "vite",
+    "start": "vite --host",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test:unit": "vitest run",
