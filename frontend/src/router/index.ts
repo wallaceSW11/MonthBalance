@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
     name: "IncomeTypes",
     component: () => import("@/views/IncomeTypesView.vue"),
   },
+  {
+    path: "/expense-types",
+    name: "ExpenseTypes",
+    component: () => import("@/views/ExpenseTypesView.vue"),
+  },
 ];
 
 const router = createRouter({

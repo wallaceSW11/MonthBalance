@@ -179,13 +179,14 @@ const handleCancel = (): void => {
 
 const actions = computed<ModalAction[]>(() => [
   {
-    text: t('common.cancel'),
-    handler: handleCancel
-  },
-  {
     text: t('common.save'),
     color: 'primary',
     handler: handleSave
+  },
+  {
+    text: t('common.cancel'),
+    color: 'secondary',
+    handler: handleCancel
   }
 ])
 

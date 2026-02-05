@@ -53,27 +53,38 @@ src/
 
 ---
 
-## 🎯 FASE 2: CRUD Tipos de Receita
+## 🎯 FASE 2: CRUD Tipos de Receita ✅ CONCLUÍDO
 
-### 2.1 View `/income-types`
-- [ ] Criar `src/views/IncomeTypesView.vue`
-- [ ] Lista de tipos cadastrados (v-list do Vuetify)
-- [ ] Botão flutuante (+) para adicionar
-- [ ] Cada item com IconToolTip (editar/excluir)
-- [ ] Usar `ref()` para gerenciar estado local
-- [ ] Integrar com LocalStorage Service
+### 2.1 View `/income-types` ✅
+- [x] Criar `src/views/IncomeTypesView.vue`
+- [x] Lista de tipos cadastrados (v-card com scroll)
+- [x] Botão flutuante (+) centralizado para adicionar
+- [x] Cada item com IconToolTip (editar/excluir)
+- [x] Usar `ref()` para gerenciar estado local
+- [x] Integrar com LocalStorage Service
+- [x] Layout: Título fixo, scroll apenas na lista de cards
+- [x] Espaçamento entre cards (mb-2)
+- [x] Altura dinâmica com `calc(100dvh - 200px)`
 
-### 2.2 Modal de Formulário
-- [ ] Criar `src/components/IncomeTypeFormModal.vue`
-- [ ] ModalBase da lib
-- [ ] Campos: nome (v-text-field), tipo (v-select com enum)
-- [ ] Validação
-- [ ] Actions: Salvar, Cancelar
-- [ ] **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
-- [ ] **MODO EDITAR**: Após salvar, fechar modal
+### 2.2 Modal de Formulário ✅
+- [x] Criar `src/components/IncomeTypeFormModal.vue`
+- [x] ModalBase da lib
+- [x] Campos: nome (v-text-field), tipo (v-select com enum)
+- [x] Validação
+- [x] Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
+- [x] **MODO ADICIONAR**: Após salvar, limpar campos, resetar validação e manter modal aberto
+- [x] **MODO EDITAR**: Após salvar, fechar modal
+- [x] Foco automático no primeiro campo ao abrir (apenas modo ADD)
+- [x] Espaçamento entre campos (mb-4)
+- [x] Mensagens de sucesso sem "com sucesso" (ex: "Receita cadastrada", "Receita atualizada")
 
-### 2.3 Rota
-- [ ] Adicionar rota `/income-types` no router
+### 2.3 Rota ✅
+- [x] Adicionar rota `/income-types` no router
+
+### 2.4 Ajustes na BaseLib ✅
+- [x] ModalBase: Controle manual de fechamento (não fecha automaticamente)
+- [x] IconToolTip: Corrigido evento @click com handleClick
+- [x] Select: Menu aparece por baixo do modal (z-index ajustado)
 
 ---
 
@@ -92,7 +103,7 @@ src/
 - [ ] ModalBase da lib
 - [ ] Campo: nome (v-text-field)
 - [ ] Validação
-- [ ] Actions: Salvar, Cancelar
+- [ ] Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
 - [ ] **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
 - [ ] **MODO EDITAR**: Após salvar, fechar modal
 
@@ -142,6 +153,7 @@ src/
     - **HOURLY**: MoneyField (valor/hora), NumberField (horas), NumberField (minutos)
     - **EXTRA**: MoneyField (valor)
   - Calcular valor final
+  - Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
   - **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
   - **MODO EDITAR**: Após salvar, fechar modal
 - [ ] Botão (+) na linha de Receitas abre modal de seleção
@@ -169,6 +181,7 @@ src/
   - Modal para selecionar tipo de despesa
 - [ ] Criar `src/components/ExpenseFormModal.vue`
   - MoneyField (valor)
+  - Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
   - **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
   - **MODO EDITAR**: Após salvar, fechar modal
 - [ ] Botão flutuante (+) abre modal de seleção
