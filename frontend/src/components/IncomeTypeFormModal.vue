@@ -33,12 +33,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { ModalBase, notify, loading } from '@wallacesw11/base-lib'
-import { localStorageService } from '@/services/localStorageService'
-import type { IncomeTypeModel } from '@/models'
-import { IncomeType, FormMode } from '@/models'
+import { ref, computed, watch, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { ModalBase, notify, loading } from '@wallacesw11/base-lib';
+import { incomeTypeService } from '@/services/incomeTypeService';
+import type { IncomeTypeModel } from '@/models';
+import { IncomeType, FormMode } from '@/models';
 
 interface ModalAction {
   text: string
@@ -122,28 +122,21 @@ const handleSave = async (): Promise<void> => {
 
   try {
     if (props.mode === FormMode.ADD) {
-      await localStorageService.post<IncomeTypeModel>('incomeTypes', {
-        name: form.value.name,
-        type: form.value.type
-      })
+      await incomeTypeService.create(form.value.name, form.value.type);
 
-      notify.success(t('incomeTypes.saved'), '')
-      emit('saved')
-      resetForm()
-      return
+      notify.success(t('incomeTypes.saved'), '');
+      emit('saved');
+      resetForm();
+      return;
     }
 
-    if (!props.incomeType) return
+    if (!props.incomeType) return;
 
-    await localStorageService.put<IncomeTypeModel>(
-      'incomeTypes',
-      props.incomeType.id,
-      { name: form.value.name }
-    )
+    await incomeTypeService.update(props.incomeType.id, form.value.name);
 
-    notify.success(t('incomeTypes.updated'), '')
-    emit('saved')
-    emit('update:modelValue', false)
+    notify.success(t('incomeTypes.updated'), '');
+    emit('saved');
+    emit('update:modelValue', false);
   } catch (error) {
     const errorMessage = props.mode === FormMode.ADD 
       ? t('incomeTypes.saveError') 

@@ -1,7 +1,6 @@
 export interface MonthData {
-  id: string
-  userId: string
-  year: number
-  month: number
-  lastAccessed: Date
+  id: number;
+  year: number;
+  month: number;
+  lastAccessed: string;
 }

@@ -1,11 +1,11 @@
 export interface Income {
-  id: string
-  monthDataId: string
-  incomeTypeId: string
-  grossValue?: number
-  netValue?: number
-  hourlyRate?: number
-  hours?: number
-  minutes?: number
-  calculatedValue: number
+  id: number;
+  monthDataId: number;
+  incomeTypeId: number;
+  grossValue: number | null;
+  netValue: number | null;
+  hourlyRate: number | null;
+  hours: number | null;
+  minutes: number | null;
+  calculatedValue: number;
 }

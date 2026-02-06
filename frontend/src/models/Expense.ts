@@ -1,6 +1,6 @@
 export interface Expense {
-  id: string
-  monthDataId: string
-  expenseTypeId: string
-  value: number
+  id: number;
+  monthDataId: number;
+  expenseTypeId: number;
+  value: number;
 }

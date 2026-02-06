@@ -23,7 +23,7 @@
 import { ref, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ModalBase, notify, loading } from '@wallacesw11/base-lib';
-import { localStorageService } from '@/services/localStorageService';
+import { expenseTypeService } from '@/services/expenseTypeService';
 import type { ExpenseTypeModel } from '@/models';
 import { FormMode } from '@/models';
 
