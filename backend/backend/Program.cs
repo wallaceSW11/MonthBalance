@@ -67,6 +67,8 @@ builder.Services.AddScoped<IMonthDataRepository, MonthDataRepository>();
 builder.Services.AddScoped<IMonthDataService, MonthDataService>();
 builder.Services.AddScoped<IIncomeTypeRepository, IncomeTypeRepository>();
 builder.Services.AddScoped<IIncomeTypeService, IncomeTypeService>();
+builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
+builder.Services.AddScoped<IIncomeService, IncomeService>();
 
 var app = builder.Build();
 
