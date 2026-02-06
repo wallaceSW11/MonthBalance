@@ -128,10 +128,13 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { EmailField, PrimaryButton } from '@wallacesw11/base-lib';
+import { EmailField, PrimaryButton, notify, loading } from '@wallacesw11/base-lib';
+import { useAuthStore } from '@/stores/auth';
+import { ROUTES } from '@/constants/routes';
 
 const router = useRouter();
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const formRef = ref();
 const emailValid = ref(false);
@@ -162,11 +165,27 @@ async function handleRegister(): Promise<void> {
 
   if (!valid || !emailValid.value) return;
 
-  console.log('Register:', form.value);
+  if (!acceptedTerms.value) {
+    notify.warning(t('auth.termsRequired'), t('auth.termsRequiredMessage'));
+
+    return;
+  }
+
+  loading.show(t('auth.creatingAccount'));
+
+  try {
+    await authStore.register(form.value.name, form.value.email, form.value.password);
+    notify.success(t('auth.accountCreated'), t('auth.accountCreatedMessage'));
+    await router.push(ROUTES.HOME);
+  } catch (error) {
+    notify.error(t('auth.registerError'), error instanceof Error ? error.message : 'Erro ao criar conta');
+  } finally {
+    loading.hide();
+  }
 }
 
 function goToLogin(): void {
-  router.push('/login');
+  router.push(ROUTES.LOGIN);
 }
 </script>
 

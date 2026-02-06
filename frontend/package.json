@@ -29,7 +29,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@wallacesw11/base-lib": "github:wallacesw11/BaseLib#main",
-    "axios": "^1.13.1",
+    "axios": "^1.13.4",
     "pinia": "^3.0.3",
     "vue": "^3.5.22",
     "vue-i18n": "^11.1.12",

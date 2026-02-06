@@ -134,7 +134,7 @@ function loadUserData(): void {
   form.value = {
     name: authStore.user.name,
     email: authStore.user.email,
-    notificationsEnabled: authStore.user.notificationsEnabled ?? true
+    notificationsEnabled: authStore.user.notificationsEnabled
   };
 }
 

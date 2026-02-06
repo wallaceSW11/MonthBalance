@@ -236,6 +236,12 @@ export default {
     passwordChanged: "Password changed successfully",
     passwordChangeError: "Error changing password",
     currentPasswordIncorrect: "Current password is incorrect",
+    creatingAccount: "Creating account...",
+    accountCreated: "Account created!",
+    accountCreatedMessage: "Welcome to Month Balance",
+    registerError: "Error creating account",
+    termsRequired: "Terms required",
+    termsRequiredMessage: "You need to accept the terms to continue",
   },
   account: {
     title: "My Account",

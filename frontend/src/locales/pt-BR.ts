@@ -243,6 +243,12 @@ export default {
     passwordChanged: "Senha alterada com sucesso",
     passwordChangeError: "Erro ao alterar senha",
     currentPasswordIncorrect: "Senha atual incorreta",
+    creatingAccount: "Criando conta...",
+    accountCreated: "Conta criada!",
+    accountCreatedMessage: "Bem-vindo ao Month Balance",
+    registerError: "Erro ao criar conta",
+    termsRequired: "Termos obrigatórios",
+    termsRequiredMessage: "Você precisa aceitar os termos para continuar",
   },
   account: {
     title: "Minha Conta",

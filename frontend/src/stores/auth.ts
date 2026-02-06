@@ -9,6 +9,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   const authenticated = computed(() => !!user.value);
 
+  async function register(name: string, email: string, password: string): Promise<void> {
+    loading.value = true;
+
+    try {
+      user.value = await authService.register(name, email, password);
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function login(email: string, password: string): Promise<void> {
     loading.value = true;
 
@@ -54,6 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     loading,
     authenticated,
+    register,
     login,
     logout,
     initializeAuth,

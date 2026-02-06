@@ -1,7 +1,7 @@
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  avatar?: string;
-  notificationsEnabled?: boolean;
+  avatar: string | null;
+  notificationsEnabled: boolean;
 }

@@ -1,29 +1,68 @@
-import { localStorageService } from './localStorageService';
+import { api } from './api';
 import type { User } from '@/models/User';
 
 const AUTH_TOKEN_KEY = 'auth_token';
 const AUTH_USER_KEY = 'auth_user';
 
-async function login(email: string, password: string): Promise<User> {
-  const fixedUser = localStorageService.getFixedUser();
+interface AuthResponse {
+  token: string;
+  user: User;
+}
 
-  if (email !== fixedUser.email || password !== fixedUser.password) {
-    throw new Error('Credenciais inválidas');
+interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface UpdateUserRequest {
+  name?: string;
+  avatar?: string | null;
+  notificationsEnabled?: boolean;
+}
+
+interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+async function register(name: string, email: string, password: string): Promise<User> {
+  try {
+    const payload: RegisterRequest = { name, email, password };
+    const response = await api.post<AuthResponse>('/auth/register', payload);
+    const { token, user } = response.data;
+
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+    return user;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao criar conta';
+
+    throw new Error(message);
   }
+}
 
-  const token = `token_${Date.now()}`;
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
+async function login(email: string, password: string): Promise<User> {
+  try {
+    const payload: LoginRequest = { email, password };
+    const response = await api.post<AuthResponse>('/auth/login', payload);
+    const { token, user } = response.data;
 
-  const user: User = {
-    id: fixedUser.id,
-    name: fixedUser.name,
-    email: fixedUser.email,
-    notificationsEnabled: true
-  };
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    return user;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Credenciais inválidas';
 
-  return user;
+    throw new Error(message);
+  }
 }
 
 function logout(): void {
@@ -49,40 +88,49 @@ function getCurrentUser(): User | null {
   }
 }
 
-async function updateUser(data: Partial<User>): Promise<User> {
-  const currentUser = getCurrentUser();
+async function fetchCurrentUser(): Promise<User> {
+  const response = await api.get<User>('/auth/me');
+  const user = response.data;
 
-  if (!currentUser) {
-    throw new Error('Usuário não autenticado');
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+  return user;
+}
+
+async function updateUser(data: UpdateUserRequest): Promise<User> {
+  try {
+    const response = await api.put<User>('/auth/me', data);
+    const user = response.data;
+
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+    return user;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao atualizar usuário';
+
+    throw new Error(message);
   }
-
-  const updatedUser: User = {
-    ...currentUser,
-    ...data,
-    email: currentUser.email
-  };
-
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
-
-  return updatedUser;
 }
 
 async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
-  const fixedUser = localStorageService.getFixedUser();
-  console.log(newPassword);
+  try {
+    const payload: ChangePasswordRequest = { currentPassword, newPassword };
 
-  if (currentPassword !== fixedUser.password) {
-    throw new Error('Senha atual incorreta');
+    await api.post('/auth/change-password', payload);
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao alterar senha';
+
+    throw new Error(message);
   }
-
-  return Promise.resolve();
 }
 
 export const authService = {
+  register,
   login,
   logout,
   isAuthenticated,
   getCurrentUser,
+  fetchCurrentUser,
   updateUser,
   changePassword
 };
