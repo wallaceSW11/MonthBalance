@@ -1,6 +1,10 @@
 <template>
   <v-app>
-    <router-view />
+    <AppDrawer v-if="authenticated" v-model="drawerOpen" />
+
+    <v-main>
+      <router-view @toggle-drawer="drawerOpen = !drawerOpen" />
+    </v-main>
 
     <FloatingNotify ref="floatingNotifyRef" />
     <LoadingOverlay ref="loadingOverlayRef" />
@@ -9,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import {
   FloatingNotify,
   LoadingOverlay,
@@ -20,18 +24,25 @@ import {
   useConfirmStore
 } from '@wallacesw11/base-lib';
 import { useLocaleStore } from '@/stores/locale';
+import { useAuthStore } from '@/stores/auth';
+import AppDrawer from '@/components/AppDrawer.vue';
 
 const floatingNotifyRef = ref();
 const loadingOverlayRef = ref();
 const confirmDialogRef = ref();
+const drawerOpen = ref<boolean>(false);
 
 const localeStore = useLocaleStore();
 const notifyStore = useNotifyStore();
 const loadingStore = useLoadingStore();
 const confirmStore = useConfirmStore();
+const authStore = useAuthStore();
+
+const authenticated = computed(() => authStore.authenticated);
 
 useThemeSync();
 localeStore.initializeLocale();
+authStore.initializeAuth();
 
 function registerGlobalComponentRefs(): void {
   if (floatingNotifyRef.value) {

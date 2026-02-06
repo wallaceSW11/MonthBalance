@@ -286,28 +286,62 @@ src/
 
 ## 🎯 FASE 11: Autenticação (Futuro)
 
-### 11.1 Tela de Login
-- [ ] Criar `src/views/LoginView.vue`
-- [ ] EmailField da lib
-- [ ] v-text-field para senha
-- [ ] PrimaryButton "Entrar"
-- [ ] Link "Esqueci minha senha"
-- [ ] Link "Criar conta"
+### 11.1 Tela de Login ✅
+- [x] Criar `src/views/LoginView.vue`
+- [x] EmailField da lib
+- [x] v-text-field para senha
+- [x] PrimaryButton "Entrar"
+- [x] Link "Esqueci minha senha"
+- [x] Link "Criar conta"
+- [x] Design adaptado do Stitch
 
-### 11.2 Tela de Cadastro
-- [ ] Criar `src/views/RegisterView.vue`
-- [ ] Campos: apelido, email, senha, confirmar senha
-- [ ] Validação
+### 11.2 Tela de Cadastro ✅
+- [x] Criar `src/views/RegisterView.vue`
+- [x] Campos: nome, email, senha, confirmar senha
+- [x] Validação
+- [x] Design adaptado do Stitch
 
-### 11.3 Esqueci Senha
-- [ ] Criar `src/views/ForgotPasswordView.vue`
-- [ ] EmailField
-- [ ] Chamar API para enviar email
+### 11.3 Esqueci Senha ✅
+- [x] Criar `src/views/ForgotPasswordView.vue`
+- [x] EmailField
+- [x] Chamar API para enviar email
+- [x] Design adaptado do Stitch
 
-### 11.4 Guards
+### 11.4 Integração com Backend
+- [ ] Implementar chamadas de API (login, register, forgot-password)
+- [ ] Armazenar token JWT no localStorage
+- [ ] Configurar interceptors do axios
+
+### 11.5 Guards
 - [ ] Criar `src/router/guards.ts`
 - [ ] Verificar token JWT
 - [ ] Redirecionar para /login se não autenticado
+
+### 11.6 **🔐 SEGURANÇA E PRIVACIDADE** (IMPORTANTE!)
+**Problema**: Dados financeiros sensíveis (salários, gastos) armazenados no backend podem ser acessados pelo administrador.
+
+**Opções a considerar:**
+1. **Criptografia End-to-End**
+   - Criptografar valores no frontend antes de enviar
+   - Usuário tem a chave (senha)
+   - Mais seguro, mas perde dados se esquecer senha
+
+2. **Criptografia no Backend**
+   - Criptografar com chave mestra do servidor
+   - Admin não vê texto plano facilmente
+   - Balanceado entre segurança e recuperação
+
+3. **Dados Locais (Offline-First)**
+   - Armazenar tudo no localStorage/IndexedDB
+   - Backend só para sync opcional
+   - Dados nunca saem do dispositivo
+
+4. **Transparência + Criptografia Básica**
+   - Criptografia no backend
+   - Política de Privacidade clara
+   - Modelo usado por Nubank, Guiabolso, etc.
+
+**Decisão**: Avaliar antes de lançar em produção. Para MVP, considerar opção 4.
 
 ---
 

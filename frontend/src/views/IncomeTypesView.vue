@@ -1,11 +1,9 @@
 <template>
   <div class="income-types-view">
-    <v-container>
-      <div class="d-flex align-center mb-4">
-        <v-btn icon="mdi-arrow-left" variant="text" @click="goBack" />
-        <h1 class="text-h5 ml-2">{{ t('incomeTypes.title') }}</h1>
-      </div>
-    </v-container>
+    <v-app-bar elevation="0">
+      <v-app-bar-nav-icon @click="toggleDrawer" />
+      <v-app-bar-title>{{ t('incomeTypes.title') }}</v-app-bar-title>
+    </v-app-bar>
 
     <div class="cards-container">
       <v-container>
@@ -67,23 +65,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
 import { localStorageService } from '@/services/localStorageService';
 import type { IncomeTypeModel } from '@/models';
 import { IncomeType, FormMode } from '@/models';
 import IncomeTypeFormModal from '@/components/IncomeTypeFormModal.vue';
 
+const emit = defineEmits<{
+  toggleDrawer: []
+}>();
+
 const { t } = useI18n();
-const router = useRouter();
 
 const incomeTypes = ref<IncomeTypeModel[]>([]);
 const modalOpen = ref(false);
 const modalMode = ref<FormMode>(FormMode.ADD);
 const selectedIncomeType = ref<IncomeTypeModel | null>(null);
 
-function goBack(): void {
-  router.push('/');
+function toggleDrawer(): void {
+  emit('toggleDrawer');
 }
 
 const getTypeLabel = (type: IncomeType): string => {
@@ -158,8 +158,9 @@ onMounted(() => {
 }
 
 .cards-container {
-  height: calc(100dvh - 200px);
+  height: calc(100dvh - 120px);
   overflow-y: auto;
+  padding-bottom: 100px;
 }
 
 .add-button {

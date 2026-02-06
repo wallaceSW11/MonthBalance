@@ -1,6 +1,7 @@
-const FIXED_USER_ID = 'user-wall'
-const FIXED_USER_EMAIL = 'wall@wall.com'
+const FIXED_USER_ID = 'user-test'
+const FIXED_USER_EMAIL = 'teste@teste.com'
 const FIXED_USER_PASSWORD = 'senha'
+const FIXED_USER_NAME = 'Usuário Teste'
 
 
 const generateId = (): string => {
@@ -87,6 +88,7 @@ export const localStorageService = {
 
   getFixedUser: () => ({
     id: FIXED_USER_ID,
+    name: FIXED_USER_NAME,
     email: FIXED_USER_EMAIL,
     password: FIXED_USER_PASSWORD
   }),

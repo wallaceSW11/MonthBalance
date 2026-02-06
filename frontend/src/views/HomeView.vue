@@ -1,21 +1,5 @@
 <template>
   <div class="home-view">
-    <v-navigation-drawer v-model="drawerOpen" temporary>
-      <v-list>
-        <v-list-item prepend-icon="mdi-cash-multiple" title="Receitas" to="/income-types" />
-        <v-list-item prepend-icon="mdi-credit-card-outline" title="Despesas" to="/expense-types" />
-
-        <v-divider class="my-2" />
-
-        <v-list-item>
-          <div class="theme-toggle-container">
-            <span class="theme-label">{{ t('theme.title') }}</span>
-            <ThemeToggle />
-          </div>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <MonthNavigator
       :year="currentYear"
       :month="currentMonth"
@@ -92,7 +76,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { confirm, notify, loading, ThemeToggle } from '@wallacesw11/base-lib';
+import { confirm, notify, loading } from '@wallacesw11/base-lib';
 import { localStorageService } from '@/services/localStorageService';
 import { IncomeType, FormMode } from '@/models';
 import type { MonthData, Income, Expense, IncomeTypeModel, ExpenseTypeModel } from '@/models';
@@ -103,6 +87,10 @@ import IncomeTypeSelectModal from '@/components/IncomeTypeSelectModal.vue';
 import IncomeFormModal from '@/components/IncomeFormModal.vue';
 import ExpenseTypeSelectModal from '@/components/ExpenseTypeSelectModal.vue';
 import ExpenseFormModal from '@/components/ExpenseFormModal.vue';
+
+const emit = defineEmits<{
+  toggleDrawer: []
+}>();
 
 const { t } = useI18n();
 
@@ -128,7 +116,6 @@ const expenseTypeSelectOpen = ref<boolean>(false);
 const expenseFormOpen = ref<boolean>(false);
 const expenseFormMode = ref<FormMode>(FormMode.ADD);
 const selectedExpenseTypeId = ref<string>('');
-const drawerOpen = ref<boolean>(false);
 const allMonthData = ref<MonthData[]>([]);
 
 const totalIncome = computed(() => {
@@ -553,7 +540,7 @@ async function handleClearMonth(): Promise<void> {
 }
 
 function handleMenuClick(): void {
-  drawerOpen.value = true;
+  emit('toggleDrawer');
 }
 
 function handleAddIncome(): void {
@@ -715,18 +702,5 @@ onMounted(async () => {
 
 .floating-button {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
-
-.theme-toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 16px;
-}
-
-.theme-label {
-  font-size: 0.875rem;
-  opacity: 0.8;
 }
 </style>

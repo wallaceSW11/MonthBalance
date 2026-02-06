@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#04a6af",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f2223",
+                        "charcoal": "#141d1e",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Navigation Drawer - Month Balance</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased">
+<!-- iOS Wrapper Simulator -->
+<div class="relative mx-auto h-screen max-w-[430px] overflow-hidden bg-black shadow-2xl">
+<!-- Navigation Drawer Overlay -->
+<div class="absolute inset-0 z-50 flex">
+<!-- Sidebar Content -->
+<div class="flex h-full w-[280px] flex-col bg-charcoal dark:bg-background-dark border-r border-white/5 shadow-2xl">
+<!-- Top Section: User Profile -->
+<div class="flex flex-col items-start px-6 pb-8 pt-12">
+<div class="relative mb-4 h-16 w-16 overflow-hidden rounded-full border-2 border-primary/30">
+<img alt="Avatar" class="h-full w-full object-cover" data-alt="Professional portrait of a male user with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC-LoydD2EhA5P3YRdG3HrrngcZqVzFdd9k1KHwdnDrMDQi4P_uk4uuw8k-HEIWUEzGgJcH4C7Iq7yS7o9vikr8PruutbwW4UjcOzRLo8Pqrbk3KhAMXukr1cZfopwlJ02_7JwNzeaTiSGV__m1bLG2A7nNeE4M8Vhamoj7SbnJoqfi4NpJTVO6ObIqJxwQDyVBcU4VVWVS0emuZZ_heZ0i3SF5YsWc-CBO1htZdADRPFywLURE06-v02W9L4AQ_ef2XMnfLJhthEw"/>
+</div>
+<h2 class="text-xl font-bold leading-tight text-white">Nome do Usuário</h2>
+<p class="text-sm font-medium text-white/50">email@exemplo.com</p>
+</div>
+<!-- Middle Section: Navigation Links -->
+<nav class="flex-1 space-y-1 px-3">
+<a class="group flex h-12 items-center gap-4 rounded-xl bg-primary/10 px-4 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</a>
+<a class="group flex h-12 items-center gap-4 rounded-xl px-4 text-white/70 transition-colors hover:bg-white/5 hover:text-white" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="text-sm font-semibold">Gerenciar Receitas</span>
+</a>
+<a class="group flex h-12 items-center gap-4 rounded-xl px-4 text-white/70 transition-colors hover:bg-white/5 hover:text-white" href="#">
+<span class="material-symbols-outlined">trending_down</span>
+<span class="text-sm font-semibold">Gerenciar Despesas</span>
+</a>
+<a class="group flex h-12 items-center gap-4 rounded-xl px-4 text-white/70 transition-colors hover:bg-white/5 hover:text-white" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="text-sm font-semibold">Minha Conta</span>
+</a>
+</nav>
+<!-- Bottom Section: Settings & Logout -->
+<div class="border-t border-white/5 p-4 space-y-2">
+<!-- Language Toggle -->
+<div class="flex items-center justify-between px-2 py-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white/50">language</span>
+<span class="text-sm font-medium text-white/80">Idioma</span>
+</div>
+<div class="flex items-center gap-1.5 rounded-full bg-white/5 px-2 py-1">
+<span class="text-xs font-bold text-white">PT-BR</span>
+</div>
+</div>
+<!-- Theme Toggle -->
+<div class="flex items-center justify-between px-2 py-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white/50">dark_mode</span>
+<span class="text-sm font-medium text-white/80">Modo Escuro</span>
+</div>
+<label class="relative flex h-6 w-11 cursor-pointer items-center rounded-full bg-primary p-0.5">
+<div class="h-5 w-5 translate-x-5 rounded-full bg-white shadow-md"></div>
+<input checked="" class="sr-only" type="checkbox"/>
+</label>
+</div>
+<!-- Logout Button -->
+<button class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 py-4 text-sm font-bold text-red-400 transition-colors active:bg-red-500/10 active:text-red-500">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span>Sair da Conta</span>
+</button>
+</div>
+<!-- iOS Home Indicator Spacing -->
+<div class="h-8"></div>
+</div>
+<!-- Backdrop (Dimmed background) -->
+<div class="flex-1 bg-black/40 backdrop-blur-[2px]"></div>
+</div>
+<!-- Fake Main Content Background (Behind Drawer) -->
+<div class="h-full w-full bg-background-dark p-6">
+<div class="mb-8 flex items-center justify-between pt-10">
+<span class="material-symbols-outlined text-white">menu</span>
+<div class="h-10 w-10 rounded-full bg-primary"></div>
+</div>
+<div class="h-32 w-full rounded-2xl bg-white/5 p-4">
+<div class="h-4 w-24 rounded bg-white/10 mb-2"></div>
+<div class="h-8 w-48 rounded bg-white/20"></div>
+</div>
+</div>
+</div>
+</body></html>

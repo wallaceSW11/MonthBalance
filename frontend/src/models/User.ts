@@ -1,6 +1,7 @@
 export interface User {
-  id: string
-  nickname: string
-  email: string
-  password: string
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  notificationsEnabled?: boolean;
 }

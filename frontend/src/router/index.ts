@@ -1,42 +1,75 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
+import { authService } from "@/services/authService";
+import { ROUTES } from "@/constants/routes";
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/login",
+    path: ROUTES.LOGIN,
     name: "Login",
     component: () => import("@/views/LoginView.vue"),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/register",
+    path: ROUTES.REGISTER,
     name: "Register",
     component: () => import("@/views/RegisterView.vue"),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/forgot-password",
+    path: ROUTES.FORGOT_PASSWORD,
     name: "ForgotPassword",
     component: () => import("@/views/ForgotPasswordView.vue"),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/",
+    path: ROUTES.HOME,
     name: "Home",
     component: () => import("@/views/HomeView.vue"),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/income-types",
+    path: ROUTES.INCOME_TYPES,
     name: "IncomeTypes",
     component: () => import("@/views/IncomeTypesView.vue"),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/expense-types",
+    path: ROUTES.EXPENSE_TYPES,
     name: "ExpenseTypes",
     component: () => import("@/views/ExpenseTypesView.vue"),
+    meta: { requiresAuth: true }
   },
+  {
+    path: ROUTES.ACCOUNT,
+    name: "Account",
+    component: () => import("@/views/AccountView.vue"),
+    meta: { requiresAuth: true }
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, _, next) => {
+  const requiresAuth = to.meta.requiresAuth !== false;
+  const authenticated = authService.isAuthenticated();
+
+  if (requiresAuth && !authenticated) {
+    next(ROUTES.LOGIN);
+
+    return;
+  }
+
+  if (to.path === ROUTES.LOGIN && authenticated) {
+    next(ROUTES.HOME);
+
+    return;
+  }
+
+  next();
 });
 
 export default router;

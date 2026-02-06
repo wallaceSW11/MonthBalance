@@ -11,7 +11,6 @@
 
       <v-form ref="formRef" class="login-form" @submit.prevent="handleLogin">
         <div class="form-field">
-          <label class="field-label">{{ t('auth.email') }}</label>
           <EmailField
             v-model="form.email"
             :placeholder="t('auth.emailPlaceholder')"
@@ -21,7 +20,6 @@
         </div>
 
         <div class="form-field">
-          <label class="field-label">{{ t('auth.password') }}</label>
           <v-text-field
             v-model="form.password"
             :placeholder="t('auth.passwordPlaceholder')"
@@ -84,10 +82,13 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { EmailField, PrimaryButton } from '@wallacesw11/base-lib';
+import { EmailField, PrimaryButton, notify, loading } from '@wallacesw11/base-lib';
+import { useAuthStore } from '@/stores/auth';
+import { ROUTES } from '@/constants/routes';
 
 const router = useRouter();
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const formRef = ref();
 const emailValid = ref(false);
@@ -106,15 +107,24 @@ async function handleLogin(): Promise<void> {
 
   if (!valid || !emailValid.value) return;
 
-  console.log('Login:', form.value);
+  loading.show(t('auth.loggingIn'));
+
+  try {
+    await authStore.login(form.value.email, form.value.password);
+    await router.push(ROUTES.HOME);
+  } catch (error) {
+    notify.error(t('auth.loginError'), error instanceof Error ? error.message : 'Erro ao fazer login');
+  } finally {
+    loading.hide();
+  }
 }
 
 function goToRegister(): void {
-  router.push('/register');
+  router.push(ROUTES.REGISTER);
 }
 
 function goToForgotPassword(): void {
-  router.push('/forgot-password');
+  router.push(ROUTES.FORGOT_PASSWORD);
 }
 </script>
 
