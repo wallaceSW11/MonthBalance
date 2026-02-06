@@ -1,6 +1,6 @@
 export default {
   common: {
-    appName: "Base Project",
+    appName: "Month Balance",
     loading: "Loading...",
     save: "Save",
     cancel: "Cancel",

@@ -49,14 +49,27 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const expanded = ref(true);
+const STORAGE_KEY = 'monthbalance_expenses_expanded';
+
+const expanded = ref(loadExpandedState());
 
 const expandIconClass = computed(() => {
   return expanded.value ? '' : 'rotate-icon';
 });
 
+function loadExpandedState(): boolean {
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  return saved ? JSON.parse(saved) : true;
+}
+
+function saveExpandedState(): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(expanded.value));
+}
+
 function toggleExpanded(): void {
   expanded.value = !expanded.value;
+  saveExpandedState();
 }
 
 function handleEdit(id: string, value: number): void {

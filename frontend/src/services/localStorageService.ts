@@ -42,7 +42,7 @@ export const localStorageService = {
     return item ?? null
   },
 
-  async post<T extends { id?: string; userId?: string }>(resource: string, data: T): Promise<T> {
+  async post<T extends { id?: string; userId?: string }>(resource: string, data: Omit<T, 'id' | 'userId'> & { id?: string; userId?: string }): Promise<T> {
     await delay()
     
     const items = getAll<T & { id: string }>(resource)

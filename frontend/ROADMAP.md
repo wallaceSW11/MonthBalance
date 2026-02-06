@@ -202,63 +202,63 @@ src/
 
 ---
 
-## 🎯 FASE 7: Navegação entre Meses
+## 🎯 FASE 7: Navegação entre Meses ✅ CONCLUÍDO
 
-### 7.1 Lógica de Navegação
-- [ ] Permitir avançar até 5 meses à frente do último cadastrado
-- [ ] Permitir voltar em todos os meses cadastrados
-- [ ] Bloquear antes de janeiro/2026
-- [ ] Desabilitar botões quando no limite
-- [ ] Salvar último mês acessado no localStorage
-- [ ] Ao abrir app, carregar último mês acessado
+### 7.1 Lógica de Navegação ✅
+- [x] Permitir avançar até 5 meses à frente do último cadastrado
+- [x] Permitir voltar em todos os meses cadastrados
+- [x] Bloquear antes de janeiro/2026
+- [x] Desabilitar botões quando no limite
+- [x] Salvar último mês acessado no localStorage
+- [x] Ao abrir app, carregar último mês acessado
 
-### 7.2 Duplicar Mês
-- [ ] Ao avançar para mês não cadastrado:
+### 7.2 Duplicar Mês ✅
+- [x] Ao avançar para mês não cadastrado:
   - Exibir confirm.show(): "Deseja copiar os dados de [mês anterior]?"
   - Sim: copiar tipos E valores
   - Não: criar mês zerado
-- [ ] Opção manual no menu dropdown
+- [x] Opção manual no menu dropdown
   - Copiar mês atual para próximo mês
   - Validar se próximo mês já existe
 
-### 7.3 Limpar Mês
-- [ ] Opção no menu dropdown
-- [ ] confirm.show() da lib: "Limpar todos os lançamentos do mês?"
-- [ ] Remover TODOS os lançamentos (incomes e expenses)
-- [ ] Manter MonthData (ano/mês)
+### 7.3 Limpar Mês ✅
+- [x] Opção no menu dropdown
+- [x] confirm.show() da lib: "Limpar todos os lançamentos do mês?"
+- [x] Remover TODOS os lançamentos (incomes e expenses)
+- [x] Manter MonthData (ano/mês)
 
 ---
 
-## 🎯 FASE 8: Expansão/Recolhimento
+## 🎯 FASE 8: Expansão/Recolhimento ✅ CONCLUÍDO
 
-### 8.1 Receitas
-- [ ] Botão com ícone expand_more
-- [ ] Rotacionar ícone ao recolher (transform: rotate(180deg))
-- [ ] Recolhido: só título "RECEITAS" + linha divisória
-- [ ] Expandido: mostra todos os lançamentos
-- [ ] Salvar estado no localStorage (opcional)
+### 8.1 Receitas ✅
+- [x] Botão com ícone expand_more
+- [x] Rotacionar ícone ao recolher (transform: rotate(180deg))
+- [x] Recolhido: só título "RECEITAS" + linha divisória
+- [x] Expandido: mostra todos os lançamentos
+- [x] Salvar estado no localStorage
 
-### 8.2 Despesas
-- [ ] Botão com ícone expand_more
-- [ ] Rotacionar ícone ao recolher
-- [ ] Recolhido: só título "DESPESAS" + linha divisória
-- [ ] Expandido: mostra todos os lançamentos
-- [ ] Salvar estado no localStorage (opcional)
+### 8.2 Despesas ✅
+- [x] Botão com ícone expand_more
+- [x] Rotacionar ícone ao recolher
+- [x] Recolhido: só título "DESPESAS" + linha divisória
+- [x] Expandido: mostra todos os lançamentos
+- [x] Salvar estado no localStorage
 
 ---
 
-## 🎯 FASE 9: PWA
+## 🎯 FASE 9: PWA ✅ CONCLUÍDO
 
-### 9.1 Configuração
-- [ ] Instalar `vite-plugin-pwa`
-- [ ] Configurar `vite.config.ts`
-- [ ] Criar ícones (192x192, 512x512)
-- [ ] Configurar `manifest.json`
-- [ ] Testar instalação no iPhone 16 Pro Max
+### 9.1 Configuração ✅
+- [x] Instalar `vite-plugin-pwa`
+- [x] Configurar `vite.config.ts`
+- [x] Criar ícones (192x192, 512x512)
+- [x] Configurar `manifest.json`
+- [x] Testar instalação no iPhone 16 Pro Max
 
-### 9.2 Service Worker
-- [ ] Estratégia de cache
-- [ ] Offline fallback (opcional, pois precisa de backend)
+### 9.2 Service Worker ✅
+- [x] Estratégia de cache
+- [x] Offline fallback (opcional, pois precisa de backend)
 
 ---
 
@@ -398,7 +398,7 @@ src/
 6. ✅ Fase 6: Funcionalidades de Despesa
 7. ✅ Fase 7: Navegação entre Meses
 8. ✅ Fase 8: Expansão/Recolhimento
-9. ⏳ Fase 9: PWA
+9. ✅ Fase 9: PWA
 10. ⏳ Fase 10: Preparação para Backend
 11. ⏳ Fase 11: Autenticação
 12. ⏳ Fase 12: Docker
