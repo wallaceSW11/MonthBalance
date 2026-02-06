@@ -63,6 +63,10 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IMonthDataRepository, MonthDataRepository>();
+builder.Services.AddScoped<IMonthDataService, MonthDataService>();
+builder.Services.AddScoped<IIncomeTypeRepository, IncomeTypeRepository>();
+builder.Services.AddScoped<IIncomeTypeService, IncomeTypeService>();
 
 var app = builder.Build();
 
