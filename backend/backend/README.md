@@ -30,12 +30,12 @@ backend/
 
 ### Desenvolvimento Local (sem Docker)
 
-1. **Instalar PostgreSQL 17** (porta 5433)
+1. **Instalar PostgreSQL 17** (porta 5432)
 
 2. **Configurar banco**:
 ```bash
 # Criar database
-createdb -U postgres -p 5433 monthbalance
+createdb -U postgres monthbalance
 ```
 
 3. **Aplicar migrations**:
@@ -48,8 +48,8 @@ dotnet ef database update
 dotnet run
 ```
 
-API disponível em: `http://localhost:5150`  
-Swagger: `http://localhost:5150/swagger`
+API disponível em: `http://localhost:5000`  
+Swagger: `http://localhost:5000/swagger`
 
 ### Com Docker
 
