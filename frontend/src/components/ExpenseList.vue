@@ -33,7 +33,7 @@ import { useI18n } from 'vue-i18n';
 import ExpenseItem from './ExpenseItem.vue';
 
 interface ExpenseListItem {
-  id: string;
+  id: number;
   name: string;
   value: number;
 }
@@ -43,8 +43,8 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  edit: [id: string, value: number];
-  delete: [id: string];
+  edit: [id: number, value: number];
+  delete: [id: number];
 }>();
 
 const { t } = useI18n();
@@ -72,7 +72,7 @@ function toggleExpanded(): void {
   saveExpandedState();
 }
 
-function handleEdit(id: string, value: number): void {
+function handleEdit(id: number, value: number): void {
   emit('edit', id, value);
 }
 </script>

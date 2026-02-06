@@ -35,7 +35,7 @@ import { useI18n } from 'vue-i18n';
 import IncomeItem from './IncomeItem.vue';
 
 interface IncomeListItem {
-  id: string;
+  id: number;
   name: string;
   type: string;
   value: number;
@@ -47,8 +47,8 @@ defineProps<{
 
 const emit = defineEmits<{
   add: [];
-  edit: [id: string];
-  delete: [id: string];
+  edit: [id: number];
+  delete: [id: number];
 }>();
 
 const { t } = useI18n();

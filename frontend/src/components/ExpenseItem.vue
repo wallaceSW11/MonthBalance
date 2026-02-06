@@ -30,13 +30,13 @@ import { ref, computed, nextTick } from 'vue';
 import { IconToolTip, MoneyField } from '@wallacesw11/base-lib';
 
 const props = defineProps<{
-  id: string;
+  id: number;
   name: string;
   value: number;
 }>();
 
 const emit = defineEmits<{
-  edit: [id: string, value: number];
+  edit: [id: number, value: number];
   delete: [];
 }>();
 

@@ -77,7 +77,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { confirm, notify, loading } from '@wallacesw11/base-lib';
-import { localStorageService } from '@/services/localStorageService';
+import { incomeService } from '@/services/incomeService';
+import { incomeTypeService } from '@/services/incomeTypeService';
+import { expenseService } from '@/services/expenseService';
+import { expenseTypeService } from '@/services/expenseTypeService';
+import { monthDataService } from '@/services/monthDataService';
 import { IncomeType, FormMode } from '@/models';
 import type { MonthData, Income, Expense, IncomeTypeModel, ExpenseTypeModel } from '@/models';
 import MonthNavigator from '@/components/MonthNavigator.vue';
@@ -110,12 +114,12 @@ const incomeTypeSelectOpen = ref<boolean>(false);
 const incomeFormOpen = ref<boolean>(false);
 const incomeFormMode = ref<FormMode>(FormMode.ADD);
 const selectedIncomeType = ref<IncomeType | null>(null);
-const selectedIncomeTypeId = ref<string>('');
+const selectedIncomeTypeId = ref<number>(0);
 const selectedIncome = ref<Income | undefined>(undefined);
 const expenseTypeSelectOpen = ref<boolean>(false);
 const expenseFormOpen = ref<boolean>(false);
 const expenseFormMode = ref<FormMode>(FormMode.ADD);
-const selectedExpenseTypeId = ref<string>('');
+const selectedExpenseTypeId = ref<number>(0);
 const allMonthData = ref<MonthData[]>([]);
 
 const totalIncome = computed(() => {
@@ -152,7 +156,7 @@ const canNavigateNext = computed(() => {
 });
 
 const currentMonthDataId = computed(() => {
-  return currentMonthData.value?.id ?? '';
+  return currentMonthData.value?.id ?? 0;
 });
 
 const incomesWithNames = computed(() => {
@@ -193,8 +197,7 @@ const expensesWithNames = computed(() => {
 
 async function loadIncomeTypes(): Promise<void> {
   try {
-    const types = (await localStorageService.get('incomeTypes')) as IncomeTypeModel[];
-    incomeTypes.value = types;
+    incomeTypes.value = await incomeTypeService.getAll();
   } catch (error) {
     notify.error(t('incomeTypes.loadError'), String(error));
   }
@@ -202,8 +205,7 @@ async function loadIncomeTypes(): Promise<void> {
 
 async function loadExpenseTypes(): Promise<void> {
   try {
-    const types = (await localStorageService.get('expenseTypes')) as ExpenseTypeModel[];
-    expenseTypes.value = types;
+    expenseTypes.value = await expenseTypeService.getAll();
   } catch (error) {
     notify.error(t('expenseTypes.loadError'), String(error));
   }
@@ -213,7 +215,8 @@ async function loadMonth(skipDuplicatePrompt: boolean = false): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
-    const monthDataList = (await localStorageService.get('month_data')) as MonthData[];
+    const monthDataList = await monthDataService.getAll();
+
     allMonthData.value = monthDataList;
 
     let foundMonthData = monthDataList.find(
@@ -235,27 +238,18 @@ async function loadMonth(skipDuplicatePrompt: boolean = false): Promise<void> {
         loading.show(t('common.loading'));
       }
 
-      const newMonthData = await localStorageService.post('month_data', {
-        year: currentYear.value,
-        month: currentMonth.value,
-        lastAccessed: new Date()
-      } as Partial<MonthData>);
+      const newMonthData = await monthDataService.create(currentYear.value, currentMonth.value);
 
-      foundMonthData = newMonthData as MonthData;
+      foundMonthData = newMonthData;
       allMonthData.value.push(foundMonthData);
     }
 
     currentMonthData.value = foundMonthData;
 
-    const allIncomes = (await localStorageService.get('incomes')) as Income[];
-    incomes.value = allIncomes.filter(i => i.monthDataId === foundMonthData.id);
+    incomes.value = await incomeService.getByMonth(foundMonthData.id);
+    expenses.value = await expenseService.getByMonth(foundMonthData.id);
 
-    const allExpenses = (await localStorageService.get('expenses')) as Expense[];
-    expenses.value = allExpenses.filter(e => e.monthDataId === foundMonthData.id);
-
-    await localStorageService.put<MonthData>('month_data', foundMonthData.id, {
-      lastAccessed: new Date()
-    });
+    await monthDataService.updateLastAccessed(foundMonthData.id);
 
     saveLastAccessedMonth();
   } catch (error) {
@@ -375,37 +369,26 @@ async function duplicatePreviousMonth(): Promise<void> {
       return;
     }
 
-    const newMonthData = await localStorageService.post('month_data', {
-      year: currentYear.value,
-      month: currentMonth.value,
-      lastAccessed: new Date()
-    } as Partial<MonthData>);
+    const newMonthData = await monthDataService.create(currentYear.value, currentMonth.value);
 
-    const previousIncomes = (await localStorageService.get('incomes')) as Income[];
-    const incomesToCopy = previousIncomes.filter(i => i.monthDataId === previousMonthData.id);
+    const previousIncomes = await incomeService.getByMonth(previousMonthData.id);
 
-    for (const income of incomesToCopy) {
-      await localStorageService.post('incomes', {
+    for (const income of previousIncomes) {
+      await incomeService.create({
         monthDataId: newMonthData.id,
         incomeTypeId: income.incomeTypeId,
         grossValue: income.grossValue,
         netValue: income.netValue,
         hourlyRate: income.hourlyRate,
         hours: income.hours,
-        minutes: income.minutes,
-        calculatedValue: income.calculatedValue
-      } as Partial<Income>);
+        minutes: income.minutes
+      });
     }
 
-    const previousExpenses = (await localStorageService.get('expenses')) as Expense[];
-    const expensesToCopy = previousExpenses.filter(e => e.monthDataId === previousMonthData.id);
+    const previousExpenses = await expenseService.getByMonth(previousMonthData.id);
 
-    for (const expense of expensesToCopy) {
-      await localStorageService.post('expenses', {
-        monthDataId: newMonthData.id,
-        expenseTypeId: expense.expenseTypeId,
-        value: expense.value
-      } as Partial<Expense>);
+    for (const expense of previousExpenses) {
+      await expenseService.create(newMonthData.id, expense.expenseTypeId, expense.value);
     }
 
     await loadMonth(true);
@@ -462,31 +445,22 @@ async function handleDuplicateMonth(): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
-    const newMonthData = await localStorageService.post('month_data', {
-      year: nextYear,
-      month: nextMonth,
-      lastAccessed: new Date()
-    } as Partial<MonthData>);
+    const newMonthData = await monthDataService.create(nextYear, nextMonth);
 
     for (const income of incomes.value) {
-      await localStorageService.post('incomes', {
+      await incomeService.create({
         monthDataId: newMonthData.id,
         incomeTypeId: income.incomeTypeId,
         grossValue: income.grossValue,
         netValue: income.netValue,
         hourlyRate: income.hourlyRate,
         hours: income.hours,
-        minutes: income.minutes,
-        calculatedValue: income.calculatedValue
-      } as Partial<Income>);
+        minutes: income.minutes
+      });
     }
 
     for (const expense of expenses.value) {
-      await localStorageService.post('expenses', {
-        monthDataId: newMonthData.id,
-        expenseTypeId: expense.expenseTypeId,
-        value: expense.value
-      } as Partial<Expense>);
+      await expenseService.create(newMonthData.id, expense.expenseTypeId, expense.value);
     }
 
     currentYear.value = nextYear;
@@ -523,11 +497,11 @@ async function handleClearMonth(): Promise<void> {
 
   try {
     for (const income of incomes.value) {
-      await localStorageService.delete('incomes', income.id);
+      await incomeService.remove(income.id);
     }
 
     for (const expense of expenses.value) {
-      await localStorageService.delete('expenses', expense.id);
+      await expenseService.remove(expense.id);
     }
 
     await loadMonth(true);
@@ -561,7 +535,7 @@ function handleIncomeTypeSelected(incomeType: IncomeTypeModel): void {
   incomeFormOpen.value = true;
 }
 
-function handleEditIncome(id: string): void {
+function handleEditIncome(id: number): void {
   const income = incomes.value.find(i => i.id === id);
   if (!income) return;
 
@@ -575,7 +549,7 @@ function handleEditIncome(id: string): void {
   incomeFormOpen.value = true;
 }
 
-async function handleDeleteIncome(id: string): Promise<void> {
+async function handleDeleteIncome(id: number): Promise<void> {
   const confirmed = await confirm.show(
     t('common.delete'),
     t('monthBalance.deleteIncomeConfirm'),
@@ -591,7 +565,7 @@ async function handleDeleteIncome(id: string): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
-    await localStorageService.delete('incomes', id);
+    await incomeService.remove(id);
     await loadMonth();
   } catch (error) {
     notify.error(t('monthBalance.deleteError'), String(error));
@@ -627,11 +601,11 @@ function handleExpenseTypeSelected(expenseType: ExpenseTypeModel): void {
   console.log('🔍 selectedExpenseTypeId após set:', selectedExpenseTypeId.value);
 }
 
-async function handleEditExpenseInline(id: string, value: number): Promise<void> {
+async function handleEditExpenseInline(id: number, value: number): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
-    await localStorageService.put<Expense>('expenses', id, { value });
+    await expenseService.update(id, value);
     await loadMonth();
   } catch (error) {
     notify.error(t('monthBalance.saveError'), String(error));
@@ -641,7 +615,7 @@ async function handleEditExpenseInline(id: string, value: number): Promise<void>
   }
 }
 
-async function handleDeleteExpense(id: string): Promise<void> {
+async function handleDeleteExpense(id: number): Promise<void> {
   const confirmed = await confirm.show(
     t('common.delete'),
     t('monthBalance.deleteExpenseConfirm'),
@@ -657,7 +631,7 @@ async function handleDeleteExpense(id: string): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
-    await localStorageService.delete('expenses', id);
+    await expenseService.remove(id);
     await loadMonth();
   } catch (error) {
     notify.error(t('monthBalance.deleteError'), String(error));
