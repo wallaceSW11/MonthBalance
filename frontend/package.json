@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.19.0",
     "pnpm": ">=8.0.0"
   },
   "packageManager": "pnpm@9.0.0",
@@ -18,7 +18,13 @@
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f month-balance",
+    "docker:restart": "docker compose restart",
+    "docker:rebuild": "docker compose build --no-cache"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",

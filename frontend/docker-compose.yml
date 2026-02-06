@@ -1,0 +1,17 @@
+services:
+  month-balance:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: month-balance
+    ports:
+      - "${PORT:-80}:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - month-balance-network
+
+networks:
+  month-balance-network:
+    driver: bridge

@@ -69,6 +69,7 @@ async function updateUser(data: Partial<User>): Promise<User> {
 
 async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
   const fixedUser = localStorageService.getFixedUser();
+  console.log(newPassword);
 
   if (currentPassword !== fixedUser.password) {
     throw new Error('Senha atual incorreta');
