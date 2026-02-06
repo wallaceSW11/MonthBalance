@@ -65,7 +65,7 @@ import { ref, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ModalBase, MoneyField, NumberField, notify, loading } from '@wallacesw11/base-lib';
 import type { ModalAction } from '@wallacesw11/base-lib/components';
-import { localStorageService } from '@/services/localStorageService';
+import { incomeService } from '@/services/incomeService';
 import { IncomeType, FormMode } from '@/models';
 import type { Income } from '@/models';
 
@@ -189,7 +189,11 @@ async function handleSave(): Promise<void> {
     const incomeData: Partial<Income> = {
       monthDataId: props.monthDataId,
       incomeTypeId: props.incomeTypeId,
-      calculatedValue: calculatedValue.value
+      grossValue: null,
+      netValue: null,
+      hourlyRate: null,
+      hours: null,
+      minutes: null
     };
 
     if (isPaycheck.value) {
@@ -209,14 +213,22 @@ async function handleSave(): Promise<void> {
     }
 
     if (isAddMode.value) {
-      await localStorageService.post('incomes', incomeData);
+      await incomeService.create(incomeData);
       notify.success(t('monthBalance.incomeSaved'), '');
       resetForm();
       internalOpen.value = false;
     } else {
       if (!props.initialData?.id) return;
 
-      await localStorageService.put<Income>('incomes', props.initialData.id, incomeData);
+      const updateData = {
+        grossValue: incomeData.grossValue,
+        netValue: incomeData.netValue,
+        hourlyRate: incomeData.hourlyRate,
+        hours: incomeData.hours,
+        minutes: incomeData.minutes
+      };
+
+      await incomeService.update(props.initialData.id, updateData);
       notify.success(t('monthBalance.incomeUpdated'), '');
       internalOpen.value = false;
     }

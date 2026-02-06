@@ -66,7 +66,7 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
-import { localStorageService } from '@/services/localStorageService';
+import { incomeTypeService } from '@/services/incomeTypeService';
 import type { IncomeTypeModel } from '@/models';
 import { IncomeType, FormMode } from '@/models';
 import IncomeTypeFormModal from '@/components/IncomeTypeFormModal.vue';
@@ -97,17 +97,16 @@ const getTypeLabel = (type: IncomeType): string => {
 }
 
 const loadIncomeTypes = async (): Promise<void> => {
-  loading.show(t('common.loading'))
+  loading.show(t('common.loading'));
 
   try {
-    const data = await localStorageService.get<IncomeTypeModel>('incomeTypes')
-    incomeTypes.value = Array.isArray(data) ? data : []
+    incomeTypes.value = await incomeTypeService.getAll();
   } catch (error) {
-    notify.error(t('messages.error'), t('incomeTypes.loadError'))
+    notify.error(t('messages.error'), t('incomeTypes.loadError'));
   } finally {
-    loading.hide()
+    loading.hide();
   }
-}
+};
 
 const openAddModal = (): void => {
   modalMode.value = FormMode.ADD
@@ -121,26 +120,26 @@ const openEditModal = (incomeType: IncomeTypeModel): void => {
   modalOpen.value = true
 }
 
-const handleDelete = async (id: string): Promise<void> => {
+const handleDelete = async (id: number): Promise<void> => {
   const confirmed = await confirm.show(
     t('common.delete'),
     t('incomeTypes.deleteConfirm')
-  )
+  );
 
-  if (!confirmed) return
+  if (!confirmed) return;
 
-  loading.show(t('incomeTypes.deleting'))
+  loading.show(t('incomeTypes.deleting'));
 
   try {
-    await localStorageService.delete('incomeTypes', id)
-    await loadIncomeTypes()
-    notify.success(t('incomeTypes.deleted'), '')
+    await incomeTypeService.remove(id);
+    await loadIncomeTypes();
+    notify.success(t('incomeTypes.deleted'), '');
   } catch (error) {
-    notify.error(t('messages.error'), t('incomeTypes.deleteError'))
+    notify.error(t('messages.error'), t('incomeTypes.deleteError'));
   } finally {
-    loading.hide()
+    loading.hide();
   }
-}
+};
 
 const handleSaved = async (): Promise<void> => {
   await loadIncomeTypes()

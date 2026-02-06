@@ -63,7 +63,7 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
-import { localStorageService } from '@/services/localStorageService';
+import { expenseTypeService } from '@/services/expenseTypeService';
 import type { ExpenseTypeModel } from '@/models';
 import { FormMode } from '@/models';
 import ExpenseTypeFormModal from '@/components/ExpenseTypeFormModal.vue';
@@ -87,8 +87,7 @@ const loadExpenseTypes = async (): Promise<void> => {
   loading.show(t('common.loading'));
 
   try {
-    const data = await localStorageService.get<ExpenseTypeModel>('expenseTypes');
-    expenseTypes.value = Array.isArray(data) ? data : [];
+    expenseTypes.value = await expenseTypeService.getAll();
   } catch (error) {
     notify.error(t('messages.error'), t('expenseTypes.loadError'));
   } finally {
@@ -108,7 +107,7 @@ const openEditModal = (expenseType: ExpenseTypeModel): void => {
   modalOpen.value = true;
 };
 
-const handleDelete = async (id: string): Promise<void> => {
+const handleDelete = async (id: number): Promise<void> => {
   const confirmed = await confirm.show(
     t('common.delete'),
     t('expenseTypes.deleteConfirm')
@@ -119,7 +118,7 @@ const handleDelete = async (id: string): Promise<void> => {
   loading.show(t('expenseTypes.deleting'));
 
   try {
-    await localStorageService.delete('expenseTypes', id);
+    await expenseTypeService.remove(id);
     await loadExpenseTypes();
     notify.success(t('expenseTypes.deleted'), '');
   } catch (error) {

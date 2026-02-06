@@ -20,7 +20,7 @@ import { ref, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ModalBase, MoneyField, notify, loading } from '@wallacesw11/base-lib';
 import type { ModalAction } from '@wallacesw11/base-lib/components';
-import { localStorageService } from '@/services/localStorageService';
+import { expenseService } from '@/services/expenseService';
 import { FormMode } from '@/models';
 import type { Expense } from '@/models';
 
@@ -95,23 +95,15 @@ async function handleSave(): Promise<void> {
   loading.show(t('common.loading'));
 
   try {
-    const expenseData: Partial<Expense> = {
-      monthDataId: props.monthDataId,
-      expenseTypeId: props.expenseTypeId,
-      value: form.value.value
-    };
-    
-    console.log('💾 expenseData:', expenseData);
-
     if (isAddMode.value) {
-      await localStorageService.post('expenses', expenseData);
+      await expenseService.create(props.monthDataId, props.expenseTypeId, form.value.value);
       notify.success(t('monthBalance.expenseSaved'), '');
       resetForm();
       internalOpen.value = false;
     } else {
       if (!props.initialData?.id) return;
 
-      await localStorageService.put<Expense>('expenses', props.initialData.id, expenseData);
+      await expenseService.update(props.initialData.id, form.value.value);
       notify.success(t('monthBalance.expenseUpdated'), '');
       internalOpen.value = false;
     }
