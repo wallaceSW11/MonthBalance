@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: month-balance-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - month-balance-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: month-balance-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
+      Jwt__Secret: ${JWT_SECRET}
+      Jwt__Issuer: "MonthBalanceAPI"
+      Jwt__Audience: "MonthBalanceApp"
+      Jwt__ExpirationHours: 24
+    ports:
+      - "5150:5150"
+    depends_on:
+      - postgres
+    networks:
+      - month-balance-network
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:
+
+networks:
+  month-balance-network:
+    driver: bridge
