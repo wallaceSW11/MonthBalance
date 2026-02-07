@@ -119,6 +119,7 @@ export default {
     typePaycheck: "Holerite",
     typeHourly: "Por Hora",
     typeExtra: "Extra",
+    typeUsedHint: "Tipo não pode ser alterado pois já possui receitas cadastradas",
     noData: "Nenhuma receita cadastrada",
     deleteConfirm: "Deseja realmente excluir esta receita?",
     saved: "Receita cadastrada",

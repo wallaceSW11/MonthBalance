@@ -74,9 +74,13 @@ public class IncomeTypesController : ControllerBase
             var incomeType = await _incomeTypeService.UpdateAsync(userId, id, request);
             return Ok(incomeType);
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
         catch (UnauthorizedAccessException)
         {

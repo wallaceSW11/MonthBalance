@@ -1,3 +1,8 @@
+---
+inclusion: always
+priority: normal
+---
+
 # 🤖 Guia do Kiro - Month Balance Backend
 
 ## 🎯 Persona

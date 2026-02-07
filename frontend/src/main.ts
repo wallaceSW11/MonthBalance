@@ -11,19 +11,18 @@ import "@/styles/main.css";
 const app = createApp(App);
 const pinia = createPinia();
 
-function registerPlugins(app: ReturnType<typeof createApp>) {
+async function initializeAndMountApp() {
   app.use(pinia);
+  
+  const themeStore = useThemeStore();
+  await themeStore.loadTheme();
+  
   app.use(router);
   app.use(vuetify);
   app.use(i18n);
   setupLib(app);
-}
-
-async function initializeAndMountApp() {
-  const themeStore = useThemeStore();
-  await themeStore.loadTheme();
+  
   app.mount("#app");
 }
 
-registerPlugins(app);
 initializeAndMountApp();

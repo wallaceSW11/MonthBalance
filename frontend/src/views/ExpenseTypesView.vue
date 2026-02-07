@@ -1,7 +1,7 @@
 <template>
   <div class="expense-types-view">
     <v-app-bar elevation="0">
-      <v-app-bar-nav-icon @click="toggleDrawer" />
+      <v-btn icon="mdi-arrow-left" @click="goBack" />
       <v-app-bar-title>{{ t('expenseTypes.title') }}</v-app-bar-title>
     </v-app-bar>
 
@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
 import { expenseTypeService } from '@/services/expenseTypeService';
 import type { ExpenseTypeModel } from '@/models';
@@ -73,6 +74,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const router = useRouter();
 
 const expenseTypes = ref<ExpenseTypeModel[]>([]);
 const modalOpen = ref(false);
@@ -81,6 +83,10 @@ const selectedExpenseType = ref<ExpenseTypeModel | null>(null);
 
 function toggleDrawer(): void {
   emit('toggleDrawer');
+}
+
+function goBack(): void {
+  router.back();
 }
 
 const loadExpenseTypes = async (): Promise<void> => {

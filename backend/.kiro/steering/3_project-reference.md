@@ -1,3 +1,9 @@
+---
+inclusion: manual
+priority: low
+---
+
+
 # 📚 Referência do Projeto - Month Balance Backend
 
 ## 🎯 Sobre o Projeto

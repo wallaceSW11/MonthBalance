@@ -1,7 +1,7 @@
 <template>
   <div class="income-types-view">
     <v-app-bar elevation="0">
-      <v-app-bar-nav-icon @click="toggleDrawer" />
+      <v-btn icon="mdi-arrow-left" @click="goBack" />
       <v-app-bar-title>{{ t('incomeTypes.title') }}</v-app-bar-title>
     </v-app-bar>
 
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { IconToolTip, confirm, notify, loading } from '@wallacesw11/base-lib';
 import { incomeTypeService } from '@/services/incomeTypeService';
 import type { IncomeTypeModel } from '@/models';
@@ -76,6 +77,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const router = useRouter();
 
 const incomeTypes = ref<IncomeTypeModel[]>([]);
 const modalOpen = ref(false);
@@ -84,6 +86,10 @@ const selectedIncomeType = ref<IncomeTypeModel | null>(null);
 
 function toggleDrawer(): void {
   emit('toggleDrawer');
+}
+
+function goBack(): void {
+  router.back();
 }
 
 const getTypeLabel = (type: IncomeType): string => {

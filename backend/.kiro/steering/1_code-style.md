@@ -1,3 +1,8 @@
+---
+inclusion: always
+priority: highest
+---
+
 # 🎨 Code Style - Month Balance Backend
 
 ## ⚠️ ESTAS REGRAS SÃO LEI - NUNCA VIOLE

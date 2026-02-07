@@ -47,9 +47,14 @@ async function create(name: string, type: 'paycheck' | 'hourly' | 'extra'): Prom
   }
 }
 
-async function update(id: number, name: string): Promise<IncomeTypeModel> {
+async function update(id: number, name: string, type?: 'paycheck' | 'hourly' | 'extra'): Promise<IncomeTypeModel> {
   try {
-    const payload: UpdateIncomeTypeRequest = { name };
+    const payload: any = { name };
+    
+    if (type) {
+      payload.type = type;
+    }
+    
     const response = await api.put<IncomeTypeModel>(`/income-types/${id}`, payload);
 
     return response.data;
@@ -70,10 +75,28 @@ async function remove(id: number): Promise<void> {
   }
 }
 
+async function hasIncomes(incomeTypeId: number): Promise<boolean> {
+  try {
+    const allMonths = await api.get('/month-data');
+    
+    for (const month of allMonths.data) {
+      const incomes = await api.get(`/incomes/month/${month.id}`);
+      const hasIncomeWithType = incomes.data.some((income: any) => income.incomeTypeId === incomeTypeId);
+      
+      if (hasIncomeWithType) return true;
+    }
+    
+    return false;
+  } catch (error: any) {
+    return false;
+  }
+}
+
 export const incomeTypeService = {
   getAll,
   getById,
   create,
   update,
-  remove
+  remove,
+  hasIncomes
 };

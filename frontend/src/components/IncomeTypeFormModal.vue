@@ -24,7 +24,9 @@
         item-title="label"
         item-value="value"
         :rules="[validateRequired]"
-        :disabled="mode === FormMode.EDIT"
+        :disabled="mode === FormMode.EDIT && typeUsed"
+        :hint="mode === FormMode.EDIT && typeUsed ? t('incomeTypes.typeUsedHint') : ''"
+        persistent-hint
         variant="outlined"
         density="comfortable"
       />
@@ -57,13 +59,14 @@ const emit = defineEmits<{
   saved: []
 }>()
 
-const { t } = useI18n()
-const formRef = ref()
-const nameFieldRef = ref()
+const { t } = useI18n();
+const formRef = ref();
+const nameFieldRef = ref();
+const typeUsed = ref(false);
 const form = ref({
   name: '',
   type: IncomeType.PAYCHECK
-})
+});
 
 const typeOptions = computed(() => [
   { label: t('incomeTypes.typePaycheck'), value: IncomeType.PAYCHECK },
@@ -93,32 +96,35 @@ const resetForm = (): void => {
   })
 }
 
-const loadFormData = (): void => {
-  if (!props.modelValue) return
+const loadFormData = async (): Promise<void> => {
+  if (!props.modelValue) return;
 
   if (props.mode === FormMode.EDIT && props.incomeType) {
     form.value = {
       name: props.incomeType.name,
       type: props.incomeType.type
-    }
-    return
+    };
+
+    typeUsed.value = await incomeTypeService.hasIncomes(props.incomeType.id);
+    return;
   }
 
   if (props.mode === FormMode.ADD) {
-    resetForm()
+    resetForm();
+    typeUsed.value = false;
     
     nextTick(() => {
-      nameFieldRef.value?.focus()
-    })
+      nameFieldRef.value?.focus();
+    });
   }
-}
+};
 
 const handleSave = async (): Promise<void> => {
-  const { valid } = await formRef.value.validate()
+  const { valid } = await formRef.value.validate();
 
-  if (!valid) return
+  if (!valid) return;
 
-  loading.show(t('incomeTypes.saving'))
+  loading.show(t('incomeTypes.saving'));
 
   try {
     if (props.mode === FormMode.ADD) {
@@ -132,7 +138,9 @@ const handleSave = async (): Promise<void> => {
 
     if (!props.incomeType) return;
 
-    await incomeTypeService.update(props.incomeType.id, form.value.name);
+    const typeToUpdate = typeUsed.value ? undefined : form.value.type;
+
+    await incomeTypeService.update(props.incomeType.id, form.value.name, typeToUpdate);
 
     notify.success(t('incomeTypes.updated'), '');
     emit('saved');
@@ -140,13 +148,13 @@ const handleSave = async (): Promise<void> => {
   } catch (error) {
     const errorMessage = props.mode === FormMode.ADD 
       ? t('incomeTypes.saveError') 
-      : t('incomeTypes.updateError')
+      : t('incomeTypes.updateError');
 
-    notify.error(t('messages.error'), errorMessage)
+    notify.error(t('messages.error'), errorMessage);
   } finally {
-    loading.hide()
+    loading.hide();
   }
-}
+};
 
 const handleModalUpdate = (value: boolean): void => {
   if (value) return

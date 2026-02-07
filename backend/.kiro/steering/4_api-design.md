@@ -1,3 +1,9 @@
+---
+inclusion: manual
+priority: low
+---
+
+
 # 🌐 API Design - Month Balance Backend
 
 ## 🎯 Princípios REST

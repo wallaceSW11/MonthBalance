@@ -118,6 +118,7 @@ export default {
     typePaycheck: "Paycheck",
     typeHourly: "Hourly",
     typeExtra: "Extra",
+    typeUsedHint: "Type cannot be changed as it already has registered incomes",
     noData: "No incomes registered",
     deleteConfirm: "Do you really want to delete this income?",
     saved: "Income registered",

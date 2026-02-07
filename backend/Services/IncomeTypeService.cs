@@ -60,7 +60,22 @@ public class IncomeTypeService : IIncomeTypeService
         if (incomeType.UserId != userId)
             throw new UnauthorizedAccessException("Access denied");
         
+        if (!IsValidIncomeType(request.Type))
+            throw new ArgumentException("Invalid income type. Must be 'paycheck', 'hourly', or 'extra'");
+        
+        var newType = ParseIncomeType(request.Type);
+        var isTypeChanging = incomeType.Type != newType;
+        
+        if (isTypeChanging)
+        {
+            var hasIncomes = await _incomeTypeRepository.HasIncomesAsync(id);
+            
+            if (hasIncomes)
+                throw new InvalidOperationException("Cannot change type of an income type that is already in use");
+        }
+        
         incomeType.Name = request.Name;
+        incomeType.Type = newType;
         
         await _incomeTypeRepository.UpdateAsync(incomeType);
         
