@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Income> Incomes { get; set; } = null!;
     public DbSet<ExpenseTypeModel> ExpenseTypes { get; set; } = null!;
     public DbSet<Expense> Expenses { get; set; } = null!;
+    public DbSet<WebAuthnCredential> WebAuthnCredentials { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +27,7 @@ public class ApplicationDbContext : DbContext
         ConfigureIncome(modelBuilder);
         ConfigureExpenseTypeModel(modelBuilder);
         ConfigureExpense(modelBuilder);
+        ConfigureWebAuthnCredential(modelBuilder);
     }
     
     private static void ConfigureUser(ModelBuilder modelBuilder)
@@ -124,6 +126,22 @@ public class ApplicationDbContext : DbContext
                 .WithMany(t => t.Expenses)
                 .HasForeignKey(e => e.ExpenseTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+    
+    private static void ConfigureWebAuthnCredential(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<WebAuthnCredential>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CredentialId).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

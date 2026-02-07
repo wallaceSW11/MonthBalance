@@ -12,12 +12,14 @@ namespace MonthBalance.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    
-    public AuthController(IAuthService authService)
+    private readonly IWebAuthnService _webAuthnService;
+
+    public AuthController(IAuthService authService, IWebAuthnService webAuthnService)
     {
         _authService = authService;
+        _webAuthnService = webAuthnService;
     }
-    
+
     [HttpPost("register")]
     public async Task<ActionResult<LoginResponse>> Register([FromBody] RegisterRequest request)
     {
@@ -31,7 +33,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-    
+
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
@@ -45,13 +47,13 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = ex.Message });
         }
     }
-    
+
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         var userId = GetUserIdFromToken();
-        
+
         try
         {
             var user = await _authService.GetCurrentUserAsync(userId);
@@ -62,13 +64,13 @@ public class AuthController : ControllerBase
             return NotFound(new { message = ex.Message });
         }
     }
-    
+
     [Authorize]
     [HttpPut("me")]
     public async Task<ActionResult<UserDto>> UpdateUser([FromBody] UpdateUserRequest request)
     {
         var userId = GetUserIdFromToken();
-        
+
         try
         {
             var user = await _authService.UpdateUserAsync(userId, request);
@@ -79,13 +81,13 @@ public class AuthController : ControllerBase
             return NotFound(new { message = ex.Message });
         }
     }
-    
+
     [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         var userId = GetUserIdFromToken();
-        
+
         try
         {
             await _authService.ChangePasswordAsync(userId, request);
@@ -100,15 +102,82 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-    
+
+    [Authorize]
+    [HttpPost("webauthn/register/challenge")]
+    public async Task<ActionResult<WebAuthnRegisterChallengeResponse>> GenerateRegisterChallenge()
+    {
+        var userId = GetUserIdFromToken();
+
+        try
+        {
+            var response = await _webAuthnService.GenerateRegisterChallengeAsync(userId);
+            return Ok(response);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [Authorize]
+    [HttpPost("webauthn/register")]
+    public async Task<ActionResult<WebAuthnRegisterResponse>> RegisterCredential([FromBody] WebAuthnRegisterRequest request)
+    {
+        var userId = GetUserIdFromToken();
+
+        try
+        {
+            var response = await _webAuthnService.RegisterCredentialAsync(userId, request);
+            return CreatedAtAction(nameof(RegisterCredential), response);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("webauthn/authenticate/challenge")]
+    public async Task<ActionResult<WebAuthnAuthenticateChallengeResponse>> GenerateAuthenticateChallenge([FromBody] WebAuthnAuthenticateChallengeRequest request)
+    {
+        try
+        {
+            var response = await _webAuthnService.GenerateAuthenticateChallengeAsync(request.Email);
+            return Ok(response);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("webauthn/authenticate")]
+    public async Task<ActionResult<LoginResponse>> AuthenticateWithWebAuthn([FromBody] WebAuthnAuthenticateRequest request)
+    {
+        try
+        {
+            var response = await _webAuthnService.AuthenticateAsync(request);
+            return Ok(response);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
+
     private int GetUserIdFromToken()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-        
+
         if (userIdClaim == null)
             throw new UnauthorizedAccessException("Invalid token");
-        
+
         return int.Parse(userIdClaim);
     }
 }
+

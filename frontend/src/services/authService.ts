@@ -124,6 +124,56 @@ async function changePassword(currentPassword: string, newPassword: string): Pro
   }
 }
 
+async function registerWebAuthnChallenge(): Promise<any> {
+  try {
+    const response = await api.post('/auth/webauthn/register/challenge');
+
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao gerar challenge';
+
+    throw new Error(message);
+  }
+}
+
+async function registerWebAuthnCredential(credential: any): Promise<void> {
+  try {
+    await api.post('/auth/webauthn/register', credential);
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao registrar credencial';
+
+    throw new Error(message);
+  }
+}
+
+async function authenticateWebAuthnChallenge(email: string): Promise<any> {
+  try {
+    const response = await api.post('/auth/webauthn/authenticate/challenge', { email });
+
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao gerar challenge';
+
+    throw new Error(message);
+  }
+}
+
+async function authenticateWebAuthn(credential: any): Promise<User> {
+  try {
+    const response = await api.post<AuthResponse>('/auth/webauthn/authenticate', credential);
+    const { token, user } = response.data;
+
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+    return user;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao autenticar';
+
+    throw new Error(message);
+  }
+}
+
 export const authService = {
   register,
   login,
@@ -132,5 +182,9 @@ export const authService = {
   getCurrentUser,
   fetchCurrentUser,
   updateUser,
-  changePassword
+  changePassword,
+  registerWebAuthnChallenge,
+  registerWebAuthnCredential,
+  authenticateWebAuthnChallenge,
+  authenticateWebAuthn
 };

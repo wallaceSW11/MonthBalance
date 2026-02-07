@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { authService } from '@/services/authService';
+import { authGuard } from '@/services/authGuard';
 import type { User } from '@/models/User';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -14,6 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       user.value = await authService.register(name, email, password);
+      authGuard.markAuthenticated();
     } finally {
       loading.value = false;
     }
@@ -24,6 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       user.value = await authService.login(email, password);
+      authGuard.markAuthenticated();
     } finally {
       loading.value = false;
     }
@@ -31,6 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout(): void {
     authService.logout();
+    authGuard.clearAuthState();
     user.value = null;
   }
 
@@ -38,6 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!authService.isAuthenticated()) return;
 
     user.value = authService.getCurrentUser();
+    authGuard.markAuthenticated();
   }
 
   async function updateUserData(data: Partial<User>): Promise<void> {

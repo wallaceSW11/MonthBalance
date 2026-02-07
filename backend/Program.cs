@@ -60,9 +60,12 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IWebAuthnRepository, WebAuthnRepository>();
+builder.Services.AddScoped<IWebAuthnService, WebAuthnService>();
 builder.Services.AddScoped<IMonthDataRepository, MonthDataRepository>();
 builder.Services.AddScoped<IMonthDataService, MonthDataService>();
 builder.Services.AddScoped<IIncomeTypeRepository, IncomeTypeRepository>();

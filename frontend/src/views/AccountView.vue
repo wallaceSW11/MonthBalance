@@ -59,6 +59,24 @@
           </v-card-text>
         </v-card>
 
+        <v-card v-if="webAuthnSupported" class="action-card">
+          <v-card-text class="action-card-content">
+            <div class="action-info">
+              <v-avatar size="40" color="primary" variant="tonal">
+                <v-icon>mdi-fingerprint</v-icon>
+              </v-avatar>
+              <span class="action-text">{{ t('account.biometric') }}</span>
+            </div>
+            <v-switch
+              :model-value="webAuthnEnabled"
+              color="primary"
+              hide-details
+              density="compact"
+              @update:model-value="handleToggleBiometric"
+            />
+          </v-card-text>
+        </v-card>
+
         <v-card class="action-card">
           <v-card-text class="action-card-content">
             <div class="action-info">
@@ -101,6 +119,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { PrimaryButton, notify, loading, confirm } from '@wallacesw11/base-lib';
 import { useAuthStore } from '@/stores/auth';
+import { useAuthGuard } from '@/composables';
 import { ROUTES } from '@/constants/routes';
 import ChangePasswordModal from '@/components/ChangePasswordModal.vue';
 
@@ -111,6 +130,7 @@ const emit = defineEmits<{
 const router = useRouter();
 const { t } = useI18n();
 const authStore = useAuthStore();
+const { webAuthnSupported, webAuthnEnabled, enableBiometric, disableBiometric } = useAuthGuard();
 const formRef = ref();
 const changePasswordOpen = ref<boolean>(false);
 
@@ -186,6 +206,43 @@ async function handleCloseAccount(): Promise<void> {
     notify.error(t('messages.error'), t('account.closeAccountError'));
   } finally {
     loading.hide();
+  }
+}
+
+async function handleToggleBiometric(value: boolean): Promise<void> {
+  if (!authStore.user) return;
+
+  if (value) {
+    loading.show(t('account.enablingBiometric'));
+
+    try {
+      const success = await enableBiometric(authStore.user.id, authStore.user.name);
+
+      if (success) {
+        notify.success(t('messages.success'), t('account.biometricEnabled'));
+      } else {
+        notify.error(t('messages.error'), t('account.biometricError'));
+      }
+    } catch (error) {
+      notify.error(t('messages.error'), t('account.biometricError'));
+    } finally {
+      loading.hide();
+    }
+  } else {
+    const confirmed = await confirm.show(
+      t('account.disableBiometricTitle'),
+      t('account.disableBiometricMessage'),
+      {
+        confirmText: t('common.confirm'),
+        cancelText: t('common.cancel'),
+        confirmColor: 'error'
+      }
+    );
+
+    if (!confirmed) return;
+
+    disableBiometric();
+    notify.success(t('messages.success'), t('account.biometricDisabled'));
   }
 }
 

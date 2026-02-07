@@ -11,7 +11,7 @@
     "dev": "vite",
     "start": "vite --host",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "generate-icons": "node scripts/generate-pwa-icons.js",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
