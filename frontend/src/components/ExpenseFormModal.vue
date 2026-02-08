@@ -96,7 +96,11 @@ async function handleSave(): Promise<void> {
 
   try {
     if (isAddMode.value) {
-      await expenseService.create(props.monthDataId, props.expenseTypeId, form.value.value);
+      await expenseService.create(
+        Number(props.monthDataId),
+        Number(props.expenseTypeId),
+        form.value.value
+      );
       notify.success(t('monthBalance.expenseSaved'), '');
       resetForm();
       internalOpen.value = false;

@@ -6,10 +6,6 @@ interface CreateIncomeTypeRequest {
   type: 'paycheck' | 'hourly' | 'extra';
 }
 
-interface UpdateIncomeTypeRequest {
-  name: string;
-}
-
 async function getAll(): Promise<IncomeTypeModel[]> {
   try {
     const response = await api.get<IncomeTypeModel[]>('/income-types');

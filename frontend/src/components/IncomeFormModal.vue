@@ -116,23 +116,11 @@ const isHourly = computed(() => props.incomeType === IncomeType.HOURLY);
 const isExtra = computed(() => props.incomeType === IncomeType.EXTRA);
 const isAddMode = computed(() => props.mode === FormMode.ADD);
 
-const calculatedValue = computed(() => {
-  if (isPaycheck.value) return form.value.netValue || form.value.grossValue;
-
-  if (isHourly.value) {
-    const totalHours = form.value.hours + (form.value.minutes / 60);
-    return totalHours * form.value.hourlyRate;
-  }
-
-  if (isExtra.value) return form.value.value;
-
-  return 0;
-});
-
 const hourlyPreview = computed(() => {
   if (!isHourly.value) return 0;
 
-  const totalHours = form.value.hours + (form.value.minutes / 60);
+  const totalHours = form.value.hours + form.value.minutes / 60;
+
   return totalHours * form.value.hourlyRate;
 });
 
@@ -187,8 +175,8 @@ async function handleSave(): Promise<void> {
 
   try {
     const incomeData: Partial<Income> = {
-      monthDataId: props.monthDataId,
-      incomeTypeId: props.incomeTypeId,
+      monthDataId: Number(props.monthDataId),
+      incomeTypeId: Number(props.incomeTypeId),
       grossValue: null,
       netValue: null,
       hourlyRate: null,
@@ -213,7 +201,17 @@ async function handleSave(): Promise<void> {
     }
 
     if (isAddMode.value) {
-      await incomeService.create(incomeData);
+      const createData = {
+        monthDataId: incomeData.monthDataId!,
+        incomeTypeId: incomeData.incomeTypeId!,
+        grossValue: incomeData.grossValue ?? null,
+        netValue: incomeData.netValue ?? null,
+        hourlyRate: incomeData.hourlyRate ?? null,
+        hours: incomeData.hours ?? null,
+        minutes: incomeData.minutes ?? null
+      };
+
+      await incomeService.create(createData);
       notify.success(t('monthBalance.incomeSaved'), '');
       resetForm();
       internalOpen.value = false;

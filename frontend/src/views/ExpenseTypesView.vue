@@ -70,7 +70,7 @@ import { FormMode } from '@/models';
 import ExpenseTypeFormModal from '@/components/ExpenseTypeFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  toggleDrawer: [];
 }>();
 
 const { t } = useI18n();
@@ -80,10 +80,6 @@ const expenseTypes = ref<ExpenseTypeModel[]>([]);
 const modalOpen = ref(false);
 const modalMode = ref<FormMode>(FormMode.ADD);
 const selectedExpenseType = ref<ExpenseTypeModel | null>(null);
-
-function toggleDrawer(): void {
-  emit('toggleDrawer');
-}
 
 function goBack(): void {
   router.back();

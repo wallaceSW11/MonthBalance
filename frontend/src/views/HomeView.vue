@@ -114,12 +114,12 @@ const incomeTypeSelectOpen = ref<boolean>(false);
 const incomeFormOpen = ref<boolean>(false);
 const incomeFormMode = ref<FormMode>(FormMode.ADD);
 const selectedIncomeType = ref<IncomeType | null>(null);
-const selectedIncomeTypeId = ref<number>(0);
+const selectedIncomeTypeId = ref<string>('0');
 const selectedIncome = ref<Income | undefined>(undefined);
 const expenseTypeSelectOpen = ref<boolean>(false);
 const expenseFormOpen = ref<boolean>(false);
 const expenseFormMode = ref<FormMode>(FormMode.ADD);
-const selectedExpenseTypeId = ref<number>(0);
+const selectedExpenseTypeId = ref<string>('0');
 const allMonthData = ref<MonthData[]>([]);
 
 const totalIncome = computed(() => {
@@ -156,7 +156,7 @@ const canNavigateNext = computed(() => {
 });
 
 const currentMonthDataId = computed(() => {
-  return currentMonthData.value?.id ?? 0;
+  return currentMonthData.value?.id ? String(currentMonthData.value.id) : '0';
 });
 
 const incomesWithNames = computed(() => {
@@ -529,7 +529,7 @@ function handleAddIncome(): void {
 
 function handleIncomeTypeSelected(incomeType: IncomeTypeModel): void {
   selectedIncomeType.value = incomeType.type as IncomeType;
-  selectedIncomeTypeId.value = incomeType.id;
+  selectedIncomeTypeId.value = String(incomeType.id);
   incomeFormMode.value = FormMode.ADD;
   selectedIncome.value = undefined;
   incomeFormOpen.value = true;
@@ -537,13 +537,15 @@ function handleIncomeTypeSelected(incomeType: IncomeTypeModel): void {
 
 function handleEditIncome(id: number): void {
   const income = incomes.value.find(i => i.id === id);
+
   if (!income) return;
 
   const incomeType = incomeTypes.value.find(it => it.id === income.incomeTypeId);
+
   if (!incomeType) return;
 
   selectedIncomeType.value = incomeType.type as IncomeType;
-  selectedIncomeTypeId.value = incomeType.id;
+  selectedIncomeTypeId.value = String(incomeType.id);
   selectedIncome.value = income;
   incomeFormMode.value = FormMode.EDIT;
   incomeFormOpen.value = true;
@@ -593,11 +595,11 @@ function handleExpenseTypeSelected(expenseType: ExpenseTypeModel): void {
   console.log('🔍 Tipo de despesa selecionado:', expenseType);
   console.log('🔍 ID do tipo:', expenseType.id);
   console.log('🔍 Nome do tipo:', expenseType.name);
-  
-  selectedExpenseTypeId.value = expenseType.id;
+
+  selectedExpenseTypeId.value = String(expenseType.id);
   expenseFormMode.value = FormMode.ADD;
   expenseFormOpen.value = true;
-  
+
   console.log('🔍 selectedExpenseTypeId após set:', selectedExpenseTypeId.value);
 }
 

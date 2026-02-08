@@ -209,8 +209,8 @@ async function handleCloseAccount(): Promise<void> {
   }
 }
 
-async function handleToggleBiometric(value: boolean): Promise<void> {
-  if (!authStore.user) return;
+async function handleToggleBiometric(value: boolean | null): Promise<void> {
+  if (!authStore.user || value === null) return;
 
   if (value) {
     loading.show(t('account.enablingBiometric'));

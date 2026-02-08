@@ -84,10 +84,6 @@ const modalOpen = ref(false);
 const modalMode = ref<FormMode>(FormMode.ADD);
 const selectedIncomeType = ref<IncomeTypeModel | null>(null);
 
-function toggleDrawer(): void {
-  emit('toggleDrawer');
-}
-
 function goBack(): void {
   router.back();
 }
