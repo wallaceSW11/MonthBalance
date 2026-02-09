@@ -1,12 +1,8 @@
-# Docker Compose para desenvolvimento isolado do BACKEND
-# Para rodar o projeto completo (frontend + backend + db), use o docker-compose.yml da raiz
-
-version: '3.8'
-
 services:
+  # PostgreSQL Database
   postgres:
     image: postgres:17-alpine
-    container_name: month-balance-db-dev
+    container_name: month-balance-db
     environment:
       POSTGRES_DB: ${DB_NAME:-monthbalance}
       POSTGRES_USER: ${DB_USER:-postgres}
@@ -14,18 +10,21 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - month-balance-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  api:
+  # Backend API (.NET)
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: month-balance-api-dev
+    container_name: month-balance-api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5150
@@ -39,13 +38,30 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - month-balance-network
     restart: unless-stopped
-    env_file:
-      - .env
+
+  # Frontend (Vue.js + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:5150/api
+    container_name: month-balance-frontend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - backend
+    networks:
+      - month-balance-network
+    restart: unless-stopped
 
 volumes:
-  postgres_data_dev:
+  postgres_data:
+    driver: local
 
 networks:
-  default:
-    name: month-balance-backend-dev
+  month-balance-network:
+    driver: bridge

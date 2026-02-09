@@ -1,17 +1,20 @@
+# Docker Compose para desenvolvimento isolado do FRONTEND
+# Para rodar o projeto completo (frontend + backend + db), use o docker-compose.yml da raiz
+
 services:
-  month-balance:
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: month-balance
+      args:
+        - VITE_API_BASE_URL=http://localhost:5150/api
+    container_name: month-balance-frontend-dev
     ports:
-      - "${PORT:-80}:80"
+      - "${PORT:-8080}:80"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
-    networks:
-      - month-balance-network
 
 networks:
-  month-balance-network:
-    driver: bridge
+  default:
+    name: month-balance-frontend-dev

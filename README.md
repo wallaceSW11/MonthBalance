@@ -1,193 +1,169 @@
 # 💰 Month Balance
 
-> A simple and efficient Progressive Web App (PWA) for monthly financial control
+Sistema completo de controle financeiro pessoal com frontend Vue.js e backend .NET.
 
-<div align="center">
+## 🏗️ Arquitetura
 
-![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?style=flat&logo=vue.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat&logo=typescript&logoColor=white)
-![Vuetify](https://img.shields.io/badge/Vuetify-3.7-1867C0?style=flat&logo=vuetify&logoColor=white)
-![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat&logo=pwa&logoColor=white)
+- **Frontend**: Vue 3 + TypeScript + Vite + TailwindCSS
+- **Backend**: .NET 10 + Entity Framework Core
+- **Database**: PostgreSQL 17
+- **Containerização**: Docker + Docker Compose
 
-</div>
+## 🚀 Quick Start com Docker
 
-## 📋 About the Project
-
-**Month Balance** is a Progressive Web App (PWA) designed to simplify monthly financial management. With a clean and intuitive interface, you can manage your income and expenses month by month, keeping your finances organized and under control.
-
-### ✨ Key Features
-
-- 📊 **Monthly Control**: View income and expenses organized by month
-- 💵 **Income Management**: Add manual income or hourly-based earnings
-- 💸 **Expense Management**: Record and track all your expenses
-- 📱 **PWA**: Install on your device and use as a native app
-- 🌓 **Light/Dark Theme**: Switch between themes according to your preference
-- 🌍 **Multilingual**: Support for Portuguese (BR) and English (US)
-- 💾 **Local Storage**: Your data is saved in the browser
-- 🎨 **White Label**: Customize colors and branding via JSON
-
-## 🚀 Tech Stack
-
-### Frontend
-
-- **[Vue 3](https://vuejs.org/)** - Progressive JavaScript framework with Composition API
-- **[TypeScript](https://www.typescriptlang.org/)** - JavaScript superset with static typing
-- **[Vuetify 3](https://vuetifyjs.com/)** - Material Design component framework
-- **[Pinia](https://pinia.vuejs.org/)** - Official Vue state management
-- **[Vue Router](https://router.vuejs.org/)** - Official Vue routing
-- **[Vue I18n](https://vue-i18n.intlify.dev/)** - Internationalization
-- **[Vite](https://vitejs.dev/)** - Lightning-fast build tool
-- **[Vitest](https://vitest.dev/)** - Unit testing framework
-- **[Cypress](https://www.cypress.io/)** - E2E testing framework
-
-### Tools
-
-- **PNPM** - Efficient package manager
-- **ESLint** - Code quality linter
-- **Vite PWA Plugin** - Progressive Web App support
-
-## 📦 Installation
-
-### Prerequisites
-
-- Node.js >= 20.0.0
-- PNPM >= 9.0.0
-
-### Installing PNPM
+### 1. Configure o ambiente
 
 ```bash
-npm install -g pnpm
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o .env e configure:
+# - DB_PASSWORD (senha do PostgreSQL)
+# - JWT_SECRET (mínimo 32 caracteres)
 ```
 
-### Installing Dependencies
+### 2. Inicie todos os serviços
+
+**No Windows (PowerShell):**
+```powershell
+.\docker-start.ps1
+```
+
+**No Linux/Mac ou WSL2:**
+```bash
+chmod +x docker-start.sh
+./docker-start.sh
+```
+
+**Ou manualmente:**
+```bash
+docker-compose up -d
+```
+
+### 3. Acesse a aplicação
+
+- **Frontend**: http://localhost:8080
+- **Backend API**: http://localhost:5150
+- **Swagger**: http://localhost:5150/swagger
+
+## 📁 Estrutura do Projeto
+
+```
+month-balance/
+├── frontend/           # Aplicação Vue.js
+│   ├── src/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── backend/            # API .NET
+│   ├── Controllers/
+│   ├── Services/
+│   ├── Repositories/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── docker-compose.yml  # Orquestração completa
+├── .env.example        # Variáveis de ambiente
+└── DOCKER_SETUP.md     # Documentação detalhada
+```
+
+## 🔧 Desenvolvimento
+
+### Rodar o projeto completo (RECOMENDADO)
+
+```bash
+# Na raiz do projeto
+docker-compose up -d
+```
+
+Isso sobe: PostgreSQL + Backend + Frontend integrados.
+
+### Rodar apenas o backend (desenvolvimento isolado)
+
+Útil quando você está desenvolvendo o backend e quer rodar o frontend localmente com `npm run dev`:
+
+```bash
+cd backend
+docker-compose up -d
+```
+
+Isso sobe: PostgreSQL + Backend (sem frontend).
+
+### Rodar apenas o frontend (desenvolvimento isolado)
+
+Útil quando você já tem o backend rodando e quer apenas testar o build do frontend:
 
 ```bash
 cd frontend
-pnpm install
+docker-compose up -d
 ```
 
-## 🎮 Available Commands
+Isso sobe: Apenas o frontend (precisa do backend rodando em outro lugar).
+
+## 📊 Comandos Úteis
 
 ```bash
-# Start development server
-pnpm dev
+# Ver logs de todos os serviços
+docker-compose logs -f
 
-# Build for production
-pnpm build
+# Ver logs de um serviço específico
+docker-compose logs -f backend
 
-# Preview production build
-pnpm preview
+# Parar todos os serviços
+docker-compose down
 
-# Run unit tests
-pnpm test:unit
+# Rebuild após mudanças no código
+docker-compose up -d --build
 
-# Run unit tests in watch mode
-pnpm test:unit:watch
-
-# Run E2E tests
-pnpm test:e2e
-
-# Open Cypress interface
-pnpm test:e2e:open
-
-# Lint and auto-fix
-pnpm lint
+# Limpar tudo (CUIDADO: apaga o banco!)
+docker-compose down -v
 ```
 
-## 🎨 Customization
+## 🗄️ Database
 
-### Theme and Branding
+O PostgreSQL roda na porta **5433** externamente para evitar conflitos.
 
-Edit the `frontend/public/theme.json` file to customize:
-
-- Light and dark theme colors
-- Logos for each theme
-- Application name and metadata
-
-```json
-{
-  "customization": {
-    "appName": "Month Balance",
-    "appDescription": "Monthly financial control",
-    "copyrightText": "© 2025 Month Balance"
-  },
-  "theme": {
-    "light": {
-      "primary": "#1976D2",
-      "secondary": "#424242"
-    },
-    "dark": {
-      "primary": "#2196F3",
-      "secondary": "#616161"
-    }
-  }
-}
+**Conectar via psql:**
+```bash
+docker-compose exec postgres psql -U postgres -d monthbalance
 ```
 
-### Translations
-
-Add or edit translations in the files:
-
-- `frontend/src/locales/pt-BR.ts` - Portuguese (Brazil)
-- `frontend/src/locales/en-US.ts` - English (US)
-
-## 📱 PWA - Progressive Web App
-
-Month Balance can be installed as a native application on mobile and desktop devices:
-
-1. Access the app in your browser
-2. Look for the "Install" or "Add to Home Screen" option
-3. Use it as a native app with its own icon
-
-## 📁 Project Structure
-
+**String de conexão:**
 ```
-frontend/
-├── public/              # Static files
-│   ├── theme.json      # Theme configuration
-│   └── ...
-├── src/
-│   ├── components/     # Reusable Vue components
-│   ├── composables/    # Vue composables
-│   ├── locales/        # Translation files (i18n)
-│   ├── models/         # TypeScript interfaces and types
-│   ├── plugins/        # Plugins (Vuetify, i18n)
-│   ├── router/         # Route configuration
-│   ├── services/       # Services (storage, API)
-│   ├── stores/         # Pinia stores
-│   ├── styles/         # Global styles
-│   ├── utils/          # Utilities
-│   ├── views/          # Pages/Views
-│   ├── App.vue         # Root component
-│   └── main.ts         # Entry point
-├── tests/              # Unit and E2E tests
-└── package.json
+Host=localhost;Port=5433;Database=monthbalance;Username=postgres;Password=sua_senha
 ```
 
-## 🤝 Contributing
+## 🌐 Deploy
 
-Contributions are welcome! Feel free to:
+Este projeto está preparado para deploy no **Oracle Cloud Free Tier**:
+- Configuração via variáveis de ambiente
+- Containers prontos para Oracle Container Instances
+- Fácil migração para Oracle Database
 
-1. Fork the project
-2. Create a branch for your feature (`git checkout -b feature/MyFeature`)
-3. Commit your changes (`git commit -m 'Add MyFeature'`)
-4. Push to the branch (`git push origin feature/MyFeature`)
-5. Open a Pull Request
+## 📚 Documentação
 
-## 📄 License
+- [DOCKER_SETUP.md](./DOCKER_SETUP.md) - Guia completo do Docker
+- [backend/README.md](./backend/README.md) - Documentação do backend
+- [frontend/README.md](./frontend/README.md) - Documentação do frontend
+- [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md) - Documentação da API
 
-This project is under the MIT license.
+## 🛠️ Tecnologias
 
-## 🙏 Acknowledgments
+### Frontend
+- Vue 3 + Composition API
+- TypeScript
+- Vite
+- TailwindCSS
+- Pinia (State Management)
+- Vue Router
+- Axios
 
-- [BaseLib](https://github.com/wallaceSW11/BaseLib) - Reusable components and utilities library
-- Vue.js Community
-- All contributors
+### Backend
+- .NET 10
+- Entity Framework Core
+- PostgreSQL
+- JWT Authentication
+- WebAuthn (Passkeys)
+- Swagger/OpenAPI
 
----
+## 📝 Licença
 
-<div align="center">
-
-Built with ❤️ using Vue 3 and TypeScript
-
-</div>
+Este projeto é privado e de uso pessoal.
