@@ -37,7 +37,7 @@ chmod +x docker-start.sh
 
 **Ou manualmente:**
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 3. Acesse a aplicação
@@ -67,25 +67,41 @@ month-balance/
 
 ## 🔧 Desenvolvimento
 
+### Cenários de uso:
+
+**1. Desenvolvimento local (sem Docker):**
+- Frontend: `pnpm dev` → http://localhost:5173
+- Backend: `dotnet run` → http://localhost:5000
+- PostgreSQL: Instância local ou Docker isolado
+
+**2. Teste local com Docker:**
+- Frontend: http://localhost:8080
+- Backend: http://localhost:5150
+- PostgreSQL: http://localhost:5433
+
+**3. Produção (Oracle Cloud):**
+- Configuração via variáveis de ambiente
+- Containers prontos para deploy
+
 ### Rodar o projeto completo (RECOMENDADO)
 
 ```bash
 # Na raiz do projeto
-docker-compose up -d
+docker compose up -d
 ```
 
 Isso sobe: PostgreSQL + Backend + Frontend integrados.
 
 ### Rodar apenas o backend (desenvolvimento isolado)
 
-Útil quando você está desenvolvendo o backend e quer rodar o frontend localmente com `npm run dev`:
+Útil quando você está desenvolvendo o backend e quer rodar o frontend localmente com `pnpm dev`:
 
 ```bash
 cd backend
-docker-compose up -d
+docker compose up -d
 ```
 
-Isso sobe: PostgreSQL + Backend (sem frontend).
+Isso sube: PostgreSQL + Backend (sem frontend).
 
 ### Rodar apenas o frontend (desenvolvimento isolado)
 
@@ -93,7 +109,7 @@ Isso sobe: PostgreSQL + Backend (sem frontend).
 
 ```bash
 cd frontend
-docker-compose up -d
+docker compose up -d
 ```
 
 Isso sobe: Apenas o frontend (precisa do backend rodando em outro lugar).
@@ -102,19 +118,19 @@ Isso sobe: Apenas o frontend (precisa do backend rodando em outro lugar).
 
 ```bash
 # Ver logs de todos os serviços
-docker-compose logs -f
+docker compose logs -f
 
 # Ver logs de um serviço específico
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # Parar todos os serviços
-docker-compose down
+docker compose down
 
 # Rebuild após mudanças no código
-docker-compose up -d --build
+docker compose up -d --build
 
 # Limpar tudo (CUIDADO: apaga o banco!)
-docker-compose down -v
+docker compose down -v
 ```
 
 ## 🗄️ Database
@@ -123,7 +139,7 @@ O PostgreSQL roda na porta **5433** externamente para evitar conflitos.
 
 **Conectar via psql:**
 ```bash
-docker-compose exec postgres psql -U postgres -d monthbalance
+docker compose exec postgres psql -U postgres -d monthbalance
 ```
 
 **String de conexão:**
@@ -131,7 +147,7 @@ docker-compose exec postgres psql -U postgres -d monthbalance
 Host=localhost;Port=5433;Database=monthbalance;Username=postgres;Password=sua_senha
 ```
 
-## 🌐 Deploy
+## 🌐 Deploy para Oracle Cloud
 
 Este projeto está preparado para deploy no **Oracle Cloud Free Tier**:
 - Configuração via variáveis de ambiente
@@ -163,6 +179,17 @@ Este projeto está preparado para deploy no **Oracle Cloud Free Tier**:
 - JWT Authentication
 - WebAuthn (Passkeys)
 - Swagger/OpenAPI
+
+## 📝 Portas
+
+### Desenvolvimento Local (sem Docker)
+- Frontend: 5173 (dev) / 4173 (preview)
+- Backend: 5000
+
+### Docker Local
+- Frontend: 8080
+- Backend: 5150
+- PostgreSQL: 5433
 
 ## 📝 Licença
 
