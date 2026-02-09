@@ -65,6 +65,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function deleteAccount(): Promise<void> {
+    loading.value = true;
+
+    try {
+      await authService.deleteAccount();
+      authGuard.clearAuthState();
+      user.value = null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     user,
     loading,
@@ -74,6 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     initializeAuth,
     updateUserData,
-    changePassword
+    changePassword,
+    deleteAccount
   };
 });

@@ -174,6 +174,17 @@ async function authenticateWebAuthn(credential: any): Promise<User> {
   }
 }
 
+async function deleteAccount(): Promise<void> {
+  try {
+    await api.delete('/auth/me');
+    logout();
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao excluir conta';
+
+    throw new Error(message);
+  }
+}
+
 export const authService = {
   register,
   login,
@@ -186,5 +197,6 @@ export const authService = {
   registerWebAuthnChallenge,
   registerWebAuthnCredential,
   authenticateWebAuthnChallenge,
-  authenticateWebAuthn
+  authenticateWebAuthn,
+  deleteAccount
 };

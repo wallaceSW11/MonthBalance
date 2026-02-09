@@ -199,7 +199,7 @@ async function handleCloseAccount(): Promise<void> {
   loading.show(t('account.closingAccount'));
 
   try {
-    authStore.logout();
+    await authStore.deleteAccount();
     notify.success(t('account.closeAccountTitle'), t('account.accountClosed'));
     await router.push(ROUTES.LOGIN);
   } catch (error) {
