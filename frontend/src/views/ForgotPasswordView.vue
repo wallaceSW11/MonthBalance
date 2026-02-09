@@ -88,8 +88,6 @@ async function handleForgotPassword(): Promise<void> {
   const { valid } = await formRef.value.validate();
 
   if (!valid || !emailValid.value) return;
-
-  console.log('Forgot Password:', form.value);
 }
 
 function goToLogin(): void {

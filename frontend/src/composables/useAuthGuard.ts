@@ -9,8 +9,6 @@ export function useAuthGuard() {
     try {
       return await authGuard.registerWebAuthn(userId, userName);
     } catch (error) {
-      console.error('Failed to enable biometric:', error);
-
       return false;
     }
   }
@@ -19,8 +17,6 @@ export function useAuthGuard() {
     try {
       return await authGuard.authenticateWithWebAuthn(email);
     } catch (error) {
-      console.error('Failed to authenticate with biometric:', error);
-
       return false;
     }
   }

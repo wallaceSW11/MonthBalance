@@ -5,6 +5,7 @@ import router from "@/router";
 import vuetify from "@/plugins/vuetify";
 import i18n from "@/plugins/i18n";
 import { setupLib, useThemeStore } from "@wallacesw11/base-lib";
+import { useAuthStore } from "@/stores/auth";
 import "@wallacesw11/base-lib/style.css";
 import "@/styles/main.css";
 
@@ -16,6 +17,9 @@ async function initializeAndMountApp() {
   
   const themeStore = useThemeStore();
   await themeStore.loadTheme();
+  
+  const authStore = useAuthStore();
+  authStore.initializeAuth();
   
   app.use(router);
   app.use(vuetify);

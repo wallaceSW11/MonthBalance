@@ -276,7 +276,7 @@ function loadLastAccessedMonth(): void {
     currentYear.value = year;
     currentMonth.value = month;
   } catch (error) {
-    console.error('Failed to load last accessed month', error);
+    // Failed to load last accessed month
   }
 }
 
@@ -592,15 +592,9 @@ function handleAddExpense(): void {
 }
 
 function handleExpenseTypeSelected(expenseType: ExpenseTypeModel): void {
-  console.log('🔍 Tipo de despesa selecionado:', expenseType);
-  console.log('🔍 ID do tipo:', expenseType.id);
-  console.log('🔍 Nome do tipo:', expenseType.name);
-
   selectedExpenseTypeId.value = String(expenseType.id);
   expenseFormMode.value = FormMode.ADD;
   expenseFormOpen.value = true;
-
-  console.log('🔍 selectedExpenseTypeId após set:', selectedExpenseTypeId.value);
 }
 
 async function handleEditExpenseInline(id: number, value: number): Promise<void> {

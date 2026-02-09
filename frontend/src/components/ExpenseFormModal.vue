@@ -87,11 +87,6 @@ function loadInitialData(): void {
 }
 
 async function handleSave(): Promise<void> {
-  console.log('💾 Salvando despesa...');
-  console.log('💾 expenseTypeId:', props.expenseTypeId);
-  console.log('💾 monthDataId:', props.monthDataId);
-  console.log('💾 value:', form.value.value);
-  
   loading.show(t('common.loading'));
 
   try {

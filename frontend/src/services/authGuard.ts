@@ -16,7 +16,8 @@ const STORAGE_KEYS = {
   WEBAUTHN_CREDENTIAL_ID: 'mb_webauthn_cred_id'
 } as const;
 
-const AUTH_TIMEOUT = 0; // 0 = immediate lock on background
+const AUTH_TIMEOUT_MOBILE = 0; // 0 = immediate lock on background (mobile)
+const AUTH_TIMEOUT_DESKTOP = 24 * 60 * 60 * 1000; // 24h (desktop)
 
 class AuthGuardService {
   private isListenerSetup = false;
@@ -56,6 +57,24 @@ class AuthGuardService {
    */
   private isDevMode(): boolean {
     return import.meta.env.DEV && import.meta.env.VITE_SKIP_AUTH === 'true';
+  }
+
+  /**
+   * Detect if running on mobile device
+   */
+  private isMobileDevice(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  }
+
+  /**
+   * Get auth timeout based on device type
+   */
+  private getAuthTimeout(): number {
+    return this.isMobileDevice() ? AUTH_TIMEOUT_MOBILE : AUTH_TIMEOUT_DESKTOP;
   }
 
   /**
@@ -107,9 +126,9 @@ class AuthGuardService {
     if (!hiddenAt) return;
 
     const diff = Date.now() - hiddenAt;
+    const timeout = this.getAuthTimeout();
 
-    // Immediate lock (AUTH_TIMEOUT = 0)
-    if (diff > AUTH_TIMEOUT) {
+    if (diff > timeout) {
       this.forceLock();
     }
   }
@@ -135,8 +154,9 @@ class AuthGuardService {
     if (!last) return true;
 
     const diff = Date.now() - last;
+    const timeout = this.getAuthTimeout();
 
-    return diff > AUTH_TIMEOUT;
+    return diff > timeout;
   }
 
   /**
@@ -230,8 +250,6 @@ class AuthGuardService {
 
       return true;
     } catch (error) {
-      console.error('WebAuthn registration failed:', error);
-
       return false;
     }
   }
@@ -288,8 +306,6 @@ class AuthGuardService {
 
       return true;
     } catch (error) {
-      console.error('WebAuthn authentication failed:', error);
-
       return false;
     }
   }
