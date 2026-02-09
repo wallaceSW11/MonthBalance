@@ -6,6 +6,15 @@ RUN npm install -g pnpm@10.29.1
 
 WORKDIR /app
 
+# Accept build argument
+ARG VITE_API_BASE_URL=http://localhost:5150/api
+
+# Set as environment variable for Vite
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
+# Debug: Show the API URL being used
+RUN echo "Building with VITE_API_BASE_URL=${VITE_API_BASE_URL}"
+
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
@@ -15,7 +24,7 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build app
+# Build app (Vite will use VITE_API_BASE_URL from ENV)
 RUN pnpm run build
 
 # Production stage
