@@ -89,13 +89,18 @@
               v-model="acceptedTerms"
               density="compact"
               hide-details
-            >
-              <template #label>
-                <span class="terms-text">
-                  {{ t('auth.termsAgreement') }}
-                </span>
-              </template>
-            </v-checkbox>
+            />
+
+            <span class="terms-text">
+              {{ t('auth.termsAgreement') }}
+              <a
+                href="#"
+                class="privacy-link"
+                @click.prevent.stop="goToPrivacyPolicy"
+              >
+                {{ t('auth.privacyPolicy') }}
+              </a>
+            </span>
           </div>
 
           <div class="action-button-wrapper">
@@ -187,6 +192,10 @@ async function handleRegister(): Promise<void> {
 function goToLogin(): void {
   router.push(ROUTES.LOGIN);
 }
+
+function goToPrivacyPolicy(): void {
+  router.push(ROUTES.PRIVACY_POLICY);
+}
 </script>
 
 <style scoped>
@@ -269,12 +278,28 @@ function goToLogin(): void {
 .terms-wrapper {
   margin-top: 8px;
   margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .terms-text {
   font-size: 12px;
   opacity: 0.7;
   line-height: 1.4;
+  flex: 1;
+  padding-top: 2px;
+}
+
+.privacy-link {
+  color: rgb(var(--v-theme-primary));
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.privacy-link:hover {
+  text-decoration: underline;
 }
 
 .action-button-wrapper {

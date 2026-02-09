@@ -24,6 +24,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: false }
   },
   {
+    path: ROUTES.PRIVACY_POLICY,
+    name: 'PrivacyPolicy',
+    component: () => import('@/views/PrivacyPolicyView.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
     path: ROUTES.HOME,
     name: 'Home',
     component: () => import('@/views/HomeView.vue'),

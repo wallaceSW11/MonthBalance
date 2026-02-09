@@ -219,7 +219,8 @@ export default {
     fullNamePlaceholder: "Your full name",
     passwordCreatePlaceholder: "Your password",
     confirmPasswordPlaceholder: "Repeat your password",
-    termsAgreement: "By creating an account, you agree to our Terms of Service and Privacy Policy.",
+    termsAgreement: "By creating an account, you agree to our Terms of Service and",
+    privacyPolicy: "Privacy Policy",
     createNewAccount: "Create new account",
     alreadyHaveAccount: "Already have an account?",
     recoverPassword: "Recover Password",
@@ -280,4 +281,42 @@ export default {
     logoutMessage: "Are you sure you want to logout?",
     logoutConfirm: "Logout",
   },
+  privacy: {
+    title: "Privacy Policy",
+    lastUpdate: "Last update: February 2026",
+    section1: {
+      title: "1. Information We Collect",
+      content: "We collect only essential information for the app to function: your name, email, and encrypted password. All financial data (income and expenses) is stored securely and linked exclusively to your account."
+    },
+    section2: {
+      title: "2. How We Use Your Information",
+      intro: "We use your information to:",
+      item1: "Authenticate your access to the app",
+      item2: "Store and manage your personal financial data",
+      item3: "Improve user experience and app features"
+    },
+    section3: {
+      title: "3. Data Sharing",
+      intro: "Your data is NOT shared with third parties. We guarantee that:",
+      item1: "We do not sell your personal information",
+      item2: "We do not share data with advertisers",
+      item3: "Your financial data is private and accessible only by you"
+    },
+    section4: {
+      title: "4. Security",
+      content: "We implement security measures to protect your information, including password encryption, HTTPS communication, and secure storage in a protected database."
+    },
+    section5: {
+      title: "5. Your Rights",
+      content: "You have the right to access, correct, or delete your data at any time through your account settings. Account deletion permanently removes all your data from the system."
+    },
+    section6: {
+      title: "6. Cookies and Local Storage",
+      content: "We use local storage (localStorage) only to keep your session active and theme preferences. We do not use tracking or analytics cookies."
+    },
+    section7: {
+      title: "7. Changes to This Policy",
+      content: "We may update this policy periodically. We will notify you of significant changes through the app."
+    }
+  }
 };

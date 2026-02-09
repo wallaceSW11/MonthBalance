@@ -94,6 +94,16 @@ public class AuthService : IAuthService
         
         await _userRepository.UpdateAsync(user);
     }
+
+    public async Task DeleteAccountAsync(int userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user == null)
+            throw new InvalidOperationException("User not found");
+
+        await _userRepository.DeleteAsync(userId);
+    }
     
     private string GenerateJwtToken(User user)
     {

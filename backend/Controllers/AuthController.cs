@@ -103,6 +103,24 @@ public class AuthController : ControllerBase
         }
     }
 
+
+    [Authorize]
+    [HttpDelete("me")]
+    public async Task<IActionResult> DeleteAccount()
+    {
+        var userId = GetUserIdFromToken();
+
+        try
+        {
+            await _authService.DeleteAccountAsync(userId);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
     [Authorize]
     [HttpPost("webauthn/register/challenge")]
     public async Task<ActionResult<WebAuthnRegisterChallengeResponse>> GenerateRegisterChallenge()

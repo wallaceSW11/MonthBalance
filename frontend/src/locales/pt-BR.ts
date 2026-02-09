@@ -226,7 +226,8 @@ export default {
     fullNamePlaceholder: "Seu nome completo",
     passwordCreatePlaceholder: "Sua senha",
     confirmPasswordPlaceholder: "Repita sua senha",
-    termsAgreement: "Ao criar uma conta, você concorda com nossos Termos de Serviço e Política de Privacidade.",
+    termsAgreement: "Ao criar uma conta, você concorda com nossos Termos de Serviço e",
+    privacyPolicy: "Política de Privacidade",
     createNewAccount: "Criar nova conta",
     alreadyHaveAccount: "Já possui uma conta?",
     recoverPassword: "Recuperar Senha",
@@ -289,4 +290,42 @@ export default {
     logoutMessage: "Tem certeza que deseja sair?",
     logoutConfirm: "Sair",
   },
+  privacy: {
+    title: "Política de Privacidade",
+    lastUpdate: "Última atualização: Fevereiro de 2026",
+    section1: {
+      title: "1. Informações que Coletamos",
+      content: "Coletamos apenas as informações essenciais para o funcionamento do aplicativo: seu nome, e-mail e senha criptografada. Todos os dados financeiros (receitas e despesas) são armazenados de forma segura e vinculados exclusivamente à sua conta."
+    },
+    section2: {
+      title: "2. Como Usamos suas Informações",
+      intro: "Utilizamos suas informações para:",
+      item1: "Autenticar seu acesso ao aplicativo",
+      item2: "Armazenar e gerenciar seus dados financeiros pessoais",
+      item3: "Melhorar a experiência do usuário e funcionalidades do app"
+    },
+    section3: {
+      title: "3. Compartilhamento de Dados",
+      intro: "Seus dados NÃO são compartilhados com terceiros. Garantimos que:",
+      item1: "Não vendemos suas informações pessoais",
+      item2: "Não compartilhamos dados com anunciantes",
+      item3: "Seus dados financeiros são privados e acessíveis apenas por você"
+    },
+    section4: {
+      title: "4. Segurança",
+      content: "Implementamos medidas de segurança para proteger suas informações, incluindo criptografia de senha, comunicação HTTPS e armazenamento seguro em banco de dados protegido."
+    },
+    section5: {
+      title: "5. Seus Direitos",
+      content: "Você tem direito de acessar, corrigir ou excluir seus dados a qualquer momento através das configurações da sua conta. A exclusão da conta remove permanentemente todos os seus dados do sistema."
+    },
+    section6: {
+      title: "6. Cookies e Armazenamento Local",
+      content: "Utilizamos armazenamento local (localStorage) apenas para manter sua sessão ativa e preferências de tema. Não utilizamos cookies de rastreamento ou análise."
+    },
+    section7: {
+      title: "7. Alterações nesta Política",
+      content: "Podemos atualizar esta política periodicamente. Notificaremos sobre mudanças significativas através do aplicativo."
+    }
+  }
 };
