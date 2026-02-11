@@ -1,1 +1,30 @@
+# Environment
 .env
+.env.local
+!.env.example
+!.env.development
+!.env.production
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+bin/
+obj/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Database
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db

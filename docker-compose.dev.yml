@@ -1,0 +1,58 @@
+# Docker Compose para Desenvolvimento Local
+# Uso: docker compose -f docker-compose.dev.yml up
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: month-balance-db-dev
+    environment:
+      POSTGRES_DB: ${DB_NAME:-monthbalance}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - month-balance-dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API (.NET) - Desenvolvimento
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: month-balance-api-dev
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME:-monthbalance};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-postgres}"
+      Jwt__Secret: ${JWT_SECRET:-dev_secret_key_for_local_development_only_min_32_chars}
+      Jwt__Issuer: MonthBalanceAPI
+      Jwt__Audience: MonthBalanceApp
+      Jwt__ExpirationHours: 24
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - month-balance-dev
+    restart: unless-stopped
+    volumes:
+      - ./backend:/src
+    command: dotnet watch run --no-launch-profile
+
+volumes:
+  postgres_data_dev:
+    driver: local
+
+networks:
+  month-balance-dev:
+    driver: bridge
