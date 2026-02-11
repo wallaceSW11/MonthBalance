@@ -1,61 +1,90 @@
-import { createRouter, createWebHistory } from "vue-router";
-import type { RouteRecordRaw } from "vue-router";
-import { authService } from "@/services/AuthService";
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
+import { authService } from '@/services/authService';
+import { authGuard } from '@/services/authGuard';
+import { ROUTES } from '@/constants/routes';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/",
-    redirect: "/auth",
+    path: ROUTES.LOGIN,
+    name: 'Login',
+    component: () => import('@/views/LoginView.vue'),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/auth",
-    name: "Auth",
-    component: () => import("@/views/AuthView.vue"),
+    path: ROUTES.REGISTER,
+    name: 'Register',
+    component: () => import('@/views/RegisterView.vue'),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: () => import("@/views/DashboardView.vue"),
-    meta: { requiresAuth: true },
+    path: ROUTES.FORGOT_PASSWORD,
+    name: 'ForgotPassword',
+    component: () => import('@/views/ForgotPasswordView.vue'),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/incomes",
-    name: "Incomes",
-    component: () => import("@/views/IncomesView.vue"),
-    meta: { requiresAuth: true },
+    path: ROUTES.PRIVACY_POLICY,
+    name: 'PrivacyPolicy',
+    component: () => import('@/views/PrivacyPolicyView.vue'),
+    meta: { requiresAuth: false }
   },
   {
-    path: "/expenses",
-    name: "Expenses",
-    component: () => import("@/views/ExpensesView.vue"),
-    meta: { requiresAuth: true },
+    path: ROUTES.HOME,
+    name: 'Home',
+    component: () => import('@/views/HomeView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/demo",
-    name: "Demo",
-    component: () => import("@/views/DemoView.vue"),
-    meta: { requiresAuth: true },
+    path: ROUTES.INCOME_TYPES,
+    name: 'IncomeTypes',
+    component: () => import('@/views/IncomeTypesView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: "/debug",
-    name: "Debug",
-    component: () => import("@/views/DebugView.vue"),
-    meta: { requiresAuth: true },
+    path: ROUTES.EXPENSE_TYPES,
+    name: 'ExpenseTypes',
+    component: () => import('@/views/ExpenseTypesView.vue'),
+    meta: { requiresAuth: true }
   },
+  {
+    path: ROUTES.ACCOUNT,
+    name: 'Account',
+    component: () => import('@/views/AccountView.vue'),
+    meta: { requiresAuth: true }
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
+  routes
 });
 
-router.beforeEach((to, _from, next) => {
-  if (to.meta.requiresAuth && authService.isAuthRequired()) {
-    next('/auth')
-    return
+authGuard.setupLifecycleGuards();
+
+router.beforeEach((to, _, next) => {
+  const requiresAuth = to.meta.requiresAuth !== false;
+  const authenticated = authService.isAuthenticated();
+
+  if (requiresAuth && !authenticated) {
+    next(ROUTES.LOGIN);
+
+    return;
   }
-  
-  next()
-})
+
+  if (requiresAuth && authGuard.isAuthRequired()) {
+    next(ROUTES.LOGIN);
+
+    return;
+  }
+
+  if (to.path === ROUTES.LOGIN && authenticated && !authGuard.isAuthRequired()) {
+    next(ROUTES.HOME);
+
+    return;
+  }
+
+  next();
+});
 
 export default router;

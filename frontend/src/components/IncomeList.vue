@@ -1,216 +1,127 @@
 <template>
   <div class="income-list">
-    <button
-      class="section-header"
-      @click="toggleCollapse"
-    >
-      <div class="header-content">
-        <v-icon :class="{ 'rotated': collapsed }">
-          mdi-chevron-down
-        </v-icon>
-        <h3 class="section-title">
-          {{ t('dashboard.incomes') }}
-        </h3>
+    <div class="list-header" @click="toggleExpanded">
+      <div class="d-flex align-center gap-2">
+        <v-icon :class="expandIconClass" size="small">mdi-chevron-down</v-icon>
+        <h3 class="section-title">{{ t('monthBalance.incomes') }}</h3>
       </div>
-      <div class="divider" />
-    </button>
 
-    <div
-      v-if="!collapsed"
-      class="items-container"
-    >
-      <div
+      <div class="header-divider" />
+
+      <v-btn icon="mdi-plus" size="small" variant="text" @click.stop="emit('add')" />
+    </div>
+
+    <div v-if="expanded" class="list-content">
+      <div v-if="incomes.length === 0" class="empty-state">
+        {{ t('monthBalance.noIncomes') }}
+      </div>
+
+      <IncomeItem
         v-for="income in incomes"
         :key="income.id"
-        class="income-item"
-      >
-        <div class="item-info">
-          <span class="item-name">{{ income.name }}</span>
-        </div>
-
-        <div class="item-value">
-          <button
-            class="value-button"
-            @click="$emit('edit', income)"
-          >
-            {{ formatValue(income) }}
-          </button>
-        </div>
-      </div>
-
-      <div
-        v-if="incomes.length === 0"
-        class="empty-state"
-      >
-        {{ t('dashboard.noIncomes') }}
-      </div>
+        :name="income.name"
+        :type="income.type"
+        :value="income.value"
+        @edit="emit('edit', income.id)"
+        @delete="emit('delete', income.id)"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useIncomeStore } from '@/stores/income'
-import { formatCurrency } from '@/utils/currency'
-import { uiStorageService } from '@/services/storage/UIStorageService'
-import type { Income } from '@/models/Income'
+import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import IncomeItem from './IncomeItem.vue';
 
-defineEmits<{
-  edit: [income: Income]
-}>()
-
-const { t, locale } = useI18n()
-const incomeStore = useIncomeStore()
-
-const collapsed = ref(false)
-
-const incomes = computed(() => incomeStore.incomes)
-
-function toggleCollapse(): void {
-  collapsed.value = !collapsed.value
-  uiStorageService.updateIncomesCollapsed(collapsed.value)
+interface IncomeListItem {
+  id: number;
+  name: string;
+  type: string;
+  value: number;
 }
 
-function formatValue(income: Income): string {
-  const value = incomeStore.calculateIncomeValue(income)
-  
-  return formatCurrency(value, locale.value)
+defineProps<{
+  incomes: IncomeListItem[];
+}>();
+
+const emit = defineEmits<{
+  add: [];
+  edit: [id: number];
+  delete: [id: number];
+}>();
+
+const { t } = useI18n();
+
+const STORAGE_KEY = 'monthbalance_incomes_expanded';
+
+const expanded = ref(loadExpandedState());
+
+const expandIconClass = computed(() => {
+  return expanded.value ? '' : 'rotate-icon';
+});
+
+function loadExpandedState(): boolean {
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  return saved ? JSON.parse(saved) : true;
 }
 
-onMounted(() => {
-  const uiState = uiStorageService.getUIState()
-  
-  collapsed.value = uiState.incomesCollapsed
-})
+function saveExpandedState(): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(expanded.value));
+}
+
+function toggleExpanded(): void {
+  expanded.value = !expanded.value;
+  saveExpandedState();
+}
 </script>
 
 <style scoped>
 .income-list {
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding: 16px;
+  padding-top: 0;
 }
 
-.section-header {
-  width: 100%;
+.list-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  margin-bottom: 8px;
-  background: transparent;
-  border: none;
+  gap: 12px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  user-select: none;
 }
 
-.section-header:hover {
-  opacity: 0.8;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
+.gap-2 {
   gap: 8px;
 }
 
 .section-title {
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: rgba(var(--v-theme-on-surface), 0.6);
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  white-space: nowrap;
 }
 
-.section-header:hover .section-title {
-  color: rgba(var(--v-theme-on-surface), 1);
-}
-
-.divider {
+.header-divider {
   flex: 1;
   height: 1px;
-  background: rgba(var(--v-theme-on-surface), 0.08);
-  margin-left: 16px;
-}
-
-.v-icon {
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  font-size: 20px;
-  transition: transform 0.3s, color 0.2s;
-}
-
-.v-icon.rotated {
-  transform: rotate(-90deg);
-}
-
-.section-header:hover .v-icon {
-  color: rgba(var(--v-theme-on-surface), 1);
-}
-
-.items-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.income-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  transition: background-color 0.2s;
-}
-
-.income-item:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.02);
-}
-
-.item-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.item-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(var(--v-theme-on-surface), 1);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.item-value {
-  width: 128px;
-}
-
-.value-button {
-  width: 100%;
-  background: transparent;
-  text-align: right;
-  font-size: 16px;
-  font-weight: 500;
-  color: rgba(var(--v-theme-on-surface), 1);
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
-  font-variant-numeric: tabular-nums;
-  cursor: pointer;
-}
-
-.value-button:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.04);
-  color: rgb(var(--v-theme-primary));
-}
-
-.value-button:active {
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
+  background-color: rgba(var(--v-theme-on-surface), 0.12);
 }
 
 .empty-state {
-  padding: 32px 16px;
   text-align: center;
-  color: rgba(var(--v-theme-on-surface), 0.4);
-  font-size: 14px;
+  padding: 32px 16px;
+  opacity: 0.6;
+  font-size: 0.875rem;
+}
+
+.rotate-icon {
+  transform: rotate(-90deg);
+}
+
+.rotate-icon,
+.list-header v-icon {
+  transition: transform 0.3s ease;
 }
 </style>

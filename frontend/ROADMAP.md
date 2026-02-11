@@ -1,345 +1,444 @@
-# 💰 MonthBalance - Roadmap
+# 🗺️ ROADMAP - Month Balance
 
-## 📋 Project Overview
+## 📱 Sobre o Projeto
 
-Mobile-first web app for monthly financial forecast management. Track income and expenses with inline editing, month navigation, and localStorage persistence.
-
-**Stack:** Vue 3, TypeScript, Pinia, Vuetify, Vue Router, Vitest, Cypress, i18n (pt-BR/en-US)
-
----
-
-## 🎯 Phase 1: Main Dashboard (Route "/")
-
-**Goal:** Implement the main screen showing monthly financial overview with inline editing
-
-### Tasks:
-- [ ] 1.1 Setup project structure and dependencies
-  - [ ] Review and update package.json dependencies
-  - [ ] Configure Pinia store structure
-  - [ ] Setup i18n with pt-BR and en-US locales
-  - [ ] Configure Vuetify theme (dark mode with custom colors)
-
-- [ ] 1.2 Create localStorage service layer
-  - [ ] Create `services/storage/` folder structure
-  - [ ] Implement `StorageService` base class
-  - [ ] Implement `IncomeStorageService` (CRUD operations)
-  - [ ] Implement `ExpenseStorageService` (CRUD operations)
-  - [ ] Implement `SettingsStorageService` (theme, locale)
-  - [ ] Implement `MonthDataStorageService` (month-specific data)
-  - [ ] Add TypeScript interfaces for all data models
-
-- [ ] 1.3 Create Pinia stores
-  - [ ] Create `stores/income.ts` (income management)
-  - [ ] Create `stores/expense.ts` (expense management)
-  - [ ] Create `stores/settings.ts` (theme, locale)
-  - [ ] Create `stores/month.ts` (current month, navigation, totals)
-
-- [ ] 1.4 Implement data models
-  - [ ] Create `models/Income.ts` (id, name, type, grossValue, netValue, hourlyRate, hours, minutes)
-  - [ ] Create `models/Expense.ts` (id, name, value)
-  - [ ] Create `models/MonthData.ts` (year, month, incomes, expenses)
-  - [ ] Create `models/Settings.ts` (theme, locale)
-
-- [ ] 1.5 Build main dashboard layout
-  - [ ] Create `views/DashboardView.vue`
-  - [ ] Implement sticky header with blur effect
-  - [ ] Add hamburger menu button (left)
-  - [ ] Add month navigation (center: < October 2023 >)
-  - [ ] Add summary cards (Receitas, Despesas, Saldo)
-
-- [ ] 1.6 Implement income section
-  - [ ] Create `components/IncomeList.vue`
-  - [ ] Add collapsible section header
-  - [ ] Implement inline editable input fields
-  - [ ] Add currency formatting (pt-BR: 1.000,00 / en-US: 1,000.00)
-  - [ ] Connect to Pinia store
-
-- [ ] 1.7 Implement expense section
-  - [ ] Create `components/ExpenseList.vue`
-  - [ ] Add collapsible section header
-  - [ ] Implement inline editable input fields
-  - [ ] Add currency formatting
-  - [ ] Connect to Pinia store
-
-- [ ] 1.8 Implement month navigation logic
-  - [ ] Add previous/next month handlers
-  - [ ] Implement "duplicate to next month" dialog
-  - [ ] Add 3-month forward limit validation
-  - [ ] Auto-calculate totals on month change
-
-- [ ] 1.9 Add floating action button (FAB)
-  - [ ] Create FAB component (bottom center)
-  - [ ] Add click handler (placeholder for future features)
-
-- [ ] 1.10 Implement auto-save functionality
-  - [ ] Debounce input changes (500ms)
-  - [ ] Save to localStorage on value change
-  - [ ] Update totals in real-time
+Sistema de previsão financeira mensal (receitas e despesas).
+- Mobile-first (iPhone 16 Pro Max)
+- PWA (instalar como app)
+- Whitelabel (tema claro/escuro)
+- i18n (pt-BR, en-US)
+- Usuário fixo inicial: wall@wall.com / senha
 
 ---
 
-## 🎯 Phase 2: Navigation & Routes
+## 🎯 FASE 1: Limpeza e Estrutura Base
 
-**Goal:** Create navigation drawer and additional pages
+### 1.1 Limpar Projeto
+- [ ] Remover views demo (DemoView.vue)
+- [ ] Remover testes exemplo
+- [ ] Remover docs desnecessários
+- [ ] Manter: stores/locale.ts, plugins (i18n, vuetify), router
 
-### Tasks:
-- [ ] 2.1 Setup Vue Router
-  - [ ] Configure routes: `/`, `/incomes`, `/expenses`, `/settings`
-  - [ ] Add route guards if needed
-  - [ ] Configure route transitions
-
-- [ ] 2.2 Create navigation drawer
-  - [ ] Create `components/NavigationDrawer.vue`
-  - [ ] Add menu items: Dashboard, Receitas, Despesas, Configurações
-  - [ ] Add icons for each menu item
-  - [ ] Implement active route highlighting
-  - [ ] Connect hamburger button to drawer
-
-- [ ] 2.3 Create placeholder pages
-  - [ ] Create `views/IncomesView.vue` (empty state)
-  - [ ] Create `views/ExpensesView.vue` (empty state)
-  - [ ] Create `views/SettingsView.vue` (empty state)
-
-- [ ] 2.4 Implement drawer behavior
-  - [ ] Add open/close animation
-  - [ ] Add overlay/backdrop
-  - [ ] Close on route change
-  - [ ] Close on outside click
-
----
-
-## 🎯 Phase 3: Income Management (CRUD)
-
-**Goal:** Full CRUD for income entries with manual and hourly types
-
-### Tasks:
-- [ ] 3.1 Design income form
-  - [ ] Create `components/IncomeForm.vue`
-  - [ ] Add form fields: name, type (manual/hourly)
-  - [ ] Conditional fields based on type:
-    - Manual: grossValue, netValue
-    - Hourly: hourlyRate, hours:minutes (masked input)
-  - [ ] Add form validation
-
-- [ ] 3.2 Implement income list page
-  - [ ] Update `views/IncomesView.vue`
-  - [ ] Display all income entries
-  - [ ] Add edit/delete actions
-  - [ ] Add empty state message
-
-- [ ] 3.3 Implement hourly calculation
-  - [ ] Create utility function: `calculateHourlyIncome(hourlyRate, hours, minutes)`
-  - [ ] Formula: `(hours + (minutes / 60)) * hourlyRate`
-  - [ ] Auto-calculate on input change
-
-- [ ] 3.4 Add income CRUD operations
-  - [ ] Create new income (modal/dialog)
-  - [ ] Edit existing income
-  - [ ] Delete income (with confirmation)
-  - [ ] Persist to localStorage
-
-- [ ] 3.5 Connect to dashboard
-  - [ ] Update dashboard to show income entries
-  - [ ] Sync changes between pages
-  - [ ] Update totals automatically
-
----
-
-## 🎯 Phase 4: Expense Management (CRUD)
-
-**Goal:** Full CRUD for expense entries
-
-### Tasks:
-- [ ] 4.1 Design expense form
-  - [ ] Create `components/ExpenseForm.vue`
-  - [ ] Add form fields: name, value
-  - [ ] Add form validation
-
-- [ ] 4.2 Implement expense list page
-  - [ ] Update `views/ExpensesView.vue`
-  - [ ] Display all expense entries
-  - [ ] Add edit/delete actions
-  - [ ] Add empty state message
-
-- [ ] 4.3 Add expense CRUD operations
-  - [ ] Create new expense (modal/dialog)
-  - [ ] Edit existing expense
-  - [ ] Delete expense (with confirmation)
-  - [ ] Persist to localStorage
-
-- [ ] 4.4 Connect to dashboard
-  - [ ] Update dashboard to show expense entries
-  - [ ] Sync changes between pages
-  - [ ] Update totals automatically
-
----
-
-## 🎯 Phase 5: Settings Page
-
-**Goal:** Configure theme and language preferences
-
-### Tasks:
-- [ ] 5.1 Implement settings page
-  - [ ] Update `views/SettingsView.vue`
-  - [ ] Add theme selector (light/dark)
-  - [ ] Add language selector (pt-BR/en-US)
-  - [ ] Add section headers and descriptions
-
-- [ ] 5.2 Implement theme switching
-  - [ ] Connect to Vuetify theme system
-  - [ ] Persist theme preference to localStorage
-  - [ ] Apply theme on app load
-
-- [ ] 5.3 Implement language switching
-  - [ ] Connect to i18n plugin
-  - [ ] Persist locale preference to localStorage
-  - [ ] Apply locale on app load
-  - [ ] Update all UI text dynamically
-
-- [ ] 5.4 Add settings to Pinia store
-  - [ ] Create actions: `setTheme()`, `setLocale()`
-  - [ ] Load settings on app initialization
-
----
-
-## 🧪 Phase 6: Testing & Quality
-
-**Goal:** Ensure code quality and functionality
-
-### Tasks:
-- [ ] 6.1 Unit tests
-  - [ ] Test Pinia stores (income, expense, settings, month)
-  - [ ] Test utility functions (currency format, hourly calculation)
-  - [ ] Test storage services
-
-- [ ] 6.2 Component tests
-  - [ ] Test IncomeList component
-  - [ ] Test ExpenseList component
-  - [ ] Test IncomeForm component
-  - [ ] Test ExpenseForm component
-  - [ ] Test NavigationDrawer component
-
-- [ ] 6.3 E2E tests (Cypress)
-  - [ ] Test main dashboard flow
-  - [ ] Test month navigation
-  - [ ] Test duplicate month dialog
-  - [ ] Test CRUD operations (income/expense)
-  - [ ] Test settings changes
-
-- [ ] 6.4 Code quality
-  - [ ] Run ESLint and fix issues
-  - [ ] Ensure TypeScript strict mode compliance
-  - [ ] Review and refactor code
-  - [ ] Add JSDoc comments where needed
-
----
-
-## 🚀 Phase 7: PWA & Polish
-
-**Goal:** Make app installable and production-ready
-
-### Tasks:
-- [ ] 7.1 PWA configuration
-  - [ ] Configure service worker
-  - [ ] Add manifest.json
-  - [ ] Add app icons (multiple sizes)
-  - [ ] Test offline functionality
-
-- [ ] 7.2 Performance optimization
-  - [ ] Lazy load routes
-  - [ ] Optimize bundle size
-  - [ ] Add loading states
-  - [ ] Optimize re-renders
-
-- [ ] 7.3 UX improvements
-  - [ ] Add loading spinners
-  - [ ] Add success/error toasts
-  - [ ] Add animations/transitions
-  - [ ] Add empty states
-  - [ ] Add confirmation dialogs
-
-- [ ] 7.4 Accessibility
-  - [ ] Add ARIA labels
-  - [ ] Test keyboard navigation
-  - [ ] Test screen reader compatibility
-  - [ ] Ensure color contrast
-
-- [ ] 7.5 Final polish
-  - [ ] Review all i18n translations
-  - [ ] Test on iPhone 16 Pro Max
-  - [ ] Test dark/light themes
-  - [ ] Fix any remaining bugs
-
----
-
-## 📝 Notes
-
-### Data Structure (localStorage)
-
-```typescript
-// Key: "month-balance-incomes"
-{
-  "2024-01": [
-    { id: "uuid", name: "Salary", type: "manual", grossValue: 10000, netValue: 8000 },
-    { id: "uuid", name: "Freelance", type: "hourly", hourlyRate: 30, hours: 10, minutes: 30 }
-  ]
-}
-
-// Key: "month-balance-expenses"
-{
-  "2024-01": [
-    { id: "uuid", name: "Rent", value: 3200 },
-    { id: "uuid", name: "Groceries", value: 1200 }
-  ]
-}
-
-// Key: "month-balance-settings"
-{
-  theme: "dark",
-  locale: "pt-BR"
-}
+### 1.2 Estrutura de Pastas
+```
+src/
+├── models/           # Interfaces e Enums
+├── services/         # LocalStorage Service (simula API)
+├── components/       # Componentes reutilizáveis
+├── views/            # Páginas
+└── utils/            # Helpers
 ```
 
-### Design Tokens (from theme.json)
+### 1.3 Models (src/models/)
+- [ ] `IncomeType.ts` - Enum: PAYCHECK, HOURLY, EXTRA
+- [ ] `User.ts` - Interface User
+- [ ] `IncomeTypeModel.ts` - Interface (id, userId, name, type)
+- [ ] `ExpenseTypeModel.ts` - Interface (id, userId, name)
+- [ ] `MonthData.ts` - Interface (id, userId, year, month, lastAccessed)
+- [ ] `Income.ts` - Interface (id, monthDataId, incomeTypeId, grossValue?, netValue?, hourlyRate?, hours?, minutes?, calculatedValue)
+- [ ] `Expense.ts` - Interface (id, monthDataId, expenseTypeId, value)
 
-```typescript
-colors: {
-  primary: "#00aab2",
-  success: "#5EC77E",   // Income/positive (green)
-  error: "#DC465D",     // Expense/negative (red)
-  background: "#1c1c22",
-  surface: "#2E2E33",
-  divider: "#3F3F46"
-}
+### 1.4 LocalStorage Service
+- [ ] `src/services/localStorageService.ts`
+  - Métodos genéricos: get, post, put, delete
+  - Simular delay de API (opcional)
+  - Usuário fixo: wall@wall.com / senha
 
-fonts: {
-  primary: "Space Grotesk, sans-serif"
-}
+### 1.5 Whitelabel + Theme + i18n
+- [ ] Configurar `public/theme.json` (cores, logo)
+- [ ] Adicionar ThemeToggle da lib no menu
+- [ ] Adicionar LanguageSelector da lib no menu
+- [ ] Configurar locales (pt-BR, en-US)
+- [ ] Traduzir todas as strings da UI
+
+---
+
+## 🎯 FASE 2: CRUD Tipos de Receita ✅ CONCLUÍDO
+
+### 2.1 View `/income-types` ✅
+- [x] Criar `src/views/IncomeTypesView.vue`
+- [x] Lista de tipos cadastrados (v-card com scroll)
+- [x] Botão flutuante (+) centralizado para adicionar
+- [x] Cada item com IconToolTip (editar/excluir)
+- [x] Usar `ref()` para gerenciar estado local
+- [x] Integrar com LocalStorage Service
+- [x] Layout: Título fixo, scroll apenas na lista de cards
+- [x] Espaçamento entre cards (mb-2)
+- [x] Altura dinâmica com `calc(100dvh - 200px)`
+
+### 2.2 Modal de Formulário ✅
+- [x] Criar `src/components/IncomeTypeFormModal.vue`
+- [x] ModalBase da lib
+- [x] Campos: nome (v-text-field), tipo (v-select com enum)
+- [x] Validação
+- [x] Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
+- [x] **MODO ADICIONAR**: Após salvar, limpar campos, resetar validação e manter modal aberto
+- [x] **MODO EDITAR**: Após salvar, fechar modal
+- [x] Foco automático no primeiro campo ao abrir (apenas modo ADD)
+- [x] Espaçamento entre campos (mb-4)
+- [x] Mensagens de sucesso sem "com sucesso" (ex: "Receita cadastrada", "Receita atualizada")
+
+### 2.3 Rota ✅
+- [x] Adicionar rota `/income-types` no router
+
+### 2.4 Ajustes na BaseLib ✅
+- [x] ModalBase: Controle manual de fechamento (não fecha automaticamente)
+- [x] IconToolTip: Corrigido evento @click com handleClick
+- [x] Select: Menu aparece por baixo do modal (z-index ajustado)
+
+---
+
+## 🎯 FASE 3: CRUD Tipos de Despesa
+
+### 3.1 View `/expense-types`
+- [ ] Criar `src/views/ExpenseTypesView.vue`
+- [ ] Lista de tipos cadastrados
+- [ ] Botão flutuante (+) para adicionar
+- [ ] Cada item com IconToolTip (editar/excluir)
+- [ ] Usar `ref()` para gerenciar estado local
+- [ ] Integrar com LocalStorage Service
+
+### 3.2 Modal de Formulário
+- [ ] Criar `src/components/ExpenseTypeFormModal.vue`
+- [ ] ModalBase da lib
+- [ ] Campo: nome (v-text-field)
+- [ ] Validação
+- [ ] Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
+- [ ] **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
+- [ ] **MODO EDITAR**: Após salvar, fechar modal
+
+### 3.3 Rota
+- [ ] Adicionar rota `/expense-types` no router
+
+---
+
+## 🎯 FASE 4: Tela Principal - Estrutura
+
+### 4.1 View `/` (HomeView)
+- [ ] Criar `src/views/HomeView.vue`
+- [ ] Header fixo com blur (sticky-blur)
+  - Menu hamburguer (dropdown: Duplicar mês, Limpar mês, Tipos de Receita, Tipos de Despesa, Theme, Language)
+  - Navegação mês (chevron_left, "Outubro 2023", chevron_right)
+  - Resumo (Receitas, Despesas, Saldo)
+- [ ] Área scrollável
+  - Seção Receitas (expansível/recolhível)
+  - Seção Despesas (expansível/recolhível)
+- [ ] Botão flutuante (+) para adicionar despesa
+
+### 4.2 Componentes Base
+- [ ] `src/components/MonthNavigator.vue` - Header com navegação
+- [ ] `src/components/MonthSummary.vue` - Cards de resumo
+- [ ] `src/components/IncomeList.vue` - Lista de receitas
+- [ ] `src/components/ExpenseList.vue` - Lista de despesas
+- [ ] `src/components/IncomeItem.vue` - Item individual de receita
+- [ ] `src/components/ExpenseItem.vue` - Item individual de despesa
+
+### 4.3 Lógica do Mês
+- [ ] Usar `ref()` para: currentYear, currentMonth, incomes, expenses
+- [ ] Usar `computed()` para: totalIncome, totalExpense, balance
+- [ ] Funções: loadMonth, duplicateMonth, clearMonth, navigateMonth
+- [ ] Salvar último mês acessado no localStorage
+
+---
+
+## 🎯 FASE 5: Funcionalidades de Receita
+
+### 5.1 Adicionar Receita
+- [ ] Criar `src/components/IncomeTypeSelectModal.vue`
+  - Modal para selecionar tipo de receita
+  - Lista dos tipos cadastrados
+- [ ] Criar `src/components/IncomeFormModal.vue`
+  - Formulário dinâmico baseado no tipo:
+    - **PAYCHECK**: MoneyField (bruto), MoneyField (líquido)
+    - **HOURLY**: MoneyField (valor/hora), NumberField (horas), NumberField (minutos)
+    - **EXTRA**: MoneyField (valor)
+  - Calcular valor final
+  - Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
+  - **MODO ADICIONAR**: Após salvar, limpar campos e manter modal aberto
+  - **MODO EDITAR**: Após salvar, fechar modal
+- [ ] Botão (+) na linha de Receitas abre modal de seleção
+- [ ] Salvar no LocalStorage
+- [ ] Atualizar lista
+
+### 5.2 Editar Receita
+- [ ] Clicar no valor abre IncomeFormModal em modo edição
+- [ ] Campos preenchidos com valores atuais
+- [ ] NÃO permitir alterar o tipo
+- [ ] Salvar alterações e fechar modal
+
+### 5.3 Excluir Receita
+- [ ] IconToolTip com ícone delete
+- [ ] confirm.show() da lib
+- [ ] Excluir do LocalStorage
+- [ ] Atualizar lista
+
+---
+
+## 🎯 FASE 6: Funcionalidades de Despesa ✅ CONCLUÍDO
+
+### 6.1 Adicionar Despesa ✅
+- [x] Criar `src/components/ExpenseTypeSelectModal.vue`
+  - Modal para selecionar tipo de despesa
+- [x] Criar `src/components/ExpenseFormModal.vue`
+  - MoneyField (valor)
+  - Actions: [Salvar (primary), Cancelar (secondary)] - Botão primário sempre primeiro
+  - **MODO ADICIONAR**: Após salvar, limpar campos e fechar modal
+  - **MODO EDITAR**: Após salvar, fechar modal
+- [x] Botão flutuante (+) abre modal de seleção
+- [x] Salvar no LocalStorage
+- [x] Atualizar lista
+
+### 6.2 Editar Despesa ✅
+- [x] Clicar no valor abre ExpenseFormModal em modo edição
+- [x] Campo preenchido com valor atual
+- [x] NÃO permitir alterar o tipo
+- [x] Salvar alterações e fechar modal
+
+### 6.3 Excluir Despesa ✅
+- [x] IconToolTip com ícone delete
+- [x] confirm.show() da lib
+- [x] Excluir do LocalStorage
+- [x] Atualizar lista
+
+---
+
+## 🎯 FASE 7: Navegação entre Meses ✅ CONCLUÍDO
+
+### 7.1 Lógica de Navegação ✅
+- [x] Permitir avançar até 5 meses à frente do último cadastrado
+- [x] Permitir voltar em todos os meses cadastrados
+- [x] Bloquear antes de janeiro/2026
+- [x] Desabilitar botões quando no limite
+- [x] Salvar último mês acessado no localStorage
+- [x] Ao abrir app, carregar último mês acessado
+
+### 7.2 Duplicar Mês ✅
+- [x] Ao avançar para mês não cadastrado:
+  - Exibir confirm.show(): "Deseja copiar os dados de [mês anterior]?"
+  - Sim: copiar tipos E valores
+  - Não: criar mês zerado
+- [x] Opção manual no menu dropdown
+  - Copiar mês atual para próximo mês
+  - Validar se próximo mês já existe
+
+### 7.3 Limpar Mês ✅
+- [x] Opção no menu dropdown
+- [x] confirm.show() da lib: "Limpar todos os lançamentos do mês?"
+- [x] Remover TODOS os lançamentos (incomes e expenses)
+- [x] Manter MonthData (ano/mês)
+
+---
+
+## 🎯 FASE 8: Expansão/Recolhimento ✅ CONCLUÍDO
+
+### 8.1 Receitas ✅
+- [x] Botão com ícone expand_more
+- [x] Rotacionar ícone ao recolher (transform: rotate(180deg))
+- [x] Recolhido: só título "RECEITAS" + linha divisória
+- [x] Expandido: mostra todos os lançamentos
+- [x] Salvar estado no localStorage
+
+### 8.2 Despesas ✅
+- [x] Botão com ícone expand_more
+- [x] Rotacionar ícone ao recolher
+- [x] Recolhido: só título "DESPESAS" + linha divisória
+- [x] Expandido: mostra todos os lançamentos
+- [x] Salvar estado no localStorage
+
+---
+
+## 🎯 FASE 9: PWA ✅ CONCLUÍDO
+
+### 9.1 Configuração ✅
+- [x] Instalar `vite-plugin-pwa`
+- [x] Configurar `vite.config.ts`
+- [x] Criar ícones (192x192, 512x512)
+- [x] Configurar `manifest.json`
+- [x] Testar instalação no iPhone 16 Pro Max
+
+### 9.2 Service Worker ✅
+- [x] Estratégia de cache
+- [x] Offline fallback (opcional, pois precisa de backend)
+
+---
+
+## 🎯 FASE 10: Preparação para Backend
+
+### 10.1 API Service
+- [ ] Criar `src/services/apiService.ts`
+- [ ] Usar `api` da lib (@wallacesw11/base-lib)
+- [ ] Configurar baseURL
+- [ ] Endpoints:
+  - Auth: POST /login, POST /register, POST /forgot-password
+  - IncomeTypes: GET, POST, PUT, DELETE /income-types
+  - ExpenseTypes: GET, POST, PUT, DELETE /expense-types
+  - MonthData: GET, POST /month-data
+  - Incomes: GET, POST, PUT, DELETE /incomes
+  - Expenses: GET, POST, PUT, DELETE /expenses
+
+### 10.2 Substituir LocalStorage
+- [ ] Trocar chamadas de LocalStorage por API
+- [ ] Manter estrutura de código
+- [ ] Adicionar loading.show() / loading.hide()
+- [ ] Adicionar tratamento de erros com notify.error()
+
+---
+
+## 🎯 FASE 11: Autenticação (Futuro)
+
+### 11.1 Tela de Login ✅
+- [x] Criar `src/views/LoginView.vue`
+- [x] EmailField da lib
+- [x] v-text-field para senha
+- [x] PrimaryButton "Entrar"
+- [x] Link "Esqueci minha senha"
+- [x] Link "Criar conta"
+- [x] Design adaptado do Stitch
+
+### 11.2 Tela de Cadastro ✅
+- [x] Criar `src/views/RegisterView.vue`
+- [x] Campos: nome, email, senha, confirmar senha
+- [x] Validação
+- [x] Design adaptado do Stitch
+
+### 11.3 Esqueci Senha ✅
+- [x] Criar `src/views/ForgotPasswordView.vue`
+- [x] EmailField
+- [x] Chamar API para enviar email
+- [x] Design adaptado do Stitch
+
+### 11.4 Integração com Backend
+- [ ] Implementar chamadas de API (login, register, forgot-password)
+- [ ] Armazenar token JWT no localStorage
+- [ ] Configurar interceptors do axios
+
+### 11.5 Guards
+- [ ] Criar `src/router/guards.ts`
+- [ ] Verificar token JWT
+- [ ] Redirecionar para /login se não autenticado
+
+### 11.6 **🔐 SEGURANÇA E PRIVACIDADE** (IMPORTANTE!)
+**Problema**: Dados financeiros sensíveis (salários, gastos) armazenados no backend podem ser acessados pelo administrador.
+
+**Opções a considerar:**
+1. **Criptografia End-to-End**
+   - Criptografar valores no frontend antes de enviar
+   - Usuário tem a chave (senha)
+   - Mais seguro, mas perde dados se esquecer senha
+
+2. **Criptografia no Backend**
+   - Criptografar com chave mestra do servidor
+   - Admin não vê texto plano facilmente
+   - Balanceado entre segurança e recuperação
+
+3. **Dados Locais (Offline-First)**
+   - Armazenar tudo no localStorage/IndexedDB
+   - Backend só para sync opcional
+   - Dados nunca saem do dispositivo
+
+4. **Transparência + Criptografia Básica**
+   - Criptografia no backend
+   - Política de Privacidade clara
+   - Modelo usado por Nubank, Guiabolso, etc.
+
+**Decisão**: Avaliar antes de lançar em produção. Para MVP, considerar opção 4.
+
+---
+
+## 🎯 FASE 12: Docker (Futuro)
+
+### 12.1 Frontend
+- [ ] Criar `Dockerfile`
+- [ ] Build otimizado para produção
+- [ ] Nginx para servir arquivos estáticos
+
+### 12.2 Docker Compose
+- [ ] Criar `docker-compose.yml`
+- [ ] Serviços: frontend, backend, postgres
+- [ ] Volumes e networks
+- [ ] Variáveis de ambiente
+
+---
+
+## 📋 Checklist de Qualidade (SEMPRE)
+
+- [ ] Code Style seguido à risca (1_code-style.md)
+- [ ] Código em inglês (UI em português)
+- [ ] Early returns
+- [ ] Async/await (não .then())
+- [ ] Optional chaining (?.)
+- [ ] Zero lógica no template
+- [ ] Componentes PascalCase no template
+- [ ] TypeScript strict
+- [ ] Usar componentes da lib: ModalBase, MoneyField, NumberField, EmailField, IconToolTip, PrimaryButton, SecondaryButton
+- [ ] Usar utils da lib: notify, confirm, loading, api
+- [ ] Sem comentários no código
+- [ ] Sem stores desnecessárias (usar ref/computed)
+- [ ] **ModalBase: SEMPRE definir `color` nos botões** (primary/secondary/error) - Ver 10_modal-buttons.md
+- [ ] **Fórmula receita por hora**: `(hours + (minutes / 60)) * hourlyRate`
+
+---
+
+## 🔧 Stack Técnica
+
+- Vue 3.5+ (Composition API, `<script setup>`)
+- TypeScript (strict mode)
+- Pinia (apenas para locale - já existe)
+- Vuetify 3
+- Vue Router
+- @wallacesw11/base-lib
+- Vite
+- PWA (vite-plugin-pwa)
+
+---
+
+## 📝 Convenções
+
+### Nomenclatura
+- Variáveis booleanas: `loading`, `valid`, `active` (não `isLoading`, `isValid`)
+- Componentes: PascalCase (IncomeList, ExpenseItem)
+- Arquivos: PascalCase para componentes, camelCase para services
+- Funções: camelCase (loadMonth, duplicateMonth)
+
+### Estrutura de Componente
+```vue
+<script setup lang="ts">
+// 1. Imports
+// 2. Props & Emits
+// 3. Refs
+// 4. Computed
+// 5. Functions
+// 6. Lifecycle
+</script>
+
+<template>
+  <!-- UI -->
+</template>
+
+<style scoped>
+  /* Estilos */
+</style>
 ```
 
-### Month Navigation Rules
+---
 
-1. Current month is default on first load
-2. Can navigate backward unlimited
-3. Can navigate forward max 3 months from current
-4. If navigating to non-existent future month, show dialog: "Duplicate data from previous month?"
-5. Auto-save all changes immediately (debounced)
+## 🚀 Ordem de Execução
+
+1. ✅ Fase 1: Limpeza e Estrutura Base
+2. ✅ Fase 2: CRUD Tipos de Receita
+3. ✅ Fase 3: CRUD Tipos de Despesa
+4. ✅ Fase 4: Tela Principal - Estrutura
+5. ✅ Fase 5: Funcionalidades de Receita
+6. ✅ Fase 6: Funcionalidades de Despesa
+7. ✅ Fase 7: Navegação entre Meses
+8. ✅ Fase 8: Expansão/Recolhimento
+9. ✅ Fase 9: PWA
+10. ⏳ Fase 10: Preparação para Backend
+11. ⏳ Fase 11: Autenticação
+12. ⏳ Fase 12: Docker
 
 ---
 
-## ✅ Definition of Done
-
-Each phase is complete when:
-- [ ] All tasks are implemented
-- [ ] Code follows project style guide (English code, i18n for UI)
-- [ ] Unit tests written and passing
-- [ ] No TypeScript errors
-- [ ] No ESLint warnings
-- [ ] Tested on mobile viewport (iPhone 16 Pro Max)
-- [ ] Dark theme working correctly
-- [ ] Both languages (pt-BR/en-US) working
-
----
-
-**Last Updated:** January 2026
-**Status:** Planning Phase
+**Versão:** 1.0  
+**Data:** 03/02/2026  
+**Projeto:** Month Balance - Previsão Financeira Mensal

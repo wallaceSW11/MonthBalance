@@ -1,14 +1,14 @@
 {
   "enabled": true,
   "name": "Gerador de Merge Request",
-  "description": "Gera arquivo markdown na raiz com documentação do MR seguindo template padrão. Inclui título (emoji + tarefa + resumo), Implementação (usuário final), Impacto (técnico) e Dicas de testes (QA). Usa diff da branch vs develop.",
-  "version": "3.0",
+  "description": "Gera arquivo markdown na raiz com documentação do MR seguindo template padrão. Inclui título (emoji + tarefa + resumo), Implementação (usuário final), Impacto (técnico) e Dicas de testes (QA). Usa diff da branch vs main.",
+  "version": "3.1",
   "when": {
     "type": "userTriggered"
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Execute: `git --no-pager diff origin/dev...HEAD --name-status --binary`\n\nCrie arquivo markdown na raiz seguindo este formato:\n\n**TÍTULO:**\nEmoji git + número da tarefa (extraído da branch) + resumo\nExemplo: :sparkles: FATWEB1097 - Implementado cálculo de impostos em tempo real\n\n**ESTRUTURA:**\n\n### Implementação\n- Descrição resumida para usuário final (1-2 parágrafos)\n- Linguagem simples, sem termos técnicos\n- Use \"-\" no começo\n\n### Impacto\n- Descrição técnica resumida para DEVs\n- Todos os pontos alterados (SEM nomes de métodos)\n- Mencione se foram criados testes unitários\n- **Mencione se testes validam interface (isVisible, clicks, inputs)**\n- Use \"-\" no começo de cada ponto\n\n### Dicas de testes\n- Direcione para QA\n- Detalhe pontos afetados\n- Sugira testes específicos\n- Use \"-\" ou \"*\"\n\n**IMPORTANTE:**\n- Termine após \"Dicas de testes\"\n- SEM estatísticas de arquivos\n- SEM lista detalhada de arquivos\n- Extraia número da tarefa da branch\n- Emojis: :sparkles: (feature), :bug: (fix), :recycle: (refactor)\n- Salve na raiz: merge-request-[TAREFA].md\n\n**ANALISE E GERE O DOCUMENTO!**"
+    "prompt": "Execute: `git --no-pager diff origin/main...HEAD --name-status --binary`\n\nCrie arquivo markdown na raiz seguindo este formato:\n\n**TÍTULO:**\nEmoji git + número da tarefa (extraído da branch) + resumo\nExemplo: :sparkles: MB-001 - Implementado cálculo de saldo mensal\n\n**ESTRUTURA:**\n\n### Implementação\n- Descrição resumida para usuário final (1-2 parágrafos)\n- Linguagem simples, sem termos técnicos\n- Use \"-\" no começo\n\n### Impacto\n- Descrição técnica resumida para DEVs\n- Todos os pontos alterados (SEM nomes de métodos)\n- Mencione se foram criados testes unitários\n- **Mencione se testes validam interface (isVisible, clicks, inputs)**\n- Use \"-\" no começo de cada ponto\n\n### Dicas de testes\n- Direcione para QA\n- Detalhe pontos afetados\n- Sugira testes específicos\n- Use \"-\" ou \"*\"\n\n**IMPORTANTE:**\n- Termine após \"Dicas de testes\"\n- SEM estatísticas de arquivos\n- SEM lista detalhada de arquivos\n- Extraia número da tarefa da branch\n- Emojis: :sparkles: (feature), :bug: (fix), :recycle: (refactor)\n- Salve na raiz: merge-request-[TAREFA].md\n\n**ANALISE E GERE O DOCUMENTO!**"
   },
   "workspaceFolderName": "frontend",
   "shortName": "merge-request-generator"

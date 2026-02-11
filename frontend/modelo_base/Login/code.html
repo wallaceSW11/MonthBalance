@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - Month Balance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#09a2aa",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#102122",
+                        "card-dark": "#1b2727",
+                        "border-dark": "#3b5354"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex items-center justify-center p-6">
+<div class="w-full max-w-sm flex flex-col items-center">
+<!-- Logo Header -->
+<div class="mb-12 flex flex-col items-center">
+<div class="w-20 h-20 bg-primary/20 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-5xl">account_balance_wallet</span>
+</div>
+<h1 class="text-3xl font-bold tracking-tight text-center dark:text-white">Month Balance</h1>
+<p class="text-slate-500 dark:text-[#9cb8ba] text-sm mt-2">Controle suas finanças com simplicidade</p>
+</div>
+<!-- Login Form -->
+<div class="w-full space-y-4">
+<!-- Email Field -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-medium px-1">E-mail</label>
+<div class="relative">
+<input class="w-full h-14 bg-white dark:bg-card-dark border-slate-200 dark:border-border-dark rounded-xl px-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-[#9cb8ba]" placeholder="seu@email.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-medium px-1">Senha</label>
+<div class="relative flex items-center">
+<input class="w-full h-14 bg-white dark:bg-card-dark border-slate-200 dark:border-border-dark rounded-xl px-4 pr-12 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-[#9cb8ba]" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 text-slate-400 dark:text-[#9cb8ba]">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Forgot Password -->
+<div class="flex justify-end pt-1">
+<a class="text-sm font-medium text-primary hover:opacity-80 transition-opacity" href="#">
+                    Esqueci minha senha
+                </a>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full h-14 bg-primary text-white font-bold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-primary/20">
+                    Entrar
+                </button>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="mt-12 text-center">
+<p class="text-sm text-slate-500 dark:text-[#9cb8ba]">
+                Ainda não tem uma conta? 
+                <a class="text-primary font-bold ml-1 hover:underline" href="#">Criar uma conta</a>
+</p>
+</div>
+<!-- iOS Home Indicator Spacing -->
+<div class="h-8"></div>
+</div>
+<!-- Background Decorative Element (Subtle Gradient) -->
+<div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden">
+<div class="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute -bottom-[10%] -left-[10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px]"></div>
+</div>
+</body></html>

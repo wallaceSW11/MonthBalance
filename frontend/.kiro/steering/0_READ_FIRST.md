@@ -1,3 +1,8 @@
+---
+inclusion: always
+priority: highest
+---
+
 # 🚨 LEIA PRIMEIRO - HIERARQUIA DE REGRAS
 
 ## 📋 Ordem de Prioridade

@@ -1,7 +1,9 @@
 <template>
   <v-app>
+    <AppDrawer v-if="authenticated" v-model="drawerOpen" />
+
     <v-main>
-      <router-view />
+      <router-view @toggle-drawer="drawerOpen = !drawerOpen" />
     </v-main>
 
     <FloatingNotify ref="floatingNotifyRef" />
@@ -11,67 +13,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue';
 import {
   FloatingNotify,
   LoadingOverlay,
   ConfirmDialog,
+  useThemeSync,
   useNotifyStore,
   useLoadingStore,
   useConfirmStore
-} from '@wallacesw11/base-lib'
-import { useThemeStore } from '@wallacesw11/base-lib/stores'
-import { useThemeSync } from '@wallacesw11/base-lib/composables'
-import { useLocaleStore } from '@/stores/locale'
-import { settingsStorageService } from '@/services/storage/SettingsStorageService'
-import { authService } from '@/services/AuthService'
+} from '@wallacesw11/base-lib';
+import { useLocaleStore } from '@/stores/locale';
+import { useAuthStore } from '@/stores/auth';
+import AppDrawer from '@/components/AppDrawer.vue';
 
-const router = useRouter()
+const floatingNotifyRef = ref();
+const loadingOverlayRef = ref();
+const confirmDialogRef = ref();
+const drawerOpen = ref<boolean>(false);
 
-const floatingNotifyRef = ref()
-const loadingOverlayRef = ref()
-const confirmDialogRef = ref()
+const localeStore = useLocaleStore();
+const notifyStore = useNotifyStore();
+const loadingStore = useLoadingStore();
+const confirmStore = useConfirmStore();
+const authStore = useAuthStore();
 
-const localeStore = useLocaleStore()
-const notifyStore = useNotifyStore()
-const loadingStore = useLoadingStore()
-const confirmStore = useConfirmStore()
-const themeStore = useThemeStore()
+const authenticated = computed(() => authStore.authenticated);
 
-const { syncTheme } = useThemeSync()
+useThemeSync();
+localeStore.initializeLocale();
+authStore.initializeAuth();
 
-localeStore.initializeLocale()
-
-function handleLockRequired(): void {
-  const currentRoute = router.currentRoute.value.path
-
-  if (currentRoute !== '/auth') {
-    router.push('/auth')
-  }
-}
-
-async function initializeApp(): Promise<void> {
+function registerGlobalComponentRefs(): void {
   if (floatingNotifyRef.value) {
-    notifyStore.setNotifyRef(floatingNotifyRef.value)
+    notifyStore.setNotifyRef(floatingNotifyRef.value);
   }
 
   if (loadingOverlayRef.value) {
-    loadingStore.setLoadingRef(loadingOverlayRef.value)
+    loadingStore.setLoadingRef(loadingOverlayRef.value);
   }
 
   if (confirmDialogRef.value) {
-    confirmStore.setConfirmRef(confirmDialogRef.value)
+    confirmStore.setConfirmRef(confirmDialogRef.value);
   }
-
-  const settings = settingsStorageService.getSettings()
-  themeStore.setTheme(settings.theme)
-
-  await themeStore.loadTheme()
-  syncTheme()
-
-  authService.setupVisibilityGuard(handleLockRequired)
 }
 
-onMounted(initializeApp)
+onMounted(registerGlobalComponentRefs);
 </script>

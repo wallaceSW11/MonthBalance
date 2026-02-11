@@ -1,6 +1,7 @@
 {
-  "name": "MonthBalance Theme",
+  "name": "BaseProject Theme",
   "version": "1.0.0",
+  "defaultTheme": "dark",
   "logo": {
     "light": "/logo-light.png",
     "dark": "/logo-dark.png",
@@ -8,36 +9,35 @@
   },
   "colors": {
     "light": {
-      "primary": "#00aab2",
+      "primary": "#1867C0",
       "secondary": "#5CBBF6",
       "accent": "#005CAF",
-      "error": "#DC465D",
+      "error": "#FF5252",
       "info": "#2196F3",
-      "success": "#5EC77E",
+      "success": "#4CAF50",
       "warning": "#FB8C00",
-      "background": "#fafafa",
+      "background": "#FFFFFF",
       "surface": "#FFFFFF"
     },
     "dark": {
-      "primary": "#00aab2",
+      "primary": "#2196F3",
       "secondary": "#424242",
       "accent": "#82B1FF",
-      "error": "#DC465D",
+      "error": "#FF5252",
       "info": "#2196F3",
-      "success": "#5EC77E",
+      "success": "#4CAF50",
       "warning": "#FFA726",
-      "background": "#1c1c22",
-      "surface": "#2E2E33",
-      "divider": "#3F3F46"
+      "background": "#121212",
+      "surface": "#212121"
     }
   },
   "fonts": {
-    "primary": "Space Grotesk, sans-serif",
+    "primary": "Roboto, sans-serif",
     "monospace": "Courier New, monospace"
   },
   "customization": {
-    "appName": "MonthBalance",
-    "appDescription": "Monthly financial forecast management",
-    "copyrightText": "© 2026 MonthBalance. All rights reserved."
+    "appName": "BaseProject",
+    "appDescription": "Modern Vue 3 + TypeScript base template",
+    "copyrightText": "© 2025 BaseProject. All rights reserved."
   }
 }

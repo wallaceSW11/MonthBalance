@@ -1,5 +1,5 @@
-import { ptBR } from "@/locales/pt-BR";
-import { enUS } from "@/locales/en-US";
+import ptBR from "@/locales/pt-BR";
+import enUS from "@/locales/en-US";
 
 export const messages = {
   "pt-BR": ptBR,
@@ -13,4 +13,4 @@ export const availableLocales = [
 
 export type LocaleCode = keyof typeof messages;
 
-export const defaultLocale: LocaleCode = 'pt-BR';
+export const defaultLocale: LocaleCode = "pt-BR";

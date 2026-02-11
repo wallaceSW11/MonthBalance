@@ -1,0 +1,60 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: month-balance-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-monthbalance}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - month-balance-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API (.NET)
+  backend:
+    image: ghcr.io/wallacesw11/month-balance-backend:latest
+    container_name: month-balance-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME:-monthbalance};Username=${DB_USER:-postgres};Password=${DB_PASSWORD}"
+      Jwt__Secret: ${JWT_SECRET}
+      Jwt__Issuer: MonthBalanceAPI
+      Jwt__Audience: MonthBalanceApp
+      Jwt__ExpirationHours: 24
+    expose:
+      - "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - month-balance-network
+    restart: unless-stopped
+
+  # Frontend (Vue 3 + Nginx)
+  frontend:
+    image: ghcr.io/wallacesw11/month-balance-frontend:latest
+    container_name: month-balance-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - month-balance-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  month-balance-network:
+    driver: bridge
