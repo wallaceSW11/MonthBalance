@@ -7,8 +7,6 @@ services:
       POSTGRES_DB: ${DB_NAME:-monthbalance}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -18,20 +16,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Backend API (.NET)
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/SEU_USUARIO/month-balance-backend:latest
     container_name: month-balance-api
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:5150
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME:-monthbalance};Username=${DB_USER:-postgres};Password=${DB_PASSWORD}"
       Jwt__Secret: ${JWT_SECRET}
-      Jwt__Issuer: "MonthBalanceAPI"
-      Jwt__Audience: "MonthBalanceApp"
+      Jwt__Issuer: MonthBalanceAPI
+      Jwt__Audience: MonthBalanceApp
       Jwt__ExpirationHours: 24
     ports:
       - "5150:5150"
@@ -42,16 +39,12 @@ services:
       - month-balance-network
     restart: unless-stopped
 
-  # Frontend (Vue.js + Nginx)
+  # Frontend (Vue 3 + Nginx)
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - VITE_API_BASE_URL=http://localhost:5150/api
+    image: ghcr.io/SEU_USUARIO/month-balance-frontend:latest
     container_name: month-balance-frontend
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "8080:80"
     depends_on:
       - backend
     networks:
