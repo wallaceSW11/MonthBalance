@@ -20,18 +20,18 @@ services:
 
   # Backend API (.NET)
   backend:
-    image: ghcr.io/SEU_USUARIO/month-balance-backend:latest
+    image: ghcr.io/wallacesw11/month-balance-backend:latest
     container_name: month-balance-api
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:5150
+      ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME:-monthbalance};Username=${DB_USER:-postgres};Password=${DB_PASSWORD}"
       Jwt__Secret: ${JWT_SECRET}
       Jwt__Issuer: MonthBalanceAPI
       Jwt__Audience: MonthBalanceApp
       Jwt__ExpirationHours: 24
-    ports:
-      - "5150:5150"
+    expose:
+      - "8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,10 +41,10 @@ services:
 
   # Frontend (Vue 3 + Nginx)
   frontend:
-    image: ghcr.io/SEU_USUARIO/month-balance-frontend:latest
+    image: ghcr.io/wallacesw11/month-balance-frontend:latest
     container_name: month-balance-frontend
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - backend
     networks:

@@ -23,14 +23,11 @@ services:
     container_name: month-balance-api-dev
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:5150
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${DB_NAME:-monthbalance};Username=${DB_USER:-postgres};Password=${DB_PASSWORD}"
       Jwt__Secret: ${JWT_SECRET}
       Jwt__Issuer: "MonthBalanceAPI"
       Jwt__Audience: "MonthBalanceApp"
       Jwt__ExpirationHours: 24
-    ports:
-      - "5150:5150"
     depends_on:
       postgres:
         condition: service_healthy

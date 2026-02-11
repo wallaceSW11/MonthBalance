@@ -47,18 +47,30 @@ builder.Services.AddCors(options =>
     {
         if (builder.Environment.IsDevelopment())
         {
-            // Em desenvolvimento, permite qualquer origem
+            // Em desenvolvimento, permite qualquer origem para facilitar testes
             policy.AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         }
         else
         {
-            // Em produção, usa as origens configuradas
-            policy.WithOrigins(allowedOrigins)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+            // Em produção com proxy reverso (Docker/BFF), não precisa de CORS
+            // O backend só recebe requisições do Nginx (mesma network Docker)
+            // Se precisar de origens específicas, configure no appsettings.Production.json
+            if (allowedOrigins.Length > 0)
+            {
+                policy.WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            }
+            else
+            {
+                // Sem CORS configurado - apenas requisições internas (proxy reverso)
+                policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            }
         }
     });
 });
