@@ -12,12 +12,23 @@ namespace MonthBalance.API.Services;
 public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
+    private readonly ISessionRepository _sessionRepository;
+    private readonly IAnalyticsService _analyticsService;
     private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    public AuthService(
+        IUserRepository userRepository,
+        ISessionRepository sessionRepository,
+        IAnalyticsService analyticsService,
+        IConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
+        _sessionRepository = sessionRepository;
+        _analyticsService = analyticsService;
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     public async Task<LoginResponse> RegisterAsync(RegisterRequest request)
@@ -30,10 +41,19 @@ public class AuthService : IAuthService
             Name = request.Name,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            NotificationsEnabled = true
+            NotificationsEnabled = true,
+            Role = UserRole.User
         };
         
         var createdUser = await _userRepository.CreateAsync(user);
+        
+        await _analyticsService.TrackActivityAsync(
+            createdUser.Id,
+            ActivityType.UserRegistered,
+            GetIpAddress(),
+            GetUserAgent()
+        );
+        
         var token = GenerateJwtToken(createdUser);
         
         return new LoginResponse(token, MapToDto(createdUser));
@@ -48,6 +68,24 @@ public class AuthService : IAuthService
         
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             throw new UnauthorizedAccessException("Invalid email or password");
+        
+        var session = new UserSession
+        {
+            UserId = user.Id,
+            LoginAt = DateTime.UtcNow,
+            IpAddress = GetIpAddress(),
+            UserAgent = GetUserAgent(),
+            IsActive = true
+        };
+        
+        await _sessionRepository.CreateAsync(session);
+        
+        await _analyticsService.TrackActivityAsync(
+            user.Id,
+            ActivityType.UserLogin,
+            GetIpAddress(),
+            GetUserAgent()
+        );
         
         var token = GenerateJwtToken(user);
         
@@ -93,6 +131,13 @@ public class AuthService : IAuthService
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
         
         await _userRepository.UpdateAsync(user);
+        
+        await _analyticsService.TrackActivityAsync(
+            userId,
+            ActivityType.PasswordChanged,
+            GetIpAddress(),
+            GetUserAgent()
+        );
     }
 
     public async Task DeleteAccountAsync(int userId)
@@ -120,7 +165,8 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
@@ -135,6 +181,16 @@ public class AuthService : IAuthService
         );
         
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    
+    private string? GetIpAddress()
+    {
+        return _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+    }
+    
+    private string? GetUserAgent()
+    {
+        return _httpContextAccessor.HttpContext?.Request.Headers.UserAgent.ToString();
     }
     
     private static UserDto MapToDto(User user)

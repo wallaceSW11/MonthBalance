@@ -16,6 +16,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<ExpenseTypeModel> ExpenseTypes { get; set; } = null!;
     public DbSet<Expense> Expenses { get; set; } = null!;
     public DbSet<WebAuthnCredential> WebAuthnCredentials { get; set; } = null!;
+    public DbSet<UserActivity> UserActivities { get; set; } = null!;
+    public DbSet<UserSession> UserSessions { get; set; } = null!;
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; } = null!;
+    public DbSet<UserFeedback> UserFeedbacks { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +32,10 @@ public class ApplicationDbContext : DbContext
         ConfigureExpenseTypeModel(modelBuilder);
         ConfigureExpense(modelBuilder);
         ConfigureWebAuthnCredential(modelBuilder);
+        ConfigureUserActivity(modelBuilder);
+        ConfigureUserSession(modelBuilder);
+        ConfigurePasswordResetToken(modelBuilder);
+        ConfigureUserFeedback(modelBuilder);
     }
     
     private static void ConfigureUser(ModelBuilder modelBuilder)
@@ -36,6 +44,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.Email).IsUnique();
+            entity.Property(e => e.Role).HasConversion<int>();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
@@ -142,6 +151,75 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+    
+    private static void ConfigureUserActivity(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserActivity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Timestamp);
+            entity.HasIndex(e => e.ActivityType);
+            entity.Property(e => e.ActivityType).HasConversion<string>();
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+    
+    private static void ConfigureUserSession(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserSession>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.LoginAt);
+            entity.HasIndex(e => e.IsActive);
+            entity.Property(e => e.LoginAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+    
+    private static void ConfigurePasswordResetToken(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PasswordResetToken>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.ExpiresAt);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+    
+    private static void ConfigureUserFeedback(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserFeedback>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.IsRead);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

@@ -13,11 +13,16 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IWebAuthnService _webAuthnService;
+    private readonly IPasswordResetService _passwordResetService;
 
-    public AuthController(IAuthService authService, IWebAuthnService webAuthnService)
+    public AuthController(
+        IAuthService authService,
+        IWebAuthnService webAuthnService,
+        IPasswordResetService passwordResetService)
     {
         _authService = authService;
         _webAuthnService = webAuthnService;
+        _passwordResetService = passwordResetService;
     }
 
     [HttpPost("register")]
@@ -118,6 +123,27 @@ public class AuthController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        await _passwordResetService.RequestPasswordResetAsync(request.Email);
+        return Ok(new { message = "Se o email existir, um link de recuperação será enviado" });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        try
+        {
+            await _passwordResetService.ResetPasswordAsync(request.Token, request.NewPassword);
+            return Ok(new { message = "Senha alterada com sucesso" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 
