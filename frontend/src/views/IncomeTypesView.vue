@@ -73,7 +73,7 @@ import { IncomeType, FormMode } from '@/models';
 import IncomeTypeFormModal from '@/components/IncomeTypeFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  'toggle-drawer': []
 }>();
 
 const { t } = useI18n();

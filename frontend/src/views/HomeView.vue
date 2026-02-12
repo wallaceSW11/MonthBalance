@@ -93,7 +93,7 @@ import ExpenseTypeSelectModal from '@/components/ExpenseTypeSelectModal.vue';
 import ExpenseFormModal from '@/components/ExpenseFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  'toggle-drawer': []
 }>();
 
 const { t } = useI18n();
@@ -514,7 +514,7 @@ async function handleClearMonth(): Promise<void> {
 }
 
 function handleMenuClick(): void {
-  emit('toggleDrawer');
+  emit('toggle-drawer');
 }
 
 function handleAddIncome(): void {

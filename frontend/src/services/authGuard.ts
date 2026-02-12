@@ -16,7 +16,7 @@ const STORAGE_KEYS = {
   WEBAUTHN_CREDENTIAL_ID: 'mb_webauthn_cred_id'
 } as const;
 
-const AUTH_TIMEOUT_MOBILE = 0; // 0 = immediate lock on background (mobile)
+const AUTH_TIMEOUT_MOBILE = 5 * 60 * 1000; // 5 minutos (mobile)
 const AUTH_TIMEOUT_DESKTOP = 24 * 60 * 60 * 1000; // 24h (desktop)
 
 class AuthGuardService {

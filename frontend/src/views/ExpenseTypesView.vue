@@ -70,7 +70,7 @@ import { FormMode } from '@/models';
 import ExpenseTypeFormModal from '@/components/ExpenseTypeFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: [];
+  'toggle-drawer': [];
 }>();
 
 const { t } = useI18n();

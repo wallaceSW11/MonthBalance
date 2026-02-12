@@ -124,7 +124,7 @@ import { ROUTES } from '@/constants/routes';
 import ChangePasswordModal from '@/components/ChangePasswordModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  'toggle-drawer': []
 }>();
 
 const router = useRouter();
@@ -141,7 +141,7 @@ const form = ref({
 });
 
 function toggleDrawer(): void {
-  emit('toggleDrawer');
+  emit('toggle-drawer');
 }
 
 function validateRequired(value: string): boolean | string {
