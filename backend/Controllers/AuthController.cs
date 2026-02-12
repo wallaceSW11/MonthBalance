@@ -138,8 +138,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            await _passwordResetService.ResetPasswordAsync(request.Token, request.NewPassword);
-            return Ok(new { message = "Senha alterada com sucesso" });
+            var email = await _passwordResetService.ResetPasswordAsync(request.Token, request.NewPassword);
+            return Ok(new { message = "Senha alterada com sucesso", email });
         }
         catch (InvalidOperationException ex)
         {

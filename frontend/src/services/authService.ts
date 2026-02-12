@@ -195,9 +195,10 @@ async function forgotPassword(email: string): Promise<void> {
   }
 }
 
-async function resetPassword(token: string, newPassword: string): Promise<void> {
+async function resetPassword(token: string, newPassword: string): Promise<string> {
   try {
-    await api.post('/auth/reset-password', { token, newPassword });
+    const response = await api.post<{ message: string; email: string }>('/auth/reset-password', { token, newPassword });
+    return response.data.email;
   } catch (error: any) {
     const message = error.response?.data?.message || 'Erro ao redefinir senha';
 

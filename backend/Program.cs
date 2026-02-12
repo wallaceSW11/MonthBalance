@@ -5,6 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using MonthBalance.API.Data;
 using MonthBalance.API.Repositories;
 using MonthBalance.API.Services;
+using DotNetEnv;
+
+// Carrega variáveis do arquivo .env (se existir)
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

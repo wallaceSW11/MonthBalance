@@ -152,8 +152,14 @@ public class EmailService : IEmailService
             var useSsl = bool.Parse(_configuration["Email:UseSsl"] ?? "true");
             var fromEmail = _configuration["Email:FromEmail"] ?? throw new InvalidOperationException("From email not configured");
             var fromName = _configuration["Email:FromName"] ?? "MonthBalance";
-            var username = Environment.GetEnvironmentVariable("EMAIL_USERNAME") ?? throw new InvalidOperationException("Email username not configured");
-            var password = Environment.GetEnvironmentVariable("EMAIL_PASSWORD") ?? throw new InvalidOperationException("Email password not configured");
+            
+            // Tenta buscar do IConfiguration primeiro, depois das variáveis de ambiente
+            var username = _configuration["EMAIL_USERNAME"] 
+                ?? Environment.GetEnvironmentVariable("EMAIL_USERNAME") 
+                ?? throw new InvalidOperationException("Email username not configured");
+            var password = _configuration["EMAIL_PASSWORD"] 
+                ?? Environment.GetEnvironmentVariable("EMAIL_PASSWORD") 
+                ?? throw new InvalidOperationException("Email password not configured");
             
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(fromName, fromEmail));

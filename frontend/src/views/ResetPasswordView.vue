@@ -70,11 +70,13 @@ import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { authService } from '@/services/authService';
+import { useAuthStore } from '@/stores/auth';
 import { ROUTES } from '@/constants/routes';
 
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const password = ref('');
 const confirmPassword = ref('');
@@ -108,12 +110,20 @@ async function handleSubmit() {
   errorMessage.value = '';
 
   try {
-    await authService.resetPassword(token.value, password.value);
+    // Redefinir senha e obter o email do usuário
+    const email = await authService.resetPassword(token.value, password.value);
     successMessage.value = t('auth.passwordResetSuccess');
     
-    setTimeout(() => {
-      router.push(ROUTES.LOGIN);
-    }, 2000);
+    // Fazer login automático
+    setTimeout(async () => {
+      try {
+        await authStore.login(email, password.value);
+        router.push(ROUTES.HOME);
+      } catch (error) {
+        // Se falhar o login automático, redireciona para a tela de login
+        router.push(ROUTES.LOGIN);
+      }
+    }, 1500);
   } catch (error: any) {
     errorMessage.value = error.message;
   } finally {

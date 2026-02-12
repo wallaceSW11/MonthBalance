@@ -59,7 +59,7 @@ public class PasswordResetService : IPasswordResetService
         _logger.LogInformation("Password reset token created for user {UserId}", user.Id);
     }
     
-    public async Task ResetPasswordAsync(string token, string newPassword)
+    public async Task<string> ResetPasswordAsync(string token, string newPassword)
     {
         var resetToken = await _context.PasswordResetTokens
             .Include(t => t.User)
@@ -82,6 +82,8 @@ public class PasswordResetService : IPasswordResetService
         await _analyticsService.TrackActivityAsync(resetToken.UserId, ActivityType.PasswordResetCompleted);
         
         _logger.LogInformation("Password reset completed for user {UserId}", resetToken.UserId);
+        
+        return resetToken.User.Email;
     }
     
     private static string GenerateSecureToken()

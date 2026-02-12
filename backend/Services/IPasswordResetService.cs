@@ -3,5 +3,5 @@ namespace MonthBalance.API.Services;
 public interface IPasswordResetService
 {
     Task RequestPasswordResetAsync(string email);
-    Task ResetPasswordAsync(string token, string newPassword);
+    Task<string> ResetPasswordAsync(string token, string newPassword);
 }
