@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Account Settings - Month Balance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#04a6ae",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f2223",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl">
+<!-- Header -->
+<header class="flex items-center justify-between px-4 pt-12 pb-4 bg-background-light dark:bg-background-dark sticky top-0 z-10 border-b border-white/5">
+<button class="flex items-center justify-center p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Minha Conta</h1>
+<div class="w-10"></div> <!-- Spacer for balance -->
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto pb-24">
+<!-- Profile Section -->
+<div class="flex flex-col items-center py-8">
+<div class="relative group">
+<div class="size-32 rounded-full overflow-hidden border-4 border-primary/20 bg-primary/10 flex items-center justify-center bg-cover bg-center" data-alt="Professional profile headshot of a smiling man" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDMA7iqQkH_8h7UHPjBfg3ONQ1gGz9JdzauWXRO2VUQb8f9a4oNcJCkkeSLR0ITiz2457FHIk_Tz6ob0TFEE6K3sLwtKIZclgkYx1mSO7geuWgbls0YzUGo9Iz4csBWPhVbz6b8uAj4e8Ug5IZagYnu7Ev0EVJK9SjjmE_WG5XPcbC8fhSHkkgd_VKL7WmzC8iFq2NQb-3wS0G232A0AZH4JuNIzXHhztG4Jaqdw537H7Y7vyoh_w14RLqJIU5II6umRC3q3yE5ZZ3u')">
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg border-2 border-background-dark hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div class="mt-4 text-center">
+<h2 class="text-xl font-bold">João Silva</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm">joao.silva@email.com</p>
+</div>
+</div>
+<!-- Form Section -->
+<div class="px-6 space-y-6">
+<!-- Inputs -->
+<div class="space-y-4">
+<label class="block">
+<span class="text-xs font-semibold uppercase tracking-wider text-primary ml-1">Nome Completo</span>
+<input class="mt-1 block w-full rounded-xl border-0 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary h-14 px-4 font-medium transition-all" placeholder="Seu nome completo" type="text" value="João Silva"/>
+</label>
+<label class="block opacity-60">
+<span class="text-xs font-semibold uppercase tracking-wider text-primary ml-1">Email</span>
+<input class="mt-1 block w-full rounded-xl border-0 bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-slate-400 h-14 px-4 font-medium cursor-not-allowed" readonly="" type="email" value="joao.silva@email.com"/>
+</label>
+</div>
+<!-- Security Divider -->
+<div class="pt-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 px-1">Segurança</h3>
+<!-- Menu Item -->
+<button class="w-full flex items-center justify-between p-4 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<span class="font-medium">Alterar Senha</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</button>
+</div>
+<!-- Notifications Toggle -->
+<div class="pt-2">
+<div class="w-full flex items-center justify-between p-4 rounded-xl bg-slate-100 dark:bg-white/5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<span class="font-medium">Notificações</span>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action -->
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light dark:via-background-dark to-transparent">
+<button class="w-full bg-primary text-white h-14 rounded-xl font-bold text-lg shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
+                Salvar Alterações
+            </button>
+<div class="mt-6 flex justify-center">
+<button class="text-red-500 text-sm font-semibold hover:underline">Sair da conta</button>
+</div>
+</div>
+</div>
+</body></html>
