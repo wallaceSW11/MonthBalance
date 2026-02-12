@@ -276,6 +276,8 @@ export default {
     incomes: "Incomes",
     expenses: "Expenses",
     myAccount: "My Account",
+    admin: "Admin",
+    sendFeedback: "Send Feedback",
     logout: "Logout",
     logoutTitle: "Logout",
     logoutMessage: "Are you sure you want to logout?",

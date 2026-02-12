@@ -24,7 +24,7 @@ Para usar o Gmail SMTP, você precisa criar uma "Senha de App":
 
 4. **Configure no .env**:
    ```env
-   EMAIL_USERNAME=walltech@gmail.com
+   EMAIL_USERNAME=walltechappbr@gmail.com
    EMAIL_PASSWORD=abcd efgh ijkl mnop  # Cole a senha gerada aqui (sem espaços)
    ```
 
@@ -36,13 +36,13 @@ No seu `docker-compose.yml` ou ao rodar o container, adicione as variáveis de a
 services:
   backend:
     environment:
-      - EMAIL_USERNAME=walltech@gmail.com
+      - EMAIL_USERNAME=walltechappbr@gmail.com
       - EMAIL_PASSWORD=sua_senha_de_app_aqui
 ```
 
 Ou via linha de comando:
 ```bash
-docker run -e EMAIL_USERNAME=walltech@gmail.com -e EMAIL_PASSWORD=sua_senha ...
+docker run -e EMAIL_USERNAME=walltechappbr@gmail.com -e EMAIL_PASSWORD=sua_senha ...
 ```
 
 ## ✅ Testar Envio de Email
@@ -97,7 +97,7 @@ Content-Type: application/json
 
 Você receberá 2 emails:
 - Um para você (confirmação)
-- Um para o admin (walltech@gmail.com)
+- Um para o admin (walltechappbr@gmail.com)
 
 ## 🔧 Troubleshooting
 

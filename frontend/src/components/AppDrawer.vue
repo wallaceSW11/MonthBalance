@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="open" :temporary="isMobile" :permanent="!isMobile" width="280">
+  <v-navigation-drawer v-model="open" :temporary="isTemporary" :permanent="!isTemporary" width="280">
     <div class="drawer-content">
       <div class="profile-section">
         <v-avatar size="64" color="primary" class="profile-avatar">
@@ -27,6 +27,21 @@
           <ThemeToggle />
         </div>
 
+        <FeedbackDialog>
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              block
+              color="primary"
+              variant="tonal"
+              prepend-icon="mdi-message-text"
+              class="mb-2"
+            >
+              {{ t('drawer.sendFeedback') }}
+            </v-btn>
+          </template>
+        </FeedbackDialog>
+
         <v-btn
           block
           color="error"
@@ -43,14 +58,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useDisplay } from 'vuetify';
 import { ThemeToggle, LanguageSelector, confirm } from '@wallacesw11/base-lib';
-import { useBreakpoint } from '@wallacesw11/base-lib/composables';
 import { useAuthStore } from '@/stores/auth';
+import { isAdmin } from '@/utils/auth';
 import { ROUTES } from '@/constants/routes';
 import type { NavigationItem } from '@/types/navigation';
+import FeedbackDialog from '@/components/FeedbackDialog.vue';
 
 const open = defineModel<boolean>({ required: true });
 
@@ -58,30 +75,52 @@ const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
 const authStore = useAuthStore();
-const { isMobile } = useBreakpoint();
+const { width } = useDisplay();
 
-const navigationItems: NavigationItem[] = [
-  {
-    icon: 'mdi-home',
-    titleKey: 'drawer.home',
-    path: ROUTES.HOME
-  },
-  {
-    icon: 'mdi-trending-up',
-    titleKey: 'drawer.incomes',
-    path: ROUTES.INCOME_TYPES
-  },
-  {
-    icon: 'mdi-trending-down',
-    titleKey: 'drawer.expenses',
-    path: ROUTES.EXPENSE_TYPES
-  },
-  {
-    icon: 'mdi-account',
-    titleKey: 'drawer.myAccount',
-    path: ROUTES.ACCOUNT
+const userIsAdmin = ref(isAdmin());
+
+// Drawer é temporário apenas em telas menores que 960px
+const isTemporary = computed(() => width.value < 960);
+
+// Atualiza quando o usuário mudar
+watch(() => authStore.user, () => {
+  userIsAdmin.value = isAdmin();
+}, { immediate: true });
+
+const navigationItems = computed<NavigationItem[]>(() => {
+  const items: NavigationItem[] = [
+    {
+      icon: 'mdi-home',
+      titleKey: 'drawer.home',
+      path: ROUTES.HOME
+    },
+    {
+      icon: 'mdi-trending-up',
+      titleKey: 'drawer.incomes',
+      path: ROUTES.INCOME_TYPES
+    },
+    {
+      icon: 'mdi-trending-down',
+      titleKey: 'drawer.expenses',
+      path: ROUTES.EXPENSE_TYPES
+    },
+    {
+      icon: 'mdi-account',
+      titleKey: 'drawer.myAccount',
+      path: ROUTES.ACCOUNT
+    }
+  ];
+
+  if (userIsAdmin.value) {
+    items.push({
+      icon: 'mdi-shield-crown',
+      titleKey: 'drawer.admin',
+      path: ROUTES.ADMIN_DASHBOARD
+    });
   }
-];
+
+  return items;
+});
 
 const userName = computed(() => authStore.user?.name ?? t('common.appName'));
 

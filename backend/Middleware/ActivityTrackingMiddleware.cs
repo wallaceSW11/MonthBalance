@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 using MonthBalance.API.Models;
 using MonthBalance.API.Services;
 
@@ -8,16 +9,26 @@ public class ActivityTrackingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ActivityTrackingMiddleware> _logger;
+    private readonly IConfiguration _configuration;
     
-    public ActivityTrackingMiddleware(RequestDelegate next, ILogger<ActivityTrackingMiddleware> logger)
+    public ActivityTrackingMiddleware(RequestDelegate next, ILogger<ActivityTrackingMiddleware> logger, IConfiguration configuration)
     {
         _next = next;
         _logger = logger;
+        _configuration = configuration;
     }
     
     public async Task InvokeAsync(HttpContext context, IAnalyticsService analyticsService)
     {
         await _next(context);
+        
+        // Verifica se o tracking detalhado está habilitado
+        var enableDetailedTracking = _configuration.GetValue<bool>("Analytics:EnableDetailedTracking", false);
+        
+        if (!enableDetailedTracking)
+        {
+            return;
+        }
         
         if (!context.User.Identity?.IsAuthenticated ?? true)
         {

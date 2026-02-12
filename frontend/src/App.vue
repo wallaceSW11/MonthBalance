@@ -13,7 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useDisplay } from 'vuetify';
 import {
   FloatingNotify,
   LoadingOverlay,
@@ -31,6 +32,7 @@ const floatingNotifyRef = ref();
 const loadingOverlayRef = ref();
 const confirmDialogRef = ref();
 const drawerOpen = ref<boolean>(false);
+const { width } = useDisplay();
 
 const localeStore = useLocaleStore();
 const notifyStore = useNotifyStore();
@@ -57,6 +59,13 @@ function registerGlobalComponentRefs(): void {
     confirmStore.setConfirmRef(confirmDialogRef.value);
   }
 }
+
+// Abre o drawer automaticamente em telas maiores que 960px
+watch(width, (newWidth) => {
+  if (newWidth >= 960) {
+    drawerOpen.value = true;
+  }
+}, { immediate: true });
 
 onMounted(registerGlobalComponentRefs);
 </script>

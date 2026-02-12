@@ -185,6 +185,26 @@ async function deleteAccount(): Promise<void> {
   }
 }
 
+async function forgotPassword(email: string): Promise<void> {
+  try {
+    await api.post('/auth/forgot-password', { email });
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao solicitar recuperação de senha';
+
+    throw new Error(message);
+  }
+}
+
+async function resetPassword(token: string, newPassword: string): Promise<void> {
+  try {
+    await api.post('/auth/reset-password', { token, newPassword });
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao redefinir senha';
+
+    throw new Error(message);
+  }
+}
+
 export const authService = {
   register,
   login,
@@ -198,5 +218,7 @@ export const authService = {
   registerWebAuthnCredential,
   authenticateWebAuthnChallenge,
   authenticateWebAuthn,
-  deleteAccount
+  deleteAccount,
+  forgotPassword,
+  resetPassword
 };

@@ -285,6 +285,8 @@ export default {
     incomes: "Receitas",
     expenses: "Despesas",
     myAccount: "Minha Conta",
+    admin: "Admin",
+    sendFeedback: "Enviar Feedback",
     logout: "Sair da Conta",
     logoutTitle: "Sair da Conta",
     logoutMessage: "Tem certeza que deseja sair?",

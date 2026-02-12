@@ -47,6 +47,7 @@
               type="submit"
               block
               size="large"
+              :loading="loading"
             />
           </div>
         </v-form>
@@ -74,12 +75,16 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { EmailField, PrimaryButton } from '@wallacesw11/base-lib';
+import { authService } from '@/services/authService';
+import { useSnackbar } from '@/composables/useSnackbar';
 
 const router = useRouter();
 const { t } = useI18n();
+const { showSuccess, showError } = useSnackbar();
 
 const formRef = ref();
 const emailValid = ref(false);
+const loading = ref(false);
 const form = ref({
   email: ''
 });
@@ -88,6 +93,21 @@ async function handleForgotPassword(): Promise<void> {
   const { valid } = await formRef.value.validate();
 
   if (!valid || !emailValid.value) return;
+
+  loading.value = true;
+
+  try {
+    await authService.forgotPassword(form.value.email);
+    showSuccess(t('auth.forgotPasswordSuccess'));
+    
+    setTimeout(() => {
+      goToLogin();
+    }, 2000);
+  } catch (error: any) {
+    showError(error.message);
+  } finally {
+    loading.value = false;
+  }
 }
 
 function goToLogin(): void {

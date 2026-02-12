@@ -166,7 +166,7 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim("role", user.Role.ToString())
         };
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));

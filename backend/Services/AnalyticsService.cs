@@ -10,19 +10,38 @@ public class AnalyticsService : IAnalyticsService
     private readonly IActivityRepository _activityRepository;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AnalyticsService> _logger;
+    private readonly IConfiguration _configuration;
     
     public AnalyticsService(
         IActivityRepository activityRepository,
         ApplicationDbContext context,
-        ILogger<AnalyticsService> logger)
+        ILogger<AnalyticsService> logger,
+        IConfiguration configuration)
     {
         _activityRepository = activityRepository;
         _context = context;
         _logger = logger;
+        _configuration = configuration;
     }
     
     public async Task TrackActivityAsync(int userId, ActivityType activityType, string? ipAddress = null, string? userAgent = null, string? metadata = null)
     {
+        // Verifica se o tracking detalhado está habilitado
+        var enableDetailedTracking = _configuration.GetValue<bool>("Analytics:EnableDetailedTracking", false);
+        
+        // Sempre loga eventos críticos, independente da configuração
+        var criticalEvents = new[]
+        {
+            ActivityType.UserRegistered,
+            ActivityType.UserLogin,
+            ActivityType.FeedbackSent
+        };
+        
+        if (!enableDetailedTracking && !criticalEvents.Contains(activityType))
+        {
+            return;
+        }
+        
         try
         {
             var activity = new UserActivity
