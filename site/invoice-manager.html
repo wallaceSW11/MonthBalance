@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoice Manager - WallTech</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -111,25 +113,44 @@
                   </li>
                 </ul>
             </div>
-            <div class="col-lg-6 order-lg-1" data-aos="fade-right">
-                <!-- Placeholder Image -->
-                <div class="ratio ratio-16x9 bg-secondary rounded-4 overflow-hidden d-flex align-items-center justify-content-center border border-secondary shadow-lg">
-                    <div class="text-center text-muted">
-                        <i class="fa-solid fa-file-invoice-dollar fa-5x mb-3"></i>
-                        <h4>Interface em Desenvolvimento</h4>
-                        <p>Prints em breve</p>
-                    </div>
-                </div>
+            <div class="col-lg-6 order-lg-1 text-center" data-aos="fade-right">
+                <!-- Image Invoice Manager -->
+                <img src="assets/images/invoice-manager/home.png" class="img-fluid rounded-4 shadow-lg border border-secondary playable-image" alt="Invoice Manager Home Screen" style="max-height: 600px; cursor: pointer;">
             </div>
         </div>
 
         <div class="text-center mt-5" data-aos="fade-up">
-            <a href="http://invoicemanager.walltech.app.br" target="_blank" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg me-3">
-                Acesse
-            </a>
+            <button class="btn btn-secondary btn-lg rounded-pill px-5 py-3 shadow-lg me-3" disabled>
+                <i class="fa-solid fa-clock me-2"></i> Disponível em breve
+            </button>
             <a href="index.html" class="btn btn-outline-light btn-lg rounded-pill px-5 py-3">
                 Voltar à Página Inicial
             </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PWA Install Section -->
+    <section class="py-5 bg-gradient-dark border-top border-secondary">
+      <div class="container text-center" data-aos="fade-up">
+        <h3 class="fw-bold mb-4">Instale no seu dispositivo</h3>
+        <p class="lead text-secondary mb-5">Adicione à tela inicial e use como aplicativo.</p>
+        <div class="row justify-content-center gap-4">
+          <div class="col-md-5 col-lg-4 p-4 border border-secondary rounded-4 bg-black">
+            <i class="fa-brands fa-apple fa-2x text-white mb-3"></i>
+            <h5 class="fw-bold">iPhone (iOS)</h5>
+            <p class="small text-secondary mb-0">Toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>.</p>
+          </div>
+          <div class="col-md-5 col-lg-4 p-4 border border-secondary rounded-4 bg-black">
+            <i class="fa-brands fa-android fa-2x text-success mb-3"></i>
+            <h5 class="fw-bold">Android</h5>
+            <p class="small text-secondary mb-0">Toque no menu (três pontos) e selecione <strong>Adicionar à Tela Inicial</strong>.</p>
+          </div>
+          <div class="col-md-5 col-lg-4 p-4 border border-secondary rounded-4 bg-black">
+            <i class="fa-solid fa-desktop fa-2x text-primary mb-3"></i>
+            <h5 class="fw-bold">Computador</h5>
+            <p class="small text-secondary mb-0">Clique no ícone de instalar <i class="fa-solid fa-download"></i> na barra de endereços do navegador.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -138,7 +159,7 @@
     <footer class="py-4 bg-black border-top border-secondary">
       <div class="container text-center">
         <p class="m-0 text-white-50 small">
-          &copy; 2024 WallTech. Todos os direitos reservados.
+          &copy; 2026 WallTech. Todos os direitos reservados.
         </p>
         <div class="mt-3">
           <a href="#" class="text-secondary me-3"><i class="fa-brands fa-instagram"></i></a>
@@ -147,6 +168,18 @@
         </div>
       </div>
     </footer>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+          <div class="modal-body text-center position-relative">
+             <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            <img src="" class="img-fluid rounded-4 shadow-lg" id="modalImage" alt="Enlarged Image">
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script
@@ -162,6 +195,17 @@
     <script src="assets/js/main.js"></script>
     <script>
       AOS.init();
+
+      // Image Modal Script
+      document.querySelectorAll('.playable-image').forEach(img => {
+        img.addEventListener('click', function() {
+            var src = this.getAttribute('src');
+            var modalImg = document.getElementById('modalImage');
+            modalImg.setAttribute('src', src);
+            var myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            myModal.show();
+        });
+      });
     </script>
   </body>
 </html>
