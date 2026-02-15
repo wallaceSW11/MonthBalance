@@ -56,7 +56,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" href="#quem-somos">Quem Somos</a>
+              <a class="nav-link" href="sobre.html">Sobre</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#produtos">Produtos</a>
@@ -73,48 +73,34 @@
     <header class="masthead d-flex align-items-center text-center">
       <div class="container" data-aos="fade-up">
         <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <h1 class="display-3 fw-bold mb-4">
-              Previsibilidade financeira para o seu mês.
+          <div class="col-lg-9">
+            <h1 class="display-2 fw-bold mb-4">
+              WallTech
             </h1>
-            <p class="lead mb-5 text-white-50">
-              Tenha controle total do que entra, do que sai e do que sobra.
+            <p class="display-6 fw-normal mb-4">
+              Soluções simples para problemas reais do dia a dia.
             </p>
-            <a
-              class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg"
-              href="#produtos"
-              >Conheça nossos produtos</a
-            >
+            <p class="lead mb-5 text-white-50">
+              Criamos web apps modernos, objetivos e acessíveis — feitos para resolver, não para complicar.
+            </p>
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a
+                class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg"
+                href="#produtos"
+                >Conheça nossos produtos</a
+              >
+              <a
+                class="btn btn-outline-light btn-lg rounded-pill px-5 py-3"
+                href="month-balance.html"
+                >Começar agora</a
+              >
+            </div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Quem Somos -->
-    <section id="quem-somos" class="py-5">
-      <div class="container py-5">
-        <div class="row align-items-center">
-          <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-            <div
-              class="p-5 bg-gradient-dark rounded-4 border border-secondary shadow"
-            >
-              <i class="fa-solid fa-code fa-3x text-primary mb-3"></i>
-              <h2 class="fw-bold mb-3">Sobre a WallTech</h2>
-              <p class="text-secondary">
-                Criamos soluções simples para problemas reais do dia a dia.
-                Nosso objetivo é trazer clareza e controle para sua vida financeira.
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-6" data-aos="fade-left">
-            <!-- Imagem Institucional -->
-            <div class="ratio ratio-16x9 rounded-4 overflow-hidden border border-secondary shadow-lg">
-                <img src="assets/images/walltech/walltech_institucional.png" class="object-fit-cover w-100 h-100" alt="WallTech Institucional">
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+
 
     <!-- Produtos -->
     <section id="produtos" class="py-5 bg-black">
@@ -129,9 +115,12 @@
         <!-- Month Balance -->
         <div class="row align-items-center mb-5 py-5 product-row">
           <div class="col-lg-5 order-lg-1 mb-4 mb-lg-0" data-aos="fade-right">
-            <span class="badge bg-primary mb-2">Finanças Pessoais</span>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-primary">Finanças Pessoais</span>
+              <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Disponível</span>
+            </div>
             <h3 class="fw-bold">Month Balance</h3>
-            <p class="lead text-secondary">Previsão financeira inteligente.</p>
+            <p class="lead text-secondary">Previsibilidade financeira para o seu mês.</p>
             <p class="text-white-50">
               Tenha controle total sobre o que entra e o que sai. Saiba seu
               saldo mensal com antecedência e planeje seu futuro financeiro sem
@@ -162,7 +151,10 @@
         <!-- Invoice Manager -->
         <div class="row align-items-center py-5 product-row">
           <div class="col-lg-5 order-lg-2 mb-4 mb-lg-0" data-aos="fade-left">
-            <span class="badge bg-info text-dark mb-2">Gestão de Faturas</span>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-info text-dark">Gestão de Faturas</span>
+              <span class="badge bg-warning text-dark"><i class="fa-solid fa-flask me-1"></i>Pré-lançamento</span>
+            </div>
             <h3 class="fw-bold">Invoice Manager</h3>
             <p class="lead text-secondary">Divisão de contas simplificada.</p>
             <p class="text-white-50">
@@ -197,23 +189,27 @@
     <!-- Trust Section -->
     <section class="py-5 bg-gradient-dark border-top border-bottom border-secondary">
       <div class="container text-center">
-        <h3 class="fw-bold mb-5" data-aos="fade-up">Segurança e Privacidade</h3>
+        <h3 class="fw-bold mb-5" data-aos="fade-up">Nossos Compromissos</h3>
         <div class="row justify-content-center">
           <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
-            <i class="fa-solid fa-lock fa-2x text-primary mb-3"></i>
-            <h5 class="fw-bold">Dados Criptografados</h5>
+            <i class="fa-solid fa-server fa-2x text-primary mb-3"></i>
+            <h5 class="fw-bold">Hospedado na Hetzner</h5>
+            <p class="small text-secondary">Infraestrutura europeia confiável e de alta performance</p>
           </div>
           <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
-            <i class="fa-solid fa-shield-halved fa-2x text-primary mb-3"></i>
-            <h5 class="fw-bold">Autenticação Segura</h5>
+            <i class="fa-solid fa-lock fa-2x text-primary mb-3"></i>
+            <h5 class="fw-bold">HTTPS em Produção</h5>
+            <p class="small text-secondary">Conexão criptografada em breve</p>
           </div>
-          <!-- <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
-            <i class="fa-brands fa-aws fa-2x text-primary mb-3"></i>
-            <h5 class="fw-bold">Infraestrutura AWS</h5>
-          </div> -->
+          <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <i class="fa-solid fa-ban fa-2x text-primary mb-3"></i>
+            <h5 class="fw-bold">Seus dados são seus</h5>
+            <p class="small text-secondary">Não vendemos, não compartilhamos, não usamos para propaganda</p>
+          </div>
           <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
-            <i class="fa-solid fa-user-shield fa-2x text-primary mb-3"></i>
-            <h5 class="fw-bold">Privacidade Total</h5>
+            <i class="fa-solid fa-handshake fa-2x text-primary mb-3"></i>
+            <h5 class="fw-bold">Desenvolvido com ética</h5>
+            <p class="small text-secondary">Pequena empresa brasileira comprometida com sua privacidade</p>
           </div>
         </div>
       </div>
