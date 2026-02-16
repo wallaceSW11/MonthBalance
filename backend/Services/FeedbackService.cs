@@ -52,16 +52,6 @@ public class FeedbackService : IFeedbackService
         _context.UserFeedbacks.Add(feedback);
         await _context.SaveChangesAsync();
         
-        try
-        {
-            await _emailService.SendFeedbackToAdminAsync(userName, email, request.Subject, request.Message, request.Rating);
-            await _emailService.SendFeedbackConfirmationAsync(email, userName);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error sending feedback emails");
-        }
-        
         if (userId.HasValue)
         {
             await _analyticsService.TrackActivityAsync(userId.Value, ActivityType.FeedbackSent);
