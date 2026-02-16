@@ -14,8 +14,10 @@
           <EmailField
             v-model="form.email"
             :placeholder="t('auth.emailPlaceholder')"
+            :requiredMessage="t('auth.requiredField')"
+            :invalidMessage="t('auth.invalidToken')"
             required
-            @valid="v => emailValid = v"
+            @valid="(v: boolean) => emailValid = v"
           />
         </div>
 
@@ -25,8 +27,8 @@
             :placeholder="t('auth.passwordPlaceholder')"
             :rules="[validateRequired]"
             :type="showPassword ? 'text' : 'password'"
-            variant="outlined"
             density="comfortable"
+            prepend-inner-icon="mdi-lock-outline"
           >
             <template #append-inner>
               <v-btn

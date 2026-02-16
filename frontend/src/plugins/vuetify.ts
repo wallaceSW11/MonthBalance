@@ -49,19 +49,19 @@ export default createVuetify({
   },
   defaults: {
     VTextField: {
-      variant: 'outlined'
+      variant: 'underlined'
     },
     VSelect: {
-      variant: 'outlined'
+      variant: 'underlined'
     },
     VTextarea: {
-      variant: 'outlined'
+      variant: 'underlined'
     },
     VAutocomplete: {
-      variant: 'outlined'
+      variant: 'underlined'
     },
     VCombobox: {
-      variant: 'outlined'
+      variant: 'underlined'
     }
   }
 });

@@ -18,6 +18,9 @@ async function initializeAndMountApp() {
   const themeStore = useThemeStore();
   await themeStore.loadTheme();
   
+  if (!localStorage.getItem('theme'))
+    themeStore.setTheme('dark');
+
   const authStore = useAuthStore();
   authStore.initializeAuth();
   

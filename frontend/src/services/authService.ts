@@ -1,4 +1,5 @@
 import { api } from './api';
+import { authGuard } from './authGuard';
 import type { User } from '@/models/User';
 
 const AUTH_TOKEN_KEY = 'auth_token';
@@ -39,6 +40,7 @@ async function register(name: string, email: string, password: string): Promise<
 
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    authGuard.markAuthenticated();
 
     return user;
   } catch (error: any) {
@@ -56,6 +58,7 @@ async function login(email: string, password: string): Promise<User> {
 
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    authGuard.markAuthenticated();
 
     return user;
   } catch (error: any) {
@@ -68,6 +71,7 @@ async function login(email: string, password: string): Promise<User> {
 function logout(): void {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
+  authGuard.clearAuthState();
 }
 
 function isAuthenticated(): boolean {
@@ -165,6 +169,7 @@ async function authenticateWebAuthn(credential: any): Promise<User> {
 
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    authGuard.markAuthenticated();
 
     return user;
   } catch (error: any) {

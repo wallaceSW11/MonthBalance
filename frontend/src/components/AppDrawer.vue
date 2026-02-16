@@ -35,7 +35,7 @@
               color="primary"
               variant="tonal"
               prepend-icon="mdi-message-text"
-              class="mb-2"
+              class="mb-2 text-none"
             >
               {{ t('drawer.sendFeedback') }}
             </v-btn>
@@ -47,7 +47,7 @@
           color="error"
           variant="tonal"
           prepend-icon="mdi-logout"
-          class="logout-button"
+          class="logout-button text-none"
           @click="handleLogout"
         >
           {{ t('drawer.logout') }}
