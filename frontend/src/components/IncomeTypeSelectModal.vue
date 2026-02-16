@@ -6,7 +6,16 @@
     :max-width="500"
   >
     <div v-if="incomeTypes.length === 0" class="empty-state">
-      {{ t('incomeTypes.noData') }}
+      <div class="empty-message">{{ t('incomeTypes.noData') }}</div>
+      <v-btn
+        color="primary"
+        variant="elevated"
+        prepend-icon="mdi-plus"
+        class="mt-4"
+        @click="handleNavigateToIncomeTypes"
+      >
+        {{ t('incomeTypes.noDataAction') }}
+      </v-btn>
     </div>
 
     <div v-else class="income-types-grid">
@@ -27,9 +36,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { ModalBase } from '@wallacesw11/base-lib';
 import type { ModalAction } from '@wallacesw11/base-lib/components';
+import { ROUTES } from '@/constants/routes';
 import type { IncomeTypeModel } from '@/models';
 
 const props = defineProps<{
@@ -42,6 +53,7 @@ const emit = defineEmits<{
   select: [incomeType: IncomeTypeModel];
 }>();
 
+const router = useRouter();
 const { t } = useI18n();
 
 const internalOpen = computed({
@@ -51,7 +63,7 @@ const internalOpen = computed({
 
 const actions = computed<ModalAction[]>(() => [
   {
-    text: t('common.cancel'),
+    text: t('monthBalance.close'),
     color: 'secondary',
     variant: 'outlined',
     handler: handleCancel
@@ -74,14 +86,24 @@ function getTypeLabel(type: string): string {
 
 function handleSelect(incomeType: IncomeTypeModel): void {
   emit('select', incomeType);
+}
+
+function handleNavigateToIncomeTypes(): void {
   internalOpen.value = false;
+  router.push({ path: ROUTES.INCOME_TYPES, query: { openAdd: 'true' } });
 }
 </script>
 
 <style scoped>
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 32px 16px;
+}
+
+.empty-message {
   opacity: 0.6;
   font-size: 0.875rem;
 }

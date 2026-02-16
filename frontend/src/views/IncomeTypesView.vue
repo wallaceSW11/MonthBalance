@@ -148,8 +148,10 @@ const handleSaved = async (): Promise<void> => {
 }
 
 onMounted(() => {
-  loadIncomeTypes()
-})
+  loadIncomeTypes();
+
+  if (router.currentRoute.value.query.openAdd === 'true') openAddModal();
+});
 </script>
 
 <style scoped>

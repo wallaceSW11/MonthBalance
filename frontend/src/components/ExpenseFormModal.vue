@@ -98,7 +98,7 @@ async function handleSave(): Promise<void> {
         Number(props.expenseTypeId),
         form.value.value
       );
-      notify.success(t('monthBalance.expenseSaved'), '');
+      notify.success(t('monthBalance.expenseAdded'), '');
       resetForm();
       internalOpen.value = false;
     } else {

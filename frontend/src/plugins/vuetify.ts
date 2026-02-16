@@ -48,6 +48,9 @@ export default createVuetify({
     defaultSet: "mdi",
   },
   defaults: {
+    VBtn: {
+      class: 'text-none'
+    },
     VTextField: {
       variant: 'underlined'
     },

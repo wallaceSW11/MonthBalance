@@ -136,6 +136,8 @@ const handleSaved = async (): Promise<void> => {
 
 onMounted(() => {
   loadExpenseTypes();
+
+  if (router.currentRoute.value.query.openAdd === 'true') openAddModal();
 });
 </script>
 

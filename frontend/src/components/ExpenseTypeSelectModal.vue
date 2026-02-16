@@ -6,7 +6,16 @@
     :max-width="500"
   >
     <div v-if="expenseTypes.length === 0" class="empty-state">
-      {{ t('expenseTypes.noData') }}
+      <div class="empty-message">{{ t('expenseTypes.noData') }}</div>
+      <v-btn
+        color="primary"
+        variant="elevated"
+        prepend-icon="mdi-plus"
+        class="mt-4"
+        @click="handleNavigateToExpenseTypes"
+      >
+        {{ t('expenseTypes.noDataAction') }}
+      </v-btn>
     </div>
 
     <div v-else class="expense-types-grid">
@@ -26,9 +35,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { ModalBase } from '@wallacesw11/base-lib';
 import type { ModalAction } from '@wallacesw11/base-lib/components';
+import { ROUTES } from '@/constants/routes';
 import type { ExpenseTypeModel } from '@/models';
 
 const props = defineProps<{
@@ -41,6 +52,7 @@ const emit = defineEmits<{
   select: [expenseType: ExpenseTypeModel];
 }>();
 
+const router = useRouter();
 const { t } = useI18n();
 
 const internalOpen = computed({
@@ -50,7 +62,7 @@ const internalOpen = computed({
 
 const actions = computed<ModalAction[]>(() => [
   {
-    text: t('common.cancel'),
+    text: t('monthBalance.close'),
     color: 'secondary',
     variant: 'outlined',
     handler: handleCancel
@@ -63,14 +75,24 @@ function handleCancel(): void {
 
 function handleSelect(expenseType: ExpenseTypeModel): void {
   emit('select', expenseType);
+}
+
+function handleNavigateToExpenseTypes(): void {
   internalOpen.value = false;
+  router.push({ path: ROUTES.EXPENSE_TYPES, query: { openAdd: 'true' } });
 }
 </script>
 
 <style scoped>
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 32px 16px;
+}
+
+.empty-message {
   opacity: 0.6;
   font-size: 0.875rem;
 }

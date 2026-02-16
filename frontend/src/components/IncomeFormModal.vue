@@ -214,7 +214,7 @@ async function handleSave(): Promise<void> {
       };
 
       await incomeService.create(createData);
-      notify.success(t('monthBalance.incomeSaved'), '');
+      notify.success(t('monthBalance.incomeAdded'), '');
       resetForm();
       internalOpen.value = false;
     } else {

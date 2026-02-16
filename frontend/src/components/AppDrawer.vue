@@ -28,14 +28,14 @@
         </div>
 
         <FeedbackDialog>
-          <template #activator="{ props }">
+          <template #activator="{ open }">
             <v-btn
-              v-bind="props"
               block
               color="primary"
               variant="tonal"
               prepend-icon="mdi-message-text"
-              class="mb-2 text-none"
+              class="mb-2"
+              @click="open"
             >
               {{ t('drawer.sendFeedback') }}
             </v-btn>
@@ -47,7 +47,7 @@
           color="error"
           variant="tonal"
           prepend-icon="mdi-logout"
-          class="logout-button text-none"
+          class="logout-button"
           @click="handleLogout"
         >
           {{ t('drawer.logout') }}

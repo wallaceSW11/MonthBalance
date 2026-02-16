@@ -532,6 +532,7 @@ function handleIncomeTypeSelected(incomeType: IncomeTypeModel): void {
   selectedIncomeTypeId.value = String(incomeType.id);
   incomeFormMode.value = FormMode.ADD;
   selectedIncome.value = undefined;
+  incomeTypeSelectOpen.value = false;
   incomeFormOpen.value = true;
 }
 
@@ -579,6 +580,11 @@ async function handleDeleteIncome(id: number): Promise<void> {
 
 async function handleIncomeSaved(): Promise<void> {
   await loadMonth();
+
+  if (incomeFormMode.value === FormMode.ADD) {
+    incomeFormOpen.value = false;
+    incomeTypeSelectOpen.value = true;
+  }
 }
 
 function handleAddExpense(): void {
@@ -594,6 +600,7 @@ function handleAddExpense(): void {
 function handleExpenseTypeSelected(expenseType: ExpenseTypeModel): void {
   selectedExpenseTypeId.value = String(expenseType.id);
   expenseFormMode.value = FormMode.ADD;
+  expenseTypeSelectOpen.value = false;
   expenseFormOpen.value = true;
 }
 
@@ -639,6 +646,11 @@ async function handleDeleteExpense(id: number): Promise<void> {
 
 async function handleExpenseSaved(): Promise<void> {
   await loadMonth();
+
+  if (expenseFormMode.value === FormMode.ADD) {
+    expenseFormOpen.value = false;
+    expenseTypeSelectOpen.value = true;
+  }
 }
 
 onMounted(async () => {
