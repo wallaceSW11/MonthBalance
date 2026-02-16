@@ -52,6 +52,7 @@ const actions = computed<ModalAction[]>(() => [
   {
     text: t('common.cancel'),
     color: 'secondary',
+    variant: 'outlined',
     handler: handleCancel
   }
 ]);

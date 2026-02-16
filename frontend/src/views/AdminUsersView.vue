@@ -13,7 +13,6 @@
                   v-model="search"
                   label="Buscar por nome ou email"
                   prepend-inner-icon="mdi-magnify"
-                  variant="outlined"
                   density="compact"
                   clearable
                   @update:model-value="handleSearch"

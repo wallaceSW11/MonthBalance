@@ -59,14 +59,16 @@ const isAddMode = computed(() => props.mode === FormMode.ADD);
 
 const actions = computed<ModalAction[]>(() => [
   {
-    text: t('common.save'),
-    color: 'primary',
-    handler: handleSave
-  },
-  {
     text: t('common.cancel'),
     color: 'secondary',
+    variant: 'outlined',
     handler: handleCancel
+  },
+  {
+    text: t('common.save'),
+    color: 'primary',
+    variant: 'elevated',
+    handler: handleSave
   }
 ]);
 

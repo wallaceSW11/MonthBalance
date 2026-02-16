@@ -13,7 +13,6 @@
                   v-model="filter"
                   :items="filterOptions"
                   label="Filtrar por"
-                  variant="outlined"
                   density="compact"
                   @update:model-value="loadFeedbacks"
                 />

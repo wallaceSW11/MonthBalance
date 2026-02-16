@@ -12,7 +12,6 @@
         v-model="form.name"
         :label="t('expenseTypes.name')"
         :rules="[validateRequired]"
-        variant="outlined"
         density="comfortable"
       />
     </v-form>
@@ -148,14 +147,16 @@ const handleCancel = (): void => {
 
 const actions = computed<ModalAction[]>(() => [
   {
-    text: t('common.save'),
-    color: 'primary',
-    handler: handleSave
-  },
-  {
     text: t('common.cancel'),
     color: 'secondary',
+    variant: 'outlined',
     handler: handleCancel
+  },
+  {
+    text: t('common.save'),
+    color: 'primary',
+    variant: 'elevated',
+    handler: handleSave
   }
 ]);
 

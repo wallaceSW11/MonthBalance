@@ -29,7 +29,6 @@
         <v-text-field
           v-model="form.name"
           :label="t('account.fullName')"
-          variant="outlined"
           :rules="[validateRequired]"
           class="form-field"
         />
@@ -37,7 +36,6 @@
         <v-text-field
           v-model="form.email"
           :label="t('account.email')"
-          variant="outlined"
           readonly
           disabled
           class="form-field"

@@ -42,7 +42,7 @@ const age = 30
   v-model="form.name"
   :label="t('name')"
   :rules="[validateRequired]"
-  variant="outlined"
+  variant="underlined"
 />
 
 <!-- ✅ CERTO - 2 props ou menos -->

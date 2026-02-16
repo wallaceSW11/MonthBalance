@@ -13,7 +13,6 @@
             v-model="form.subject"
             label="Assunto"
             :rules="[rules.required]"
-            variant="outlined"
             density="comfortable"
             class="mb-3"
           />
@@ -22,7 +21,6 @@
             v-model="form.message"
             label="Mensagem"
             :rules="[rules.required]"
-            variant="outlined"
             density="comfortable"
             rows="5"
             class="mb-3"

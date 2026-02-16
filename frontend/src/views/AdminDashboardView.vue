@@ -13,7 +13,7 @@
       <!-- Métricas Principais -->
       <v-row>
         <v-col cols="12" sm="6" md="3">
-          <v-card>
+          <v-card class="metric-card">
             <v-card-text>
               <div class="text-overline mb-1">Total de Usuários</div>
               <div class="text-h4">{{ dashboard.totalUsers }}</div>
@@ -22,7 +22,7 @@
         </v-col>
 
         <v-col cols="12" sm="6" md="3">
-          <v-card>
+          <v-card class="metric-card">
             <v-card-text>
               <div class="text-overline mb-1">Novos Hoje</div>
               <div class="text-h4">{{ dashboard.newUsersToday }}</div>
@@ -34,7 +34,7 @@
         </v-col>
 
         <v-col cols="12" sm="6" md="3">
-          <v-card>
+          <v-card class="metric-card">
             <v-card-text>
               <div class="text-overline mb-1">Ativos Hoje</div>
               <div class="text-h4">{{ dashboard.activeUsersToday }}</div>
@@ -46,7 +46,7 @@
         </v-col>
 
         <v-col cols="12" sm="6" md="3">
-          <v-card>
+          <v-card class="metric-card">
             <v-card-text>
               <div class="text-overline mb-1">Feedbacks Não Lidos</div>
               <div class="text-h4">{{ dashboard.unreadFeedbacks }}</div>
@@ -145,3 +145,10 @@ function formatDate(dateString: string): string {
   });
 }
 </script>
+
+<style scoped>
+.metric-card {
+  height: 100%;
+  min-height: 140px;
+}
+</style>
