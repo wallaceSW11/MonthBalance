@@ -24,23 +24,32 @@
 - Todas as rotas já usam lazy loading
 - PWA com cache de assets
 
-## Próximos Passos Recomendados
+## 6. PWA Corrigido ✅
+- Ícones regenerados nos tamanhos corretos (192x192, 512x512)
+- Screenshots adicionados (mobile 390x844, desktop 1280x720)
+- Manifest atualizado com screenshots
+- Richer PWA Install UI habilitado
 
-### Para aplicar agora:
+## Para aplicar agora:
 ```bash
 cd frontend
-pnpm install
 pnpm build
 ```
 
-### No servidor (Hetzner):
+## No servidor (Hetzner):
 ```bash
 # Rebuild e deploy
 docker compose build frontend --no-cache
 docker compose up -d frontend
 ```
 
-### Otimizações Futuras (Opcional):
+## Verificar PWA após deploy:
+1. Abra DevTools → Application → Manifest
+2. Verifique se todos os ícones aparecem corretamente
+3. Verifique se os screenshots aparecem
+4. Teste a instalação do PWA
+
+## Otimizações Futuras (Opcional):
 
 1. **CDN**: Considere usar Cloudflare ou similar para cache global
 2. **Brotli**: Habilitar compressão Brotli no nginx (melhor que gzip)
@@ -48,7 +57,7 @@ docker compose up -d frontend
 4. **Imagens WebP**: Converter imagens para formato WebP
 5. **Font Subsetting**: Carregar apenas os ícones MDI usados
 
-### Monitoramento:
+## Monitoramento:
 - Use Lighthouse para medir melhorias
 - Verifique Network tab no DevTools
 - Compare tamanho dos bundles antes/depois
@@ -57,3 +66,4 @@ docker compose up -d frontend
 - Bundle Vuetify: ~500KB → ~300KB (gzipped)
 - First Contentful Paint: melhoria de 20-30%
 - Time to Interactive: melhoria de 30-40%
+- PWA instalável com UI rica no desktop e mobile

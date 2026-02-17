@@ -49,6 +49,21 @@ export default defineConfig({
             purpose: "maskable"
           }
         ],
+        screenshots: [
+          {
+            src: "screenshot-mobile.png",
+            sizes: "464x919",
+            type: "image/png",
+            label: "Tela principal do aplicativo"
+          },
+          {
+            src: "screenshot-desktop.png",
+            sizes: "1394x807",
+            type: "image/png",
+            form_factor: "wide",
+            label: "Dashboard financeiro"
+          }
+        ],
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
