@@ -19,13 +19,16 @@ RUN pnpm run build
 # ========================
 # Production Stage
 # ========================
-FROM nginx:alpine
+FROM nginx:stable-alpine
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
+# Remove default config
+RUN rm -f /etc/nginx/conf.d/default.conf
 
 # Copy build files
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

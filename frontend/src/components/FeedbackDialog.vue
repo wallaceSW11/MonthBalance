@@ -44,7 +44,6 @@ const { t } = useI18n();
 
 const dialog = ref(false);
 const formRef = ref();
-const subjectFieldRef = ref();
 
 const form = ref({
   subject: '',
