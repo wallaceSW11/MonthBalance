@@ -1,19 +1,18 @@
-
 AOS.init({
-    duration: 1000,
-    once: true,
-    offset: 100
+  duration: 1000,
+  once: true,
+  offset: 100
 });
 
-
-const navbarToggler = document.body.querySelector('.navbar-toggler');
-const responsiveNavItems = [].slice.call(
-    document.querySelectorAll('#navbarNav .nav-link')
-);
-responsiveNavItems.map(function (responsiveNavItem) {
-    responsiveNavItem.addEventListener('click', () => {
-        if (window.getComputedStyle(navbarToggler).display !== 'none') {
-            navbarToggler.click();
-        }
+// Fecha o menu mobile ao clicar em qualquer nav-link
+document.addEventListener('DOMContentLoaded', function () {
+  const navbarToggler = document.querySelector('.navbar-toggler');
+  const navLinks = document.querySelectorAll('#navbarNav .nav-link');
+  navLinks.forEach(function (link) {
+    link.addEventListener('click', function () {
+      if (navbarToggler && window.getComputedStyle(navbarToggler).display !== 'none') {
+        navbarToggler.click();
+      }
     });
+  });
 });

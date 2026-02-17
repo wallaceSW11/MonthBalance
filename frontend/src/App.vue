@@ -44,7 +44,6 @@ const authenticated = computed(() => authStore.authenticated);
 
 useThemeSync();
 localeStore.initializeLocale();
-authStore.initializeAuth();
 
 function registerGlobalComponentRefs(): void {
   if (floatingNotifyRef.value) {

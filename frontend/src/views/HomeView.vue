@@ -122,23 +122,19 @@ const expenseFormMode = ref<FormMode>(FormMode.ADD);
 const selectedExpenseTypeId = ref<string>('0');
 const allMonthData = ref<MonthData[]>([]);
 
-const totalIncome = computed(() => {
-  return incomes.value.reduce((sum, income) => sum + income.calculatedValue, 0);
-});
+const totalIncome = computed(() =>
+  incomes.value.reduce((sum, income) => sum + income.calculatedValue, 0)
+);
 
-const totalExpense = computed(() => {
-  return expenses.value.reduce((sum, expense) => sum + expense.value, 0);
-});
+const totalExpense = computed(() =>
+  expenses.value.reduce((sum, expense) => sum + expense.value, 0)
+);
 
-const balance = computed(() => {
-  return totalIncome.value - totalExpense.value;
-});
+const balance = computed(() => totalIncome.value - totalExpense.value);
 
-const canNavigatePrevious = computed(() => {
-  if (currentYear.value === MIN_YEAR && currentMonth.value === MIN_MONTH) return false;
-
-  return true;
-});
+const canNavigatePrevious = computed(
+  () => !(currentYear.value === MIN_YEAR && currentMonth.value === MIN_MONTH)
+);
 
 const canNavigateNext = computed(() => {
   const lastMonth = getLastRegisteredMonth();
@@ -155,12 +151,12 @@ const canNavigateNext = computed(() => {
   return monthsAhead < MAX_MONTHS_AHEAD;
 });
 
-const currentMonthDataId = computed(() => {
-  return currentMonthData.value?.id ? String(currentMonthData.value.id) : '0';
-});
+const currentMonthDataId = computed(() =>
+  currentMonthData.value?.id ? String(currentMonthData.value.id) : '0'
+);
 
-const incomesWithNames = computed(() => {
-  return incomes.value.map(income => {
+const incomesWithNames = computed(() =>
+  incomes.value.map(income => {
     const incomeType = incomeTypes.value.find(it => it.id === income.incomeTypeId);
     const typeLabel = incomeType ? getTypeLabel(incomeType.type) : '';
 
@@ -170,8 +166,8 @@ const incomesWithNames = computed(() => {
       type: typeLabel,
       value: income.calculatedValue
     };
-  });
-});
+  })
+);
 
 function getTypeLabel(type: string): string {
   const labels: Record<string, string> = {
@@ -183,8 +179,8 @@ function getTypeLabel(type: string): string {
   return labels[type] ?? type;
 }
 
-const expensesWithNames = computed(() => {
-  return expenses.value.map(expense => {
+const expensesWithNames = computed(() =>
+  expenses.value.map(expense => {
     const expenseType = expenseTypes.value.find(et => et.id === expense.expenseTypeId);
 
     return {
@@ -192,8 +188,8 @@ const expensesWithNames = computed(() => {
       name: expenseType?.name ?? 'Despesa',
       value: expense.value
     };
-  });
-});
+  })
+);
 
 async function loadIncomeTypes(): Promise<void> {
   try {
@@ -275,8 +271,8 @@ function loadLastAccessedMonth(): void {
     const { year, month } = JSON.parse(saved);
     currentYear.value = year;
     currentMonth.value = month;
-  } catch (error) {
-    // Failed to load last accessed month
+  } catch {
+    localStorage.removeItem(LAST_MONTH_KEY);
   }
 }
 
@@ -655,8 +651,7 @@ async function handleExpenseSaved(): Promise<void> {
 
 onMounted(async () => {
   loadLastAccessedMonth();
-  await loadIncomeTypes();
-  await loadExpenseTypes();
+  await Promise.all([loadIncomeTypes(), loadExpenseTypes()]);
   await loadMonth();
 });
 </script>

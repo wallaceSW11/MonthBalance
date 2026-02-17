@@ -95,14 +95,9 @@ router.beforeEach((to, _, next) => {
   const requiresAuth = to.meta.requiresAuth !== false;
   const requiresAdmin = to.meta.requiresAdmin === true;
   const authenticated = authService.isAuthenticated();
+  const sessionExpired = authenticated && authGuard.isAuthRequired();
 
-  if (requiresAuth && !authenticated) {
-    next(ROUTES.LOGIN);
-
-    return;
-  }
-
-  if (requiresAuth && authGuard.isAuthRequired()) {
+  if (requiresAuth && (!authenticated || sessionExpired)) {
     next(ROUTES.LOGIN);
 
     return;
@@ -114,7 +109,7 @@ router.beforeEach((to, _, next) => {
     return;
   }
 
-  if (to.path === ROUTES.LOGIN && authenticated && !authGuard.isAuthRequired()) {
+  if (to.path === ROUTES.LOGIN && authenticated && !sessionExpired) {
     next(ROUTES.HOME);
 
     return;
