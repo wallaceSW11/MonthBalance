@@ -406,16 +406,6 @@ async function handleDuplicateMonth(): Promise<void> {
   const nextMonth = currentMonth.value === 12 ? 1 : currentMonth.value + 1;
   const nextYear = currentMonth.value === 12 ? currentYear.value + 1 : currentYear.value;
 
-  const nextMonthExists = allMonthData.value.find(
-    md => md.year === nextYear && md.month === nextMonth
-  );
-
-  if (nextMonthExists) {
-    notify.error(t('monthBalance.duplicateError'), 'Próximo mês já existe');
-
-    return;
-  }
-
   const lastMonth = getLastRegisteredMonth();
 
   if (lastMonth) {
@@ -429,7 +419,105 @@ async function handleDuplicateMonth(): Promise<void> {
   }
 
   const monthName = t(`monthBalance.months.${nextMonth}`);
+  const nextMonthData = allMonthData.value.find(
+    md => md.year === nextYear && md.month === nextMonth
+  );
 
+  // Se o próximo mês existe, verifica se tem lançamentos
+  if (nextMonthData) {
+    const [nextIncomes, nextExpenses] = await Promise.all([
+      incomeService.getByMonth(nextMonthData.id),
+      expenseService.getByMonth(nextMonthData.id)
+    ]);
+
+    const hasData = nextIncomes.length > 0 || nextExpenses.length > 0;
+
+    if (hasData) {
+      // Tem dados: pergunta se quer sobrescrever
+      const confirmed = await confirm.show(
+        t('monthBalance.duplicateMonth'),
+        `${monthName} ${nextYear} já possui lançamentos. Deseja sobrescrever com os dados do mês atual?`,
+        { confirmText: t('common.yes'), cancelText: t('common.no'), confirmColor: 'warning' }
+      );
+
+      if (!confirmed) return;
+
+      loading.show(t('common.loading'));
+
+      try {
+        // Limpa os lançamentos existentes
+        for (const income of nextIncomes) {
+          await incomeService.remove(income.id);
+        }
+
+        for (const expense of nextExpenses) {
+          await expenseService.remove(expense.id);
+        }
+
+        // Copia do mês atual
+        for (const income of incomes.value) {
+          await incomeService.create({
+            monthDataId: nextMonthData.id,
+            incomeTypeId: income.incomeTypeId,
+            grossValue: income.grossValue,
+            netValue: income.netValue,
+            hourlyRate: income.hourlyRate,
+            hours: income.hours,
+            minutes: income.minutes
+          });
+        }
+
+        for (const expense of expenses.value) {
+          await expenseService.create(nextMonthData.id, expense.expenseTypeId, expense.value);
+        }
+
+        currentYear.value = nextYear;
+        currentMonth.value = nextMonth;
+        await loadMonth(true);
+      } catch (error) {
+        notify.error(t('monthBalance.duplicateError'), String(error));
+      } finally {
+        loading.hide();
+        notify.success(t('monthBalance.duplicateSuccess'), '');
+      }
+
+      return;
+    }
+
+    // Próximo mês existe mas está vazio: duplica direto sem perguntar
+    loading.show(t('common.loading'));
+
+    try {
+      for (const income of incomes.value) {
+        await incomeService.create({
+          monthDataId: nextMonthData.id,
+          incomeTypeId: income.incomeTypeId,
+          grossValue: income.grossValue,
+          netValue: income.netValue,
+          hourlyRate: income.hourlyRate,
+          hours: income.hours,
+          minutes: income.minutes
+        });
+      }
+
+      for (const expense of expenses.value) {
+        await expenseService.create(nextMonthData.id, expense.expenseTypeId, expense.value);
+      }
+
+      currentYear.value = nextYear;
+      currentMonth.value = nextMonth;
+      await loadMonth(true);
+    } catch (error) {
+      notify.error(t('monthBalance.duplicateError'), String(error));
+    } finally {
+      loading.hide();
+      notify.success(t('monthBalance.duplicateSuccess'), '');
+    }
+
+    return;
+  }
+
+  // Próximo mês não existe: confirma e cria
   const confirmed = await confirm.show(
     t('monthBalance.duplicateMonth'),
     `Copiar dados do mês atual para ${monthName} ${nextYear}?`,
