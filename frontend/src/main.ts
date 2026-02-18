@@ -12,24 +12,19 @@ import "@/styles/main.css";
 const app = createApp(App);
 const pinia = createPinia();
 
-async function initializeAndMountApp() {
-  app.use(pinia);
-  
-  const themeStore = useThemeStore();
-  await themeStore.loadTheme();
-  
+app.use(pinia);
+app.use(router);
+app.use(vuetify);
+app.use(i18n);
+setupLib(app);
+
+const themeStore = useThemeStore();
+themeStore.loadTheme().then(() => {
   if (!localStorage.getItem('theme'))
     themeStore.setTheme('dark');
+});
 
-  const authStore = useAuthStore();
-  authStore.initializeAuth();
-  
-  app.use(router);
-  app.use(vuetify);
-  app.use(i18n);
-  setupLib(app);
-  
-  app.mount("#app");
-}
+const authStore = useAuthStore();
+authStore.initializeAuth();
 
-initializeAndMountApp();
+app.mount('#app');
