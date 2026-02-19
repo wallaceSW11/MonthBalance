@@ -49,21 +49,58 @@ export default defineConfig({
             purpose: "maskable"
           }
         ],
+        screenshots: [
+          {
+            src: "screenshot-mobile.png",
+            sizes: "464x919",
+            type: "image/png",
+            label: "Tela principal do aplicativo"
+          },
+          {
+            src: "screenshot-desktop.png",
+            sizes: "1394x807",
+            type: "image/png",
+            form_factor: "wide",
+            label: "Dashboard financeiro"
+          }
+        ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+        globIgnores: [
+          '**/screenshot-*.png',
+          '**/pwa-*.png',
+          '**/apple-touch-icon.png',
+          '**/logo-*.png',
+          '**/*.eot',
+          '**/*.ttf',
+          '**/*.woff'
+        ],
+        navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^(?!\/__).*/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "CacheFirst",
+            handler: 'CacheFirst',
             options: {
-              cacheName: "google-fonts-cache",
+              cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365
               },
               cacheableResponse: {
                 statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 30
               }
             }
           }
@@ -76,7 +113,11 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  css: {
+    preprocessorMaxWorkers: true
+  },
   build: {
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
         manualChunks: (id) => {
@@ -111,5 +152,12 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 800,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
 });

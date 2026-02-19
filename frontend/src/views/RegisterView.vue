@@ -19,7 +19,6 @@
               v-model="form.name"
               :placeholder="t('auth.fullNamePlaceholder')"
               :rules="[validateRequired]"
-              variant="outlined"
               density="comfortable"
             />
           </div>
@@ -41,7 +40,6 @@
               :placeholder="t('auth.passwordCreatePlaceholder')"
               :rules="[validateRequired, validatePasswordLength]"
               :type="showPassword ? 'text' : 'password'"
-              variant="outlined"
               density="comfortable"
             >
               <template #append-inner>
@@ -66,7 +64,6 @@
               :placeholder="t('auth.confirmPasswordPlaceholder')"
               :rules="[validateRequired, validatePasswordMatch]"
               :type="showConfirmPassword ? 'text' : 'password'"
-              variant="outlined"
               density="comfortable"
             >
               <template #append-inner>

@@ -22,6 +22,8 @@ public class User
     
     public bool NotificationsEnabled { get; set; } = true;
     
+    public UserRole Role { get; set; } = UserRole.User;
+    
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     

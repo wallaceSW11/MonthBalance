@@ -73,7 +73,7 @@ import { IncomeType, FormMode } from '@/models';
 import IncomeTypeFormModal from '@/components/IncomeTypeFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  'toggle-drawer': []
 }>();
 
 const { t } = useI18n();
@@ -148,8 +148,10 @@ const handleSaved = async (): Promise<void> => {
 }
 
 onMounted(() => {
-  loadIncomeTypes()
-})
+  loadIncomeTypes();
+
+  if (router.currentRoute.value.query.openAdd === 'true') openAddModal();
+});
 </script>
 
 <style scoped>

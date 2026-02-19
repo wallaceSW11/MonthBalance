@@ -5,7 +5,6 @@
         v-model="form.currentPassword"
         :label="t('auth.currentPassword')"
         type="password"
-        variant="outlined"
         :rules="[validateRequired]"
         class="mb-4"
       />
@@ -14,7 +13,6 @@
         v-model="form.newPassword"
         :label="t('auth.newPassword')"
         type="password"
-        variant="outlined"
         :rules="[validateRequired, validateMinLength]"
         class="mb-4"
       />
@@ -23,7 +21,6 @@
         v-model="form.confirmPassword"
         :label="t('auth.confirmNewPassword')"
         type="password"
-        variant="outlined"
         :rules="[validateRequired, validatePasswordMatch]"
       />
     </v-form>
@@ -53,6 +50,7 @@ const actions = computed<ModalAction[]>(() => [
   {
     text: t('common.cancel'),
     color: 'secondary',
+    variant: 'outlined',
     handler: () => {
       open.value = false;
     }
@@ -60,6 +58,7 @@ const actions = computed<ModalAction[]>(() => [
   {
     text: t('common.confirm'),
     color: 'primary',
+    variant: 'elevated',
     handler: handleSubmit
   }
 ]);

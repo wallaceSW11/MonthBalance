@@ -5,6 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using MonthBalance.API.Data;
 using MonthBalance.API.Repositories;
 using MonthBalance.API.Services;
+using DotNetEnv;
+
+// Carrega variáveis do arquivo .env (se existir)
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +91,13 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWebAuthnRepository, WebAuthnRepository>();
 builder.Services.AddScoped<IWebAuthnService, WebAuthnService>();
@@ -118,6 +129,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<MonthBalance.API.Middleware.ActivityTrackingMiddleware>();
 app.MapControllers();
 
 app.Run();

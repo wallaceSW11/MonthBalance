@@ -29,7 +29,6 @@
         <v-text-field
           v-model="form.name"
           :label="t('account.fullName')"
-          variant="outlined"
           :rules="[validateRequired]"
           class="form-field"
         />
@@ -37,7 +36,6 @@
         <v-text-field
           v-model="form.email"
           :label="t('account.email')"
-          variant="outlined"
           readonly
           disabled
           class="form-field"
@@ -124,7 +122,7 @@ import { ROUTES } from '@/constants/routes';
 import ChangePasswordModal from '@/components/ChangePasswordModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  'toggle-drawer': []
 }>();
 
 const router = useRouter();
@@ -141,7 +139,7 @@ const form = ref({
 });
 
 function toggleDrawer(): void {
-  emit('toggleDrawer');
+  emit('toggle-drawer');
 }
 
 function validateRequired(value: string): boolean | string {

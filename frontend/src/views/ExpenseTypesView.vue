@@ -70,7 +70,7 @@ import { FormMode } from '@/models';
 import ExpenseTypeFormModal from '@/components/ExpenseTypeFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: [];
+  'toggle-drawer': [];
 }>();
 
 const { t } = useI18n();
@@ -136,6 +136,8 @@ const handleSaved = async (): Promise<void> => {
 
 onMounted(() => {
   loadExpenseTypes();
+
+  if (router.currentRoute.value.query.openAdd === 'true') openAddModal();
 });
 </script>
 

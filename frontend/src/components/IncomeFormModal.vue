@@ -133,14 +133,16 @@ const formattedHourlyPreview = computed(() => {
 
 const actions = computed<ModalAction[]>(() => [
   {
-    text: t('common.save'),
-    color: 'primary',
-    handler: handleSave
-  },
-  {
     text: t('common.cancel'),
     color: 'secondary',
+    variant: 'outlined',
     handler: handleCancel
+  },
+  {
+    text: t('common.save'),
+    color: 'primary',
+    variant: 'elevated',
+    handler: handleSave
   }
 ]);
 
@@ -212,7 +214,7 @@ async function handleSave(): Promise<void> {
       };
 
       await incomeService.create(createData);
-      notify.success(t('monthBalance.incomeSaved'), '');
+      notify.success(t('monthBalance.incomeAdded'), '');
       resetForm();
       internalOpen.value = false;
     } else {

@@ -1,0 +1,91 @@
+:root {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  --bs-primary: #3b82f6;
+  --bs-secondary: #6c757d;
+  --bs-body-bg: #0f172a;
+  --bs-dark-rgb: 15, 23, 42;
+  --card-bg: #1e293b;
+}
+
+body {
+  font-family: "Outfit", sans-serif;
+  background-color: var(--bs-body-bg);
+  overflow-x: hidden;
+}
+
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bs-body-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bs-primary);
+}
+
+
+.navbar {
+  background-color: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+
+.masthead {
+  height: 100vh;
+  min-height: 600px;
+  background: linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.95) 0%,
+      rgba(30, 41, 59, 0.9) 50%,
+      rgba(15, 23, 42, 0.95) 100%
+    );
+  background-size: cover;
+  position: relative;
+  padding-top: 5rem;
+}
+
+
+section {
+  position: relative;
+  overflow: hidden;
+}
+
+
+.bg-gradient-dark {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+}
+
+.divider {
+  height: 4px;
+  width: 60px;
+  border-radius: 2px;
+}
+
+
+.form-control:focus {
+  background-color: #1e293b;
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+  color: #fff;
+}
+.form-control::placeholder {
+  color: #64748b;
+}
+
+
+.carousel-item img {
+  object-fit: contain;
+  max-height: 500px;
+  background-color: #000;
+}

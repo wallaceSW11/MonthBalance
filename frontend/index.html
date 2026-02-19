@@ -11,6 +11,34 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Month Balance">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="dns-prefetch" href="https://api.monthbalance.com">
+
+  <style>
+    #app:empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #121212;
+    }
+    #app:empty::after {
+      content: "";
+      width: 40px;
+      height: 40px;
+      border: 3px solid #333;
+      border-top-color: #2196F3;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
   <title>Month Balance</title>
 </head>
 

@@ -93,7 +93,7 @@ import ExpenseTypeSelectModal from '@/components/ExpenseTypeSelectModal.vue';
 import ExpenseFormModal from '@/components/ExpenseFormModal.vue';
 
 const emit = defineEmits<{
-  toggleDrawer: []
+  'toggle-drawer': []
 }>();
 
 const { t } = useI18n();
@@ -122,23 +122,19 @@ const expenseFormMode = ref<FormMode>(FormMode.ADD);
 const selectedExpenseTypeId = ref<string>('0');
 const allMonthData = ref<MonthData[]>([]);
 
-const totalIncome = computed(() => {
-  return incomes.value.reduce((sum, income) => sum + income.calculatedValue, 0);
-});
+const totalIncome = computed(() =>
+  incomes.value.reduce((sum, income) => sum + income.calculatedValue, 0)
+);
 
-const totalExpense = computed(() => {
-  return expenses.value.reduce((sum, expense) => sum + expense.value, 0);
-});
+const totalExpense = computed(() =>
+  expenses.value.reduce((sum, expense) => sum + expense.value, 0)
+);
 
-const balance = computed(() => {
-  return totalIncome.value - totalExpense.value;
-});
+const balance = computed(() => totalIncome.value - totalExpense.value);
 
-const canNavigatePrevious = computed(() => {
-  if (currentYear.value === MIN_YEAR && currentMonth.value === MIN_MONTH) return false;
-
-  return true;
-});
+const canNavigatePrevious = computed(
+  () => !(currentYear.value === MIN_YEAR && currentMonth.value === MIN_MONTH)
+);
 
 const canNavigateNext = computed(() => {
   const lastMonth = getLastRegisteredMonth();
@@ -155,12 +151,12 @@ const canNavigateNext = computed(() => {
   return monthsAhead < MAX_MONTHS_AHEAD;
 });
 
-const currentMonthDataId = computed(() => {
-  return currentMonthData.value?.id ? String(currentMonthData.value.id) : '0';
-});
+const currentMonthDataId = computed(() =>
+  currentMonthData.value?.id ? String(currentMonthData.value.id) : '0'
+);
 
-const incomesWithNames = computed(() => {
-  return incomes.value.map(income => {
+const incomesWithNames = computed(() =>
+  incomes.value.map(income => {
     const incomeType = incomeTypes.value.find(it => it.id === income.incomeTypeId);
     const typeLabel = incomeType ? getTypeLabel(incomeType.type) : '';
 
@@ -170,8 +166,8 @@ const incomesWithNames = computed(() => {
       type: typeLabel,
       value: income.calculatedValue
     };
-  });
-});
+  })
+);
 
 function getTypeLabel(type: string): string {
   const labels: Record<string, string> = {
@@ -183,8 +179,8 @@ function getTypeLabel(type: string): string {
   return labels[type] ?? type;
 }
 
-const expensesWithNames = computed(() => {
-  return expenses.value.map(expense => {
+const expensesWithNames = computed(() =>
+  expenses.value.map(expense => {
     const expenseType = expenseTypes.value.find(et => et.id === expense.expenseTypeId);
 
     return {
@@ -192,8 +188,8 @@ const expensesWithNames = computed(() => {
       name: expenseType?.name ?? 'Despesa',
       value: expense.value
     };
-  });
-});
+  })
+);
 
 async function loadIncomeTypes(): Promise<void> {
   try {
@@ -275,8 +271,8 @@ function loadLastAccessedMonth(): void {
     const { year, month } = JSON.parse(saved);
     currentYear.value = year;
     currentMonth.value = month;
-  } catch (error) {
-    // Failed to load last accessed month
+  } catch {
+    localStorage.removeItem(LAST_MONTH_KEY);
   }
 }
 
@@ -410,16 +406,6 @@ async function handleDuplicateMonth(): Promise<void> {
   const nextMonth = currentMonth.value === 12 ? 1 : currentMonth.value + 1;
   const nextYear = currentMonth.value === 12 ? currentYear.value + 1 : currentYear.value;
 
-  const nextMonthExists = allMonthData.value.find(
-    md => md.year === nextYear && md.month === nextMonth
-  );
-
-  if (nextMonthExists) {
-    notify.error(t('monthBalance.duplicateError'), 'Próximo mês já existe');
-
-    return;
-  }
-
   const lastMonth = getLastRegisteredMonth();
 
   if (lastMonth) {
@@ -433,7 +419,105 @@ async function handleDuplicateMonth(): Promise<void> {
   }
 
   const monthName = t(`monthBalance.months.${nextMonth}`);
+  const nextMonthData = allMonthData.value.find(
+    md => md.year === nextYear && md.month === nextMonth
+  );
 
+  // Se o próximo mês existe, verifica se tem lançamentos
+  if (nextMonthData) {
+    const [nextIncomes, nextExpenses] = await Promise.all([
+      incomeService.getByMonth(nextMonthData.id),
+      expenseService.getByMonth(nextMonthData.id)
+    ]);
+
+    const hasData = nextIncomes.length > 0 || nextExpenses.length > 0;
+
+    if (hasData) {
+      // Tem dados: pergunta se quer sobrescrever
+      const confirmed = await confirm.show(
+        t('monthBalance.duplicateMonth'),
+        `${monthName} ${nextYear} já possui lançamentos. Deseja sobrescrever com os dados do mês atual?`,
+        { confirmText: t('common.yes'), cancelText: t('common.no'), confirmColor: 'warning' }
+      );
+
+      if (!confirmed) return;
+
+      loading.show(t('common.loading'));
+
+      try {
+        // Limpa os lançamentos existentes
+        for (const income of nextIncomes) {
+          await incomeService.remove(income.id);
+        }
+
+        for (const expense of nextExpenses) {
+          await expenseService.remove(expense.id);
+        }
+
+        // Copia do mês atual
+        for (const income of incomes.value) {
+          await incomeService.create({
+            monthDataId: nextMonthData.id,
+            incomeTypeId: income.incomeTypeId,
+            grossValue: income.grossValue,
+            netValue: income.netValue,
+            hourlyRate: income.hourlyRate,
+            hours: income.hours,
+            minutes: income.minutes
+          });
+        }
+
+        for (const expense of expenses.value) {
+          await expenseService.create(nextMonthData.id, expense.expenseTypeId, expense.value);
+        }
+
+        currentYear.value = nextYear;
+        currentMonth.value = nextMonth;
+        await loadMonth(true);
+      } catch (error) {
+        notify.error(t('monthBalance.duplicateError'), String(error));
+      } finally {
+        loading.hide();
+        notify.success(t('monthBalance.duplicateSuccess'), '');
+      }
+
+      return;
+    }
+
+    // Próximo mês existe mas está vazio: duplica direto sem perguntar
+    loading.show(t('common.loading'));
+
+    try {
+      for (const income of incomes.value) {
+        await incomeService.create({
+          monthDataId: nextMonthData.id,
+          incomeTypeId: income.incomeTypeId,
+          grossValue: income.grossValue,
+          netValue: income.netValue,
+          hourlyRate: income.hourlyRate,
+          hours: income.hours,
+          minutes: income.minutes
+        });
+      }
+
+      for (const expense of expenses.value) {
+        await expenseService.create(nextMonthData.id, expense.expenseTypeId, expense.value);
+      }
+
+      currentYear.value = nextYear;
+      currentMonth.value = nextMonth;
+      await loadMonth(true);
+    } catch (error) {
+      notify.error(t('monthBalance.duplicateError'), String(error));
+    } finally {
+      loading.hide();
+      notify.success(t('monthBalance.duplicateSuccess'), '');
+    }
+
+    return;
+  }
+
+  // Próximo mês não existe: confirma e cria
   const confirmed = await confirm.show(
     t('monthBalance.duplicateMonth'),
     `Copiar dados do mês atual para ${monthName} ${nextYear}?`,
@@ -514,7 +598,7 @@ async function handleClearMonth(): Promise<void> {
 }
 
 function handleMenuClick(): void {
-  emit('toggleDrawer');
+  emit('toggle-drawer');
 }
 
 function handleAddIncome(): void {
@@ -532,6 +616,7 @@ function handleIncomeTypeSelected(incomeType: IncomeTypeModel): void {
   selectedIncomeTypeId.value = String(incomeType.id);
   incomeFormMode.value = FormMode.ADD;
   selectedIncome.value = undefined;
+  incomeTypeSelectOpen.value = false;
   incomeFormOpen.value = true;
 }
 
@@ -579,6 +664,11 @@ async function handleDeleteIncome(id: number): Promise<void> {
 
 async function handleIncomeSaved(): Promise<void> {
   await loadMonth();
+
+  if (incomeFormMode.value === FormMode.ADD) {
+    incomeFormOpen.value = false;
+    incomeTypeSelectOpen.value = true;
+  }
 }
 
 function handleAddExpense(): void {
@@ -594,6 +684,7 @@ function handleAddExpense(): void {
 function handleExpenseTypeSelected(expenseType: ExpenseTypeModel): void {
   selectedExpenseTypeId.value = String(expenseType.id);
   expenseFormMode.value = FormMode.ADD;
+  expenseTypeSelectOpen.value = false;
   expenseFormOpen.value = true;
 }
 
@@ -639,12 +730,16 @@ async function handleDeleteExpense(id: number): Promise<void> {
 
 async function handleExpenseSaved(): Promise<void> {
   await loadMonth();
+
+  if (expenseFormMode.value === FormMode.ADD) {
+    expenseFormOpen.value = false;
+    expenseTypeSelectOpen.value = true;
+  }
 }
 
 onMounted(async () => {
   loadLastAccessedMonth();
-  await loadIncomeTypes();
-  await loadExpenseTypes();
+  await Promise.all([loadIncomeTypes(), loadExpenseTypes()]);
   await loadMonth();
 });
 </script>

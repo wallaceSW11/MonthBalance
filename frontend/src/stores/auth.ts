@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!authService.isAuthenticated()) return;
 
     user.value = authService.getCurrentUser();
-    authGuard.markAuthenticated();
+    authGuard.markAuthenticated(); // also clears HIDDEN_AT to prevent watchdog false-positive
   }
 
   async function updateUserData(data: Partial<User>): Promise<void> {

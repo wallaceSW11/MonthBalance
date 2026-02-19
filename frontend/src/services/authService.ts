@@ -1,4 +1,5 @@
 import { api } from './api';
+import { authGuard } from './authGuard';
 import type { User } from '@/models/User';
 
 const AUTH_TOKEN_KEY = 'auth_token';
@@ -39,6 +40,7 @@ async function register(name: string, email: string, password: string): Promise<
 
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    authGuard.markAuthenticated();
 
     return user;
   } catch (error: any) {
@@ -56,6 +58,7 @@ async function login(email: string, password: string): Promise<User> {
 
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    authGuard.markAuthenticated();
 
     return user;
   } catch (error: any) {
@@ -68,6 +71,7 @@ async function login(email: string, password: string): Promise<User> {
 function logout(): void {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
+  authGuard.clearAuthState();
 }
 
 function isAuthenticated(): boolean {
@@ -165,6 +169,7 @@ async function authenticateWebAuthn(credential: any): Promise<User> {
 
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    authGuard.markAuthenticated();
 
     return user;
   } catch (error: any) {
@@ -185,6 +190,27 @@ async function deleteAccount(): Promise<void> {
   }
 }
 
+async function forgotPassword(email: string): Promise<void> {
+  try {
+    await api.post('/auth/forgot-password', { email });
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao solicitar recuperação de senha';
+
+    throw new Error(message);
+  }
+}
+
+async function resetPassword(token: string, newPassword: string): Promise<string> {
+  try {
+    const response = await api.post<{ message: string; email: string }>('/auth/reset-password', { token, newPassword });
+    return response.data.email;
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'Erro ao redefinir senha';
+
+    throw new Error(message);
+  }
+}
+
 export const authService = {
   register,
   login,
@@ -198,5 +224,7 @@ export const authService = {
   registerWebAuthnCredential,
   authenticateWebAuthnChallenge,
   authenticateWebAuthn,
-  deleteAccount
+  deleteAccount,
+  forgotPassword,
+  resetPassword
 };

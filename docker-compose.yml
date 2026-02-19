@@ -30,6 +30,8 @@ services:
       Jwt__Issuer: MonthBalanceAPI
       Jwt__Audience: MonthBalanceApp
       Jwt__ExpirationHours: 24
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
     expose:
       - "8080"
     depends_on:
